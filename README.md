@@ -7,11 +7,6 @@ Application de suivi TCC entre les séances, permettant au patient de pratiquer 
 - Navigation : React Navigation
 - Backend : SQLite
 
-## ⚙️ Installation
-- git clone https://github.com/rawdath28/projetH5.git
-- cd projetH5
-- npm install
-
 # 🚀 Démarrage rapide
 ## 1. Prérequis
 - Node.js (version recommandée : 18+)
@@ -19,8 +14,8 @@ Application de suivi TCC entre les séances, permettant au patient de pratiquer 
 - Expo CLI: npm install -g expo-cli
 - Application Expo Go sur smartphone ou émulateur Android/iOS configuré
 
-## 2. Installation
-- git clone https://github.com/<organisation>/<nom-du-repo>.git
+## 2. ⚙️Installation
+- git clone https://github.com/rawdath28/projetH5.git
 - cd projetH5
 - npm install ou yarn install
 
