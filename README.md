@@ -3,10 +3,9 @@
 Application de suivi TCC entre les séances, permettant au patient de pratiquer des exercices, suivre son humeur et visualiser ses progrès.
 ## 📦 Stack technique
 - Framework : React Native (Expo / React Native CLI)
-- Langage : TypeScript ou JavaScript
+- Langage : JavaScript
 - Navigation : React Navigation
-- State management : (ex. React Context / Zustand / Redux)
-- Backend / API : (ex. Node.js / Firebase / Supabase – à adapter)
+- Backend : SQLite
 
 ## ⚙️ Installation
 - git clone https://github.com/rawdath28/projetH5.git
