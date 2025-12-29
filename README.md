@@ -1,78 +1,50 @@
-# # 🚀 My React Native App
+# Welcome to your Expo app 👋
 
-Application de suivi TCC entre les séances, permettant au patient de pratiquer des exercices, suivre son humeur et visualiser ses progrès.
-## 📦 Stack technique
-- Framework : React Native (Expo / React Native CLI)
-- Langage : JavaScript
-- Navigation : React Navigation
-- Backend : SQLite
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-# 🚀 Démarrage rapide
-## 1. Prérequis
-- Node.js (version recommandée : 18+)
-- npm, yarn
-- Expo CLI: npm install -g expo-cli
-- Application Expo Go sur smartphone ou émulateur Android/iOS configuré
+## Get started
 
-## 2. ⚙️Installation
-- git clone https://github.com/rawdath28/projetH5.git
-- cd projetH5
-- npm install ou yarn install
+1. Install dependencies
 
-## 3. Lancer l’app en développement
-Avec Expo : 
-- npm start ou yarn start
-- Scanner le QR code avec l’app Expo Go (sur iOS / Android) Ou appuyer sur a pour lancer l’émulateur Android, i pour iOS
+   ```bash
+   npm install
+   ```
 
-Avec React Native CLI (sans Expo) :
-- iOS
-  - npx react-native run-ios
-- Android
-  - npx react-native run-android
+2. Start the app
 
-## 📂 Structure du projet
-- ├── src
-- │   ├── components      # Composants UI réutilisables
-- │   ├── screens         # Écrans (Home, Exercises, Séances, Progrès.)
-- │   ├── navigation      # Stack/Tab navigators
-- │   ├── hooks           # Hooks custom
-- │   ├── context         # Contexte global (auth, thème, data)
-- │   ├── services        # Appels API, clients HTTP
-- │   ├── theme           # Design system léger (couleurs, typos)
-- │   └── utils           # Fonctions utilitaires
-- ├── assets              # Images, icônes, fonts
-- ├── app.json / expo.json
-- └── README.md
+   ```bash
+   npx expo start
+   ```
 
-## 🧭 Navigation
-L’app utilise React Navigation avec par exemple :
-## Tab Navigator :
-- Home (suivi/progrès)
-- Exercises
-- Séances
-- Progrès
-## Stack Navigator :
-- Auth (Login / Register)
-- App (tabs principales)
+In the output, you'll find options to open the app in a
 
-## 🔐 Authentification (si présente)
-Écran Login avec :
-- Email
-- Mot de passe
-Une fois connecté : Redirection vers Home
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-## 🌱 Roadmap (exemple)
-- Authentification basique (login / logout)
-- Écran Home (suivi rapide du patient)
-- Écran Exercises (liste + détail + lancement)
-- Écran Séances (mood tracker)
-- Écran Progrès
-- Intégration backend pour sauvegarder les données
-- Design system léger (couleurs, composants réutilisables)
+You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## 👥 Contribution
-Créer une branche :
-- git checkout -b feature/nom-de-la-feature
-Développer, commiter :
-- git commit -m "feat: ajoute écran exercices"
-Pousser et ouvrir une Pull Request.
+## Get a fresh project
+
+When you're ready, run:
+
+```bash
+npm run reset-project
+```
+
+This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+
+## Learn more
+
+To learn more about developing your project with Expo, look at the following resources:
+
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+
+## Join the community
+
+Join our community of developers creating universal apps.
+
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
