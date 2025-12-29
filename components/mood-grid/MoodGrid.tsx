@@ -1,15 +1,18 @@
-import { useCallback } from 'react';
-import { Dimensions, LayoutChangeEvent, Pressable, StyleSheet, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { Dimensions, LayoutChangeEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
+  runOnJS,
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
-  withDecay
+  withDecay,
+  withSpring
 } from 'react-native-reanimated';
 
 import { ThemedText } from '../../components/themed-text';
 import { MOODS } from '../../constants/moods';
+import { IconSymbol } from '../ui/icon-symbol';
 import { MoodDraggable } from './MoodDraggable';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -36,6 +39,23 @@ export function MoodGrid({ onComplete }: Props) {
 
   const cameraX = useSharedValue(0);
   const cameraY = useSharedValue(0);
+
+  // Tracking de l'émotion sélectionnée pour le repoussage et la description
+  const selectedMoodId = useSharedValue<string | null>(null);
+  const selectedMoodX = useSharedValue(0);
+  const selectedMoodY = useSharedValue(0);
+  const selectedMoodLabel = useSharedValue<string>('');
+
+  // État React pour afficher le nom de l'émotion
+  const [displayedMood, setDisplayedMood] = useState<string>('');
+
+  // Synchroniser la shared value avec l'état React
+  useAnimatedReaction(
+    () => selectedMoodLabel.value,
+    (currentLabel) => {
+      runOnJS(setDisplayedMood)(currentLabel);
+    }
+  );
 
   const handleLayout = useCallback((e: LayoutChangeEvent) => {
     const { width, height } = e.nativeEvent.layout;
@@ -110,7 +130,7 @@ export function MoodGrid({ onComplete }: Props) {
       transform: [
         { translateX: cameraX.value },
         { translateY: cameraY.value },
-      ] as const,
+      ] as const
     };
   });
 
@@ -134,6 +154,21 @@ export function MoodGrid({ onComplete }: Props) {
     },
     [onComplete]
   );
+
+  // Animation de la barre de description
+  const descriptionStyle = useAnimatedStyle(() => {
+    const hasSelection = selectedMoodLabel.value !== '';
+    const translateY = withSpring(hasSelection ? 0 : 150, {
+      damping: 20,
+      stiffness: 200,
+    });
+    const opacity = hasSelection ? 1 : 0;
+
+    return {
+      transform: [{ translateY }],
+      opacity,
+    };
+  });
 
   return (
     <View style={styles.wrapper}>
@@ -230,30 +265,60 @@ export function MoodGrid({ onComplete }: Props) {
                   cameraX={cameraX}
                   cameraY={cameraY}
                   onSelect={handleMoodSelect}
+                  selectedMoodId={selectedMoodId}
+                  selectedMoodX={selectedMoodX}
+                  selectedMoodY={selectedMoodY}
+                  selectedMoodLabel={selectedMoodLabel}
                 />
               );
             })}
 
-            {/* Bouton "Continuer" au centre - taille normale fixe */}
+            {/* Bouton "Continuer" au centre */}
             <View
               style={[
                 styles.centerButton,
                 {
-                  left: SPACE_WIDTH / 2 - 65,
-                  top: SPACE_HEIGHT / 2 - 65,
+                  left: SPACE_WIDTH / 2 - 57.5,
+                  top: SPACE_HEIGHT / 2 - 57.5,
                 },
               ]}>
               <Pressable
                 style={styles.centerPressable}
                 onPress={() => onComplete(null)}>
                 <ThemedText type="defaultSemiBold" style={styles.centerLabel}>
-                  Continuer Sans
+                  Continuer
                 </ThemedText>
               </Pressable>
             </View>
           </Animated.View>
+
+          {/* Description de l'émotion centrée */}
+          {displayedMood !== '' && (
+            <Animated.View style={[styles.descriptionContainer, descriptionStyle]}>
+              <Text style={styles.moodTitle} numberOfLines={2}>
+                {displayedMood}
+              </Text>
+              <Pressable 
+                style={styles.arrowButton}
+                onPress={() => {
+                  const moodId = MOODS.find(m => m.label === displayedMood)?.id;
+                  if (moodId) {
+                    onComplete(moodId);
+                  }
+                }}>
+                <Text style={styles.arrow}>→</Text>
+              </Pressable>
+            </Animated.View>
+          )}
         </View>
       </GestureDetector>
+      
+      {/* Search button top-right */}
+      <Pressable 
+        style={styles.searchButton}
+        onPress={() => console.log('Search pressed')}>
+        <IconSymbol name="magnifyingglass" size={24} color="#FFFFFF" />
+      </Pressable>
     </View>
   );
 }
@@ -285,9 +350,9 @@ const styles = StyleSheet.create({
   },
   centerButton: {
     position: 'absolute',
-    width: 130,
-    height: 130,
-    borderRadius: 39, // 130 * 0.3 = coins arrondis comme les émotions
+    width: 115,
+    height: 115,
+    borderRadius: 39,
     backgroundColor: 'rgba(60, 60, 60, 0.85)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -308,9 +373,60 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   centerLabel: {
-    fontSize: 15,
+    fontSize: 14,
     textAlign: 'center',
     color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  descriptionContainer: {
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    right: 20,
+    height: 80,
+    backgroundColor: 'rgba(60, 60, 60, 0.95)',
+    borderRadius: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 30,
+    shadowColor: '#000',
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 10,
+  },
+  moodTitle: {
+    color: '#FFFFFF',
+    fontSize: 24,
     fontWeight: '700',
+    flex: 1,
+  },
+  arrowButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  arrow: {
+    fontSize: 32,
+    color: '#000000',
+    fontWeight: '700',
+  },
+  searchButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    zIndex: 1000,
   },
 });
