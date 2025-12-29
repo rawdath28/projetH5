@@ -249,7 +249,7 @@ export function MoodGrid({ onComplete }: Props) {
                 style={styles.centerPressable}
                 onPress={() => onComplete(null)}>
                 <ThemedText type="defaultSemiBold" style={styles.centerLabel}>
-                  Continuer
+                  Continuer Sans
                 </ThemedText>
               </Pressable>
             </View>
