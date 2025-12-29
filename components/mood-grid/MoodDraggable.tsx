@@ -10,7 +10,7 @@ import Animated, {
     withSpring
 } from 'react-native-reanimated';
 
-import { Mood } from '@/constants/moods';
+import { Mood } from '../../constants/moods';
 
 type Props = {
   mood: Mood;

@@ -5,13 +5,11 @@ import Animated, {
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
-  withDecay,
-  withSpring,
-  cancelAnimation
+  withDecay
 } from 'react-native-reanimated';
 
-import { ThemedText } from '@/components/themed-text';
-import { MOODS } from '@/constants/moods';
+import { ThemedText } from '../../components/themed-text';
+import { MOODS } from '../../constants/moods';
 import { MoodDraggable } from './MoodDraggable';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -112,7 +110,7 @@ export function MoodGrid({ onComplete }: Props) {
       transform: [
         { translateX: cameraX.value },
         { translateY: cameraY.value },
-      ],
+      ] as const,
     };
   });
 
