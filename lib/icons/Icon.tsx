@@ -71,7 +71,7 @@ export const Icon: FC<IconProps> = ({
     <SvgIcon
       width={size}
       height={size}
-      fill={color}
+      color={color}
       style={style}
     />
   );

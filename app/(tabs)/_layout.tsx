@@ -1,52 +1,103 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { StyleSheet } from 'react-native';
 
 import { HapticTab } from '../../components/haptic-tab';
-import { IconSymbol } from '../../components/ui/icon-symbol';
-import { Colors } from '../../constants/theme';
-import { useColorScheme } from '../../hooks/use-color-scheme';
+import { Icon } from '../../lib/icons';
+
+// Couleurs de la tab bar selon le design Figma
+const TAB_BAR_COLORS = {
+  background: '#FFFFFF',
+  iconDefault: '#687076',
+  iconSelected: '#1B1B1B',
+};
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: TAB_BAR_COLORS.iconSelected,
+        tabBarInactiveTintColor: TAB_BAR_COLORS.iconDefault,
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarShowLabel: false,  // Ajouté ici
+        tabBarShowLabel: false,
+        tabBarStyle: styles.tabBar,
+        tabBarItemStyle: styles.tabBarItem,
+        tabBarIconStyle: styles.tabBarIcon,
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="pencil" color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <Icon name={focused ? 'vector-pen-fill' : 'vector-pen'} size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="exercice"
         options={{
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="lightbulb.fill" color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <Icon name={focused ? 'lightbulb-fill' : 'lightbulb'} size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="micro"
         options={{
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="mic.fill" color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <Icon name={focused ? 'mic-fill' : 'mic'} size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="seances"
         options={{
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.line.uptrend.xyaxis" color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <Icon name={focused ? 'bar-chart-fill' : 'bar-chart'} size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="list.triangle" color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <Icon name={focused ? 'person-fill' : 'person'} size={22} color={color} />
+          ),
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    backgroundColor: TAB_BAR_COLORS.background,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderTopWidth: 0,
+    // Hauteur totale : 56px (contenu) + 22px (safe area iOS) = 78px
+    height: 80,
+    paddingHorizontal: 16,
+    paddingBottom: 22,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  tabBarItem: {
+    // Pas de padding ici - le bouton cliquable gère tout
+    flex: 1,
+    padding: 0,
+    margin: 0,
+  },
+  tabBarIcon: {
+    // Reset les marges par défaut de l'icône
+    marginTop: 0,
+    marginBottom: 0,
+  },
+});
