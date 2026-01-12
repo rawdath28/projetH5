@@ -317,7 +317,7 @@ export function MoodGrid({ onComplete }: Props) {
       <Pressable 
         style={styles.searchButton}
         onPress={() => console.log('Search pressed')}>
-        <IconSymbol name="magnifyingglass" size={24} color="#FFFFFF" />
+        <IconSymbol name="magnifyingglass" size={20} color="#FFFFFF" />
       </Pressable>
     </View>
   );
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
-    overflow: 'hidden',
+    // overflow: 'hidden',
     backgroundColor: '#000000',
   },
   emotionalSpace: {
@@ -419,14 +419,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 16,
     right: 16,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
     zIndex: 1000,
   },
 });
