@@ -6,6 +6,7 @@
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "generate-icons": "node ./scripts/generate-icons.js",
+    "fix-svg-colors": "node ./scripts/fix-svg-colors.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
