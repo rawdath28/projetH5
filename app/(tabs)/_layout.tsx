@@ -20,29 +20,29 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="pencil" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="pencil.line" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="exercice"
+        name="exercise"
         options={{
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="lightbulb.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="micro"
+        name="record"
         options={{
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="mic.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="seances"
+        name="progress"
         options={{
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.line.uptrend.xyaxis" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="progress"
+        name="session"
         options={{
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="list.triangle" color={color} />,
         }}

@@ -14,7 +14,7 @@ export default function HomeScreen() {
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <ThemedView style={styles.content}>
         <ThemedView style={styles.header}>
-          <IconSymbol size={48} name="house.fill" color={colors.tint} />
+          <IconSymbol size={48} name="pencil.line" color={colors.tint} />
           <ThemedText type="title" style={styles.title}>
             Accueil
           </ThemedText>

@@ -6,7 +6,7 @@ import { IconSymbol } from '../../components/ui/icon-symbol';
 import { Colors } from '../../constants/theme';
 import { useColorScheme } from '../../hooks/use-color-scheme';
 
-export default function ProgressScreen() {
+export default function ExerciseScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
@@ -14,54 +14,45 @@ export default function ProgressScreen() {
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <ThemedView style={styles.content}>
         <ThemedView style={styles.header}>
-          <IconSymbol size={48} name="chart.line.uptrend.xyaxis" color={colors.tint} />
+          <IconSymbol size={48} name="lightbulb.fill" color={colors.tint} />
           <ThemedText type="title" style={styles.title}>
-            Progrès
+            Exercices
           </ThemedText>
         </ThemedView>
 
         <ThemedView style={styles.section}>
           <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Suivi de vos progrès
+            Exercices disponibles
           </ThemedText>
           <ThemedText style={styles.description}>
-            Visualisez votre évolution au fil du temps et célébrez vos réussites.
+            Pratiquez vos exercices de TCC entre les séances pour renforcer vos compétences.
           </ThemedText>
         </ThemedView>
 
-        <ThemedView style={styles.statsCard}>
-          <ThemedText type="defaultSemiBold" style={styles.statLabel}>
-            Exercices complétés
+        <ThemedView style={styles.exerciseCard}>
+          <ThemedText type="defaultSemiBold" style={styles.exerciseTitle}>
+            Exercice de respiration
           </ThemedText>
-          <ThemedText type="title" style={styles.statValue}>
-            0
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedView style={styles.statsCard}>
-          <ThemedText type="defaultSemiBold" style={styles.statLabel}>
-            Séances suivies
-          </ThemedText>
-          <ThemedText type="title" style={styles.statValue}>
-            0
+          <ThemedText style={styles.exerciseDescription}>
+            Technique de respiration profonde pour gérer l'anxiété et le stress.
           </ThemedText>
         </ThemedView>
 
-        <ThemedView style={styles.statsCard}>
-          <ThemedText type="defaultSemiBold" style={styles.statLabel}>
-            Jours consécutifs
+        <ThemedView style={styles.exerciseCard}>
+          <ThemedText type="defaultSemiBold" style={styles.exerciseTitle}>
+            Restructuration cognitive
           </ThemedText>
-          <ThemedText type="title" style={styles.statValue}>
-            0
+          <ThemedText style={styles.exerciseDescription}>
+            Identifiez et remettez en question vos pensées négatives.
           </ThemedText>
         </ThemedView>
 
-        <ThemedView style={styles.section}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Graphiques
+        <ThemedView style={styles.exerciseCard}>
+          <ThemedText type="defaultSemiBold" style={styles.exerciseTitle}>
+            Journal de pensées
           </ThemedText>
-          <ThemedText style={styles.description}>
-            Les graphiques de votre humeur et de vos progrès apparaîtront ici.
+          <ThemedText style={styles.exerciseDescription}>
+            Enregistrez vos pensées et émotions pour mieux les comprendre.
           </ThemedText>
         </ThemedView>
       </ThemedView>
@@ -99,22 +90,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
   },
-  statsCard: {
-    padding: 20,
+  exerciseCard: {
+    padding: 16,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    alignItems: 'center',
     gap: 8,
     marginBottom: 12,
   },
-  statLabel: {
-    fontSize: 16,
-    opacity: 0.7,
+  exerciseTitle: {
+    fontSize: 18,
+    marginBottom: 4,
   },
-  statValue: {
-    fontSize: 36,
-    fontWeight: 'bold',
+  exerciseDescription: {
+    fontSize: 14,
+    lineHeight: 20,
+    opacity: 0.8,
   },
 });
 

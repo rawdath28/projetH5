@@ -6,7 +6,7 @@ import { IconSymbol } from '../../components/ui/icon-symbol';
 import { Colors } from '../../constants/theme';
 import { useColorScheme } from '../../hooks/use-color-scheme';
 
-export default function SeancesScreen() {
+export default function SessionScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
@@ -14,7 +14,7 @@ export default function SeancesScreen() {
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <ThemedView style={styles.content}>
         <ThemedView style={styles.header}>
-          <IconSymbol size={48} name="calendar" color={colors.tint} />
+          <IconSymbol size={48} name="list.triangle" color={colors.tint} />
           <ThemedText type="title" style={styles.title}>
             Séances
           </ThemedText>
