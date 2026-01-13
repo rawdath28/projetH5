@@ -41,7 +41,7 @@ export const getMistralApiKey = (): string | undefined => {
   // Clé API Mistral depuis le fichier .env
   // Note: Pour que les variables d'environnement fonctionnent avec Expo,
   // vous devez redémarrer complètement le serveur Expo (pas juste reload)
-  return 'MW3X8oDqMhLOcdVswW5PKIGlAePgki0H';
+  return '2haQR5kEQFrjxvwVDuCuK4fgTK5TVKBb';
   
   // return undefined;
 };

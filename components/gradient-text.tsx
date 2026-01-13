@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Text, View, StyleSheet, TextStyle, LayoutChangeEvent } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import MaskedView from "@react-native-masked-view/masked-view";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useState } from "react";
+import { LayoutChangeEvent, StyleSheet, Text, TextStyle, View } from "react-native";
 import { Fonts } from "../constants/theme";
 
 interface GradientTextProps {
@@ -35,7 +35,7 @@ export default function GradientText({ children, style }: GradientTextProps) {
           {
             position: 'absolute',
             opacity: 0,
-            fontFamily: style?.fontStyle === 'italic' ? Fonts.serif.regularItalic : Fonts.serif.regular,
+            fontFamily: style?.fontFamily || (style?.fontStyle === 'italic' ? Fonts.serif.regularItalic : Fonts.serif.regular),
             fontStyle: style?.fontStyle,
             textAlign: style?.textAlign || 'center',
             paddingHorizontal: style?.paddingHorizontal || 20,
@@ -54,13 +54,13 @@ export default function GradientText({ children, style }: GradientTextProps) {
           minHeight: fontSize * 1.5,
         }}
         maskElement={
-          <View style={{ paddingHorizontal: style?.paddingHorizontal || 20 }}>
+          <View style={{ paddingHorizontal: style?.paddingHorizontal || 0 }}>
             <Text 
               style={[
                 style, 
                 { 
                   backgroundColor: "transparent", 
-                  fontFamily: Fonts.serif.regular,
+                  fontFamily: style?.fontFamily || Fonts.serif.regular,
                   fontStyle: style?.fontStyle,
                   textAlign: style?.textAlign || 'center',
                 }
@@ -85,7 +85,7 @@ export default function GradientText({ children, style }: GradientTextProps) {
                 style, 
                 { 
                   opacity: 0, 
-                  fontFamily: Fonts.serif.regular,
+                  fontFamily: style?.fontFamily || Fonts.serif.regular,
                   fontStyle: style?.fontStyle,
                   textAlign: style?.textAlign || 'center',
                 }

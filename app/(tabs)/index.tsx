@@ -42,12 +42,12 @@ export default function HomeScreen() {
   const [note, setNote] = useState("");
   const [moodHistory, setMoodHistory] = useState<MoodEntry[]>([]);
   const [moodTexts, setMoodTexts] = useState<{ [key: string]: string }>({});
-  
+
   // États pour l'analyse et l'affichage du bottom sheet
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  
+
   // On trie le tableau par date/heure croissante
   const sortedMoodHistory = [...moodHistory].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -67,22 +67,31 @@ export default function HomeScreen() {
 
   const loadMoodHistory = async () => {
     try {
-      const today = new Date().toDateString();
-      const savedMoods = await AsyncStorage.getItem(`moods_${today}`);
-      if (savedMoods) {
-        const parsedMoods: MoodEntry[] = JSON.parse(savedMoods);
+      // Charger tous les jours depuis AsyncStorage
+      const allKeys = await AsyncStorage.getAllKeys();
+      const moodKeys = allKeys.filter(key => key.startsWith('moods_'));
 
-        // On trie pour trouver le vrai dernier
-        parsedMoods.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      let allMoods: MoodEntry[] = [];
 
-        setMoodHistory(parsedMoods);
-
-        // Si on a des moods, on reprend l'édition du dernier
-        if (parsedMoods.length > 0) {
-          const lastMood = parsedMoods[parsedMoods.length - 1];
-          setEditingMoodId(lastMood.id);
-          setNote(lastMood.text || ""); // On remet le texte dans l'input
+      // Charger les moods de tous les jours
+      for (const key of moodKeys) {
+        const savedMoods = await AsyncStorage.getItem(key);
+        if (savedMoods) {
+          const parsedMoods: MoodEntry[] = JSON.parse(savedMoods);
+          allMoods = [...allMoods, ...parsedMoods];
         }
+      }
+
+      // Trier par date/heure croissante
+      allMoods.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      setMoodHistory(allMoods);
+
+      // Si on a des moods, on reprend l'édition du dernier
+      if (allMoods.length > 0) {
+        const lastMood = allMoods[allMoods.length - 1];
+        setEditingMoodId(lastMood.id);
+        setNote(lastMood.text || ""); // On remet le texte dans l'input
       }
     } catch (error) {
       console.error("Erreur chargement historique moods", error);
@@ -104,10 +113,11 @@ export default function HomeScreen() {
   const [editingMoodId, setEditingMoodId] = useState<string | null>(null);
 
   // ajouter un nouveau mood
-  const handleSelectMood = (newMood: Mood) => {
+  const handleSelectMood = async (newMood: Mood) => {
     // 1. Sauvegarder le texte du mood précédent avant de changer
     if (editingMoodId && note.trim() !== "") {
-      // Optionnel : s'assurer que l'ancien est bien sauvegardé
+      handleSaveText(editingMoodId, note);
+      await saveMoodToStorage(editingMoodId, note);
     }
 
     const newEntry: MoodEntry = {
@@ -119,7 +129,23 @@ export default function HomeScreen() {
     };
 
     // On ajoute le nouveau et on le met en mode édition
-    setMoodHistory(prev => [...prev, newEntry]);
+    setMoodHistory(prev => {
+      const updated = [...prev, newEntry];
+
+      // Sauvegarder immédiatement le nouveau mood
+      const today = new Date().toDateString();
+      const todayMoods = updated.filter(m => {
+        const moodDate = new Date(m.date).toDateString();
+        return moodDate === today;
+      });
+
+      AsyncStorage.setItem(`moods_${today}`, JSON.stringify(todayMoods)).catch(e => {
+        console.error("Erreur sauvegarde nouveau mood", e);
+      });
+
+      return updated;
+    });
+
     setEditingMoodId(newEntry.id);
     setNote(""); // On vide l'input pour le nouveau
   };
@@ -166,11 +192,18 @@ export default function HomeScreen() {
   const saveMoodToStorage = async (id: string, finalText: string) => {
     try {
       const today = new Date().toDateString();
-      // On récupère la liste actuelle du state (mise à jour)
-      const updatedHistory = moodHistory.map(m =>
+      // On récupère uniquement les moods du jour actuel
+      const todayMoods = moodHistory.filter(m => {
+        const moodDate = new Date(m.date).toDateString();
+        return moodDate === today;
+      });
+
+      // Mettre à jour le texte du mood spécifique
+      const updatedTodayMoods = todayMoods.map(m =>
         m.id === id ? { ...m, text: finalText } : m
       );
-      await AsyncStorage.setItem(`moods_${today}`, JSON.stringify(updatedHistory));
+
+      await AsyncStorage.setItem(`moods_${today}`, JSON.stringify(updatedTodayMoods));
     } catch (e) {
       console.error("Erreur storage", e);
     }
@@ -188,11 +221,11 @@ export default function HomeScreen() {
     try {
       const result = await analyzeTextWithMistral(text);
       setAnalysisResult(result);
-      
+
       // Afficher le bottom sheet seulement si un problème est détecté
       if (result.type !== 'none') {
         setShowBottomSheet(true);
-        
+
         // Pour les pensées suicidaires, afficher immédiatement une alerte
         if (result.type === 'suicidal_thoughts') {
           Alert.alert(
@@ -256,9 +289,9 @@ export default function HomeScreen() {
   const getBottomSheetContent = () => {
     if (analysisResult?.type === 'self_deprecation') {
       // Utiliser la réponse de Mistral si disponible, sinon message par défaut
-      const description = analysisResult.responseText || 
+      const description = analysisResult.responseText ||
         'La reformulation te permet de sortir de l\'émotion pour revenir aux faits. Le but est de reformuler ta pensée avec une approche moins dramatique.';
-      
+
       return {
         titlePart1: 'Ici, tu fais une ',
         titlePart2: 'auto-dépréciation',
@@ -267,9 +300,9 @@ export default function HomeScreen() {
       };
     } else if (analysisResult?.type === 'suicidal_thoughts') {
       // Utiliser la réponse de Mistral si disponible, sinon message par défaut
-      const description = analysisResult.responseText || 
+      const description = analysisResult.responseText ||
         'Si tu traverses une période difficile, n\'hésite pas à appeler le numéro d\'aide. Des professionnels sont disponibles 24h/24 pour t\'écouter.';
-      
+
       return {
         titlePart1: 'Besoin d\'aide ?',
         titlePart2: 'Nous sommes là pour toi',
@@ -319,10 +352,13 @@ export default function HomeScreen() {
               <View key={item.id} style={styles.moodItem}>
                 {/* Date si nécessaire */}
                 {showDateHeader && (
-                  <GradientText style={styles.dateHeader}>
-                    {formatDate(item.date)}
-                  </GradientText>
+                  // <View style={styles.dateHeaderContainer}>
+                    <GradientText style={styles.dateHeader}>
+                      {formatDate(item.date)}
+                    </GradientText>
+                  // </View>
                 )}
+
                 <View style={styles.moodRowCentered}>
                   <Text style={styles.moodTime}>{item.time}</Text>
                   <View style={[styles.moodCard, { backgroundColor: item.mood.color }]}>
@@ -332,7 +368,7 @@ export default function HomeScreen() {
                 {isLast ? (
                   <TextInput
                     style={styles.editor}
-                    placeholder="Écris ici…"
+                    placeholder="Commence à écrire ici..."
                     placeholderTextColor="#B0B0B0"
                     multiline
                     value={note} // Utilise l'état local "note"
@@ -371,7 +407,7 @@ export default function HomeScreen() {
       >
         <Text style={colors === Colors.light ? { color: '#FFFFFF' } : { color: '#000000' }}>Effacer l'historique du jour</Text>
       </TouchableOpacity> */}
-      
+
       {/* Bottom Sheet pour les suggestions d'exercices */}
       {showBottomSheet && analysisResult && getBottomSheetContent() && (
         <ExerciseBottomSheet
@@ -414,36 +450,39 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   moodTime: {
-    fontSize: 12,
+    fontSize: 14,
     opacity: 0.7,
     marginRight: 8,
     fontFamily: Fonts.sans.regular,
   },
   moodText: {
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: Fonts.sans.semiBold,
     color: "#FFFFFF",
   },
   moodNote: {
-    fontSize: 14,
-    marginLeft: 44,
+    fontSize: 18,
     marginTop: 4,
     fontFamily: Fonts.sans.regular,
   },
   editor: {
-    fontSize: 16,
+    fontSize: 18,
     minHeight: 120,
     textAlignVertical: "top",
     marginBottom: 12,
-    fontFamily: Fonts.sans.regular,
+    fontFamily: Fonts.serif.semiBoldItalic,
+  },
+  dateHeaderContainer: {
+    width: "100%",
+    alignItems: "flex-start", // force à gauche
   },
   dateHeader: {
-    fontSize: 20,
+    fontSize: 24,
     fontFamily: Fonts.serif.semiBoldItalic,
-    textAlign: "center",
     lineHeight: 28,
+    textAlignVertical: "top",
+    textAlign: "left",
     marginVertical: 12,
-    paddingHorizontal: 20,
     paddingVertical: 20,
   },
 });

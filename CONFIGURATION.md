@@ -17,7 +17,7 @@ Pour utiliser l'analyse de texte avec Mistral API, vous devez configurer votre c
    
    Créez un fichier `.env` à la racine du projet avec :
    ```
-   EXPO_PUBLIC_MISTRAL_API_KEY=MW3X8oDqMhLOcdVswW5PKIGlAePgki0H
+   EXPO_PUBLIC_MISTRAL_API_KEY=2haQR5kEQFrjxvwVDuCuK4fgTK5TVKBb
    ```
    
    **Option 2 : Fichier de configuration**
@@ -25,7 +25,7 @@ Pour utiliser l'analyse de texte avec Mistral API, vous devez configurer votre c
    Modifiez directement `lib/config.ts` et remplacez la fonction `getMistralApiKey()` pour retourner votre clé :
    ```typescript
    export const getMistralApiKey = (): string | undefined => {
-     return 'MW3X8oDqMhLOcdVswW5PKIGlAePgki0H';
+     return '2haQR5kEQFrjxvwVDuCuK4fgTK5TVKBb';
    };
    ```
 
