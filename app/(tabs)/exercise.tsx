@@ -1,5 +1,7 @@
-import { StyleSheet, ScrollView } from 'react-native';
+import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
+import { ExerciseBottomSheet } from '../../components/exercise-bottom-sheet';
 import { ThemedText } from '../../components/themed-text';
 import { ThemedView } from '../../components/themed-view';
 import { IconSymbol } from '../../components/ui/icon-symbol';
@@ -10,8 +12,12 @@ export default function ExerciseScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
+  // État pour afficher/cacher le bottom sheet (pour test)
+  const [showBottomSheet, setShowBottomSheet] = useState(true);
+
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={styles.wrapper}>
+      <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <ThemedView style={styles.content}>
         <ThemedView style={styles.header}>
           <IconSymbol size={48} name="lightbulb.fill" color={colors.tint} />
@@ -55,12 +61,42 @@ export default function ExerciseScreen() {
             Enregistrez vos pensées et émotions pour mieux les comprendre.
           </ThemedText>
         </ThemedView>
+
+        {/* Bouton pour réafficher le bottom sheet (test) */}
+        {!showBottomSheet && (
+          <Pressable
+            style={styles.showBottomSheetButton}
+            onPress={() => setShowBottomSheet(true)}
+          >
+            <ThemedText style={styles.showBottomSheetButtonText}>
+              Afficher la suggestion
+            </ThemedText>
+          </Pressable>
+        )}
       </ThemedView>
     </ScrollView>
+
+      {/* Bottom Sheet de suggestion d'exercice */}
+      <ExerciseBottomSheet
+        visible={showBottomSheet}
+        titlePart1="Ici, tu fais une "
+        titlePart2="distortion cognitive !"
+        description="Le tribunal permet de sortir de l'émotion pour revenir aux faits. Le but est de chercher des preuves concrètes comme s'il était dans un tribunal."
+        buttonText="Démarrer l'exercice"
+        onButtonPress={() => {
+          // TODO: Naviguer vers l'exercice
+          console.log('Démarrer exercice');
+        }}
+        onDismiss={() => setShowBottomSheet(false)}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
@@ -106,6 +142,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     opacity: 0.8,
+  },
+  showBottomSheetButton: {
+    backgroundColor: '#027A54',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  showBottomSheetButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
 });
 

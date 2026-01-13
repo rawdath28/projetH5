@@ -27,27 +27,23 @@ export const Colors = {
   },
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
+/**
+ * Polices Source Sans Pro et Source Serif Pro
+ * Chargées dans app/_layout.tsx
+ */
+export const Fonts = {
+  // Source Sans Pro - Police sans-serif principale
+  sans: {
+    light: 'SourceSansPro_300Light',
+    regular: 'SourceSansPro_400Regular',
+    semiBold: 'SourceSansPro_600SemiBold',
+    bold: 'SourceSansPro_700Bold',
   },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
+  // Source Serif Pro - Police serif pour les titres ou accents
+  serif: {
+    light: 'SourceSerifPro_300Light',
+    regular: 'SourceSerifPro_400Regular',
+    semiBold: 'SourceSerifPro_600SemiBold',
+    bold: 'SourceSerifPro_700Bold',
   },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+};

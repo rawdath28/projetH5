@@ -29,7 +29,7 @@ export default function TabLayout() {
         name="index"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Icon name={focused ? 'vector-pen-fill' : 'vector-pen'} size={22} color={color} />
+            <Icon name={focused ? 'vector-pen-fill' : 'vector-pen'} size={24} color={color} />
           ),
         }}
       />
@@ -37,7 +37,7 @@ export default function TabLayout() {
         name="exercise"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Icon name={focused ? 'lightbulb-fill' : 'lightbulb'} size={22} color={color} />
+            <Icon name={focused ? 'lightbulb-fill' : 'lightbulb'} size={24} color={color} />
           ),
         }}
       />
@@ -45,7 +45,7 @@ export default function TabLayout() {
         name="record"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Icon name={focused ? 'mic-fill' : 'mic'} size={22} color={color} />
+            <Icon name={focused ? 'mic-fill' : 'mic'} size={24} color={color} />
           ),
         }}
       />
@@ -53,7 +53,7 @@ export default function TabLayout() {
         name="progress"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Icon name={focused ? 'bar-chart-fill' : 'bar-chart'} size={22} color={color} />
+            <Icon name={focused ? 'bar-chart-fill' : 'bar-chart'} size={24} color={color} />
           ),
         }}
       />
@@ -61,7 +61,7 @@ export default function TabLayout() {
         name="session"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Icon name={focused ? 'person-fill' : 'person'} size={22} color={color} />
+            <Icon name={focused ? 'person-fill' : 'person'} size={24} color={color} />
           ),
         }}
       />
@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
     // Hauteur totale : 56px (contenu) + 22px (safe area iOS) = 78px
     height: 80,
     paddingHorizontal: 16,
-    paddingBottom: 22,
     position: 'absolute',
     left: 0,
     right: 0,
