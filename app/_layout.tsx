@@ -11,6 +11,8 @@ import {
   SourceSansPro_400Regular,
   SourceSansPro_600SemiBold,
   SourceSansPro_700Bold,
+  SourceSansPro_400Regular_Italic,
+  SourceSansPro_600SemiBold_Italic,
   useFonts,
 } from '@expo-google-fonts/source-sans-pro';
 
@@ -19,6 +21,8 @@ import {
   SourceSerifPro_400Regular,
   SourceSerifPro_600SemiBold,
   SourceSerifPro_700Bold,
+  SourceSerifPro_400Regular_Italic,
+  SourceSerifPro_600SemiBold_Italic,
 } from '@expo-google-fonts/source-serif-pro';
 
 import { useColorScheme } from '../hooks/use-color-scheme';
@@ -35,11 +39,15 @@ export default function RootLayout() {
     SourceSansPro_400Regular,
     SourceSansPro_600SemiBold,
     SourceSansPro_700Bold,
+    SourceSansPro_400Regular_Italic,
+    SourceSansPro_600SemiBold_Italic,
     // Source Serif Pro
     SourceSerifPro_300Light,
     SourceSerifPro_400Regular,
     SourceSerifPro_600SemiBold,
     SourceSerifPro_700Bold,
+    SourceSerifPro_400Regular_Italic,
+    SourceSerifPro_600SemiBold_Italic,
   });
 
   useEffect(() => {

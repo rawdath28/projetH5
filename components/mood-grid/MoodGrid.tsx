@@ -12,6 +12,7 @@ import Animated, {
 
 import { ThemedText } from '../../components/themed-text';
 import { MOODS } from '../../constants/moods';
+import { Fonts } from '../../constants/theme';
 import { IconSymbol } from '../ui/icon-symbol';
 import { MoodDraggable } from './MoodDraggable';
 
@@ -376,7 +377,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     color: '#FFFFFF',
-    fontWeight: '600',
+    fontFamily: Fonts.sans.semiBold,
   },
   descriptionContainer: {
     position: 'absolute',
@@ -399,7 +400,7 @@ const styles = StyleSheet.create({
   moodTitle: {
     color: '#FFFFFF',
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: Fonts.serif.bold,
     flex: 1,
   },
   arrowButton: {
@@ -413,7 +414,7 @@ const styles = StyleSheet.create({
   arrow: {
     fontSize: 32,
     color: '#000000',
-    fontWeight: '700',
+    fontFamily: Fonts.sans.bold,
   },
   searchButton: {
     position: 'absolute',

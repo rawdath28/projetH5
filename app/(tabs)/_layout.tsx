@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import { HapticTab } from '../../components/haptic-tab';
+import { GradientIcon } from '../../components/gradient-icon';
 import { Icon } from '../../lib/icons';
 
 // Couleurs de la tab bar selon le design Figma
@@ -28,41 +29,56 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Icon name={focused ? 'vector-pen-fill' : 'vector-pen'} size={24} color={color} />
-          ),
+          tabBarIcon: ({ color, focused }) => 
+            focused ? (
+              <GradientIcon name="vector-pen-fill" size={24} />
+            ) : (
+              <Icon name="vector-pen" size={24} color={color} />
+            ),
         }}
       />
       <Tabs.Screen
         name="exercise"
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Icon name={focused ? 'lightbulb-fill' : 'lightbulb'} size={24} color={color} />
-          ),
+          tabBarIcon: ({ color, focused }) => 
+            focused ? (
+              <GradientIcon name="lightbulb-fill" size={24} />
+            ) : (
+              <Icon name="lightbulb" size={24} color={color} />
+            ),
         }}
       />
       <Tabs.Screen
         name="record"
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Icon name={focused ? 'mic-fill' : 'mic'} size={24} color={color} />
-          ),
+          tabBarIcon: ({ color, focused }) => 
+            focused ? (
+              <GradientIcon name="mic-fill" size={24} />
+            ) : (
+              <Icon name="mic" size={24} color={color} />
+            ),
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Icon name={focused ? 'bar-chart-fill' : 'bar-chart'} size={24} color={color} />
-          ),
+          tabBarIcon: ({ color, focused }) => 
+            focused ? (
+              <GradientIcon name="bar-chart-fill" size={24} />
+            ) : (
+              <Icon name="bar-chart" size={24} color={color} />
+            ),
         }}
       />
       <Tabs.Screen
         name="session"
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Icon name={focused ? 'person-fill' : 'person'} size={24} color={color} />
-          ),
+          tabBarIcon: ({ color, focused }) => 
+            focused ? (
+              <GradientIcon name="person-fill" size={24} />
+            ) : (
+              <Icon name="person" size={24} color={color} />
+            ),
         }}
       />
     </Tabs>

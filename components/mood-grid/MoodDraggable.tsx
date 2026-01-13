@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Mood } from '../../constants/moods';
+import { Fonts } from '../../constants/theme';
 
 type Props = {
   mood: Mood;
@@ -129,11 +130,9 @@ function MoodDraggableComponent({
     const isCenter = distance < CLOSE_DISTANCE;
 
     const fontSize = isCenter ? 18 : 15;
-    const fontWeight = isCenter ? '700' : '600';
 
     return {
       fontSize,
-      fontWeight,
     };
   });
 
@@ -176,5 +175,6 @@ const styles = StyleSheet.create({
     color: '#000000',
     textAlign: 'center',
     lineHeight: 18,
+    fontFamily: Fonts.sans.semiBold,
   },
 });

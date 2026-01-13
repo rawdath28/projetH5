@@ -18,63 +18,63 @@ export default function ExerciseScreen() {
   return (
     <View style={styles.wrapper}>
       <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-      <ThemedView style={styles.content}>
-        <ThemedView style={styles.header}>
-          <IconSymbol size={48} name="lightbulb.fill" color={colors.tint} />
-          <ThemedText type="title" style={styles.title}>
-            Exercices
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedView style={styles.section}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Exercices disponibles
-          </ThemedText>
-          <ThemedText style={styles.description}>
-            Pratiquez vos exercices de TCC entre les séances pour renforcer vos compétences.
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedView style={styles.exerciseCard}>
-          <ThemedText type="defaultSemiBold" style={styles.exerciseTitle}>
-            Exercice de respiration
-          </ThemedText>
-          <ThemedText style={styles.exerciseDescription}>
-            Technique de respiration profonde pour gérer l'anxiété et le stress.
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedView style={styles.exerciseCard}>
-          <ThemedText type="defaultSemiBold" style={styles.exerciseTitle}>
-            Restructuration cognitive
-          </ThemedText>
-          <ThemedText style={styles.exerciseDescription}>
-            Identifiez et remettez en question vos pensées négatives.
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedView style={styles.exerciseCard}>
-          <ThemedText type="defaultSemiBold" style={styles.exerciseTitle}>
-            Journal de pensées
-          </ThemedText>
-          <ThemedText style={styles.exerciseDescription}>
-            Enregistrez vos pensées et émotions pour mieux les comprendre.
-          </ThemedText>
-        </ThemedView>
-
-        {/* Bouton pour réafficher le bottom sheet (test) */}
-        {!showBottomSheet && (
-          <Pressable
-            style={styles.showBottomSheetButton}
-            onPress={() => setShowBottomSheet(true)}
-          >
-            <ThemedText style={styles.showBottomSheetButtonText}>
-              Afficher la suggestion
+        <ThemedView style={styles.content}>
+          <ThemedView style={styles.header}>
+            <IconSymbol size={48} name="lightbulb.fill" color={colors.tint} />
+            <ThemedText type="title" style={styles.title}>
+              Exercices
             </ThemedText>
-          </Pressable>
-        )}
-      </ThemedView>
-    </ScrollView>
+          </ThemedView>
+
+          <ThemedView style={styles.section}>
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              Exercices disponibles
+            </ThemedText>
+            <ThemedText style={styles.description}>
+              Pratiquez vos exercices de TCC entre les séances pour renforcer vos compétences.
+            </ThemedText>
+          </ThemedView>
+
+          <ThemedView style={styles.exerciseCard}>
+            <ThemedText type="defaultSemiBold" style={styles.exerciseTitle}>
+              Exercice de respiration
+            </ThemedText>
+            <ThemedText style={styles.exerciseDescription}>
+              Technique de respiration profonde pour gérer l'anxiété et le stress.
+            </ThemedText>
+          </ThemedView>
+
+          <ThemedView style={styles.exerciseCard}>
+            <ThemedText type="defaultSemiBold" style={styles.exerciseTitle}>
+              Restructuration cognitive
+            </ThemedText>
+            <ThemedText style={styles.exerciseDescription}>
+              Identifiez et remettez en question vos pensées négatives.
+            </ThemedText>
+          </ThemedView>
+
+          <ThemedView style={styles.exerciseCard}>
+            <ThemedText type="defaultSemiBold" style={styles.exerciseTitle}>
+              Journal de pensées
+            </ThemedText>
+            <ThemedText style={styles.exerciseDescription}>
+              Enregistrez vos pensées et émotions pour mieux les comprendre.
+            </ThemedText>
+          </ThemedView>
+
+          {/* Bouton pour réafficher le bottom sheet (test) */}
+          {!showBottomSheet && (
+            <Pressable
+              style={styles.showBottomSheetButton}
+              onPress={() => setShowBottomSheet(true)}
+            >
+              <ThemedText style={styles.showBottomSheetButtonText}>
+                Afficher la suggestion
+              </ThemedText>
+            </Pressable>
+          )}
+        </ThemedView>
+      </ScrollView>
 
       {/* Bottom Sheet de suggestion d'exercice */}
       <ExerciseBottomSheet

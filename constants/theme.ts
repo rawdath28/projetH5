@@ -3,7 +3,6 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
-import { Platform } from 'react-native';
 
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
@@ -38,6 +37,8 @@ export const Fonts = {
     regular: 'SourceSansPro_400Regular',
     semiBold: 'SourceSansPro_600SemiBold',
     bold: 'SourceSansPro_700Bold',
+    regularItalic: 'SourceSansPro_400Regular_Italic',
+    semiBoldItalic: 'SourceSansPro_600SemiBold_Italic',
   },
   // Source Serif Pro - Police serif pour les titres ou accents
   serif: {
@@ -45,5 +46,7 @@ export const Fonts = {
     regular: 'SourceSerifPro_400Regular',
     semiBold: 'SourceSerifPro_600SemiBold',
     bold: 'SourceSerifPro_700Bold',
+    regularItalic: 'SourceSerifPro_400Regular_Italic',
+    semiBoldItalic: 'SourceSerifPro_600SemiBold_Italic',
   },
 };
