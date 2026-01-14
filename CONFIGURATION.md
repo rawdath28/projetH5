@@ -15,9 +15,9 @@ Pour utiliser l'analyse de texte avec Mistral API, vous devez configurer votre c
 
    **Option 1 : Variables d'environnement (recommandé)**
    
-   Créez un fichier `.env` à la racine du projet avec :
+   Créez un fichier `.env` à la racine du projet (vous pouvez copier `env.example`) avec :
    ```
-   EXPO_PUBLIC_MISTRAL_API_KEY=2haQR5kEQFrjxvwVDuCuK4fgTK5TVKBb
+   EXPO_PUBLIC_MISTRAL_API_KEY=VOTRE_CLE_API
    ```
    
    **Option 2 : Fichier de configuration**
@@ -25,7 +25,7 @@ Pour utiliser l'analyse de texte avec Mistral API, vous devez configurer votre c
    Modifiez directement `lib/config.ts` et remplacez la fonction `getMistralApiKey()` pour retourner votre clé :
    ```typescript
    export const getMistralApiKey = (): string | undefined => {
-     return '2haQR5kEQFrjxvwVDuCuK4fgTK5TVKBb';
+        return process.env.EXPO_PUBLIC_MISTRAL_API_KEY;
    };
    ```
 
@@ -49,3 +49,11 @@ L'application analyse automatiquement le texte entré par l'utilisateur et déte
 ## Note de sécurité
 
 ⚠️ **Important** : Ne commitez jamais votre clé API dans le dépôt Git. Le fichier `.env` est déjà ignoré par `.gitignore`.
+
+## EAS Build (recommandé si vous utilisez EAS)
+
+Si vous faites des builds via EAS, stockez la clé comme secret EAS plutôt que dans le repo :
+
+```bash
+eas secret:create --name EXPO_PUBLIC_MISTRAL_API_KEY --value VOTRE_CLE_API
+```

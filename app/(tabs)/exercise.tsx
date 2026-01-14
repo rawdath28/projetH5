@@ -7,13 +7,14 @@ import { ThemedView } from '../../components/themed-view';
 import { IconSymbol } from '../../components/ui/icon-symbol';
 import { Colors } from '../../constants/theme';
 import { useColorScheme } from '../../hooks/use-color-scheme';
-
+import { useRouter } from 'expo-router';
 export default function ExerciseScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
   // État pour afficher/cacher le bottom sheet (pour test)
   const [showBottomSheet, setShowBottomSheet] = useState(true);
+  const router = useRouter();
 
   return (
     <View style={styles.wrapper}>
@@ -86,6 +87,7 @@ export default function ExerciseScreen() {
         onButtonPress={() => {
           // TODO: Naviguer vers l'exercice
           console.log('Démarrer exercice');
+          router.push('/select-thought-screen');
         }}
         onDismiss={() => setShowBottomSheet(false)}
       />

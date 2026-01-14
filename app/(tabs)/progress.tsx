@@ -14,7 +14,7 @@ export default function ProgressScreen() {
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <ThemedView style={styles.content}>
         <ThemedView style={styles.header}>
-          <IconSymbol size={48} name="chart.line.uptrend.xyaxis" color={colors.tint} />
+          <IconSymbol size={48} name="list.triangle" color={colors.tint} />
           <ThemedText type="title" style={styles.title}>
             Progrès
           </ThemedText>
@@ -22,46 +22,55 @@ export default function ProgressScreen() {
 
         <ThemedView style={styles.section}>
           <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Suivi de vos progrès
+            Suivi des séances
           </ThemedText>
           <ThemedText style={styles.description}>
-            Visualisez votre évolution au fil du temps et célébrez vos réussites.
+            Gérez vos séances de thérapie et suivez votre humeur entre les rendez-vous.
           </ThemedText>
         </ThemedView>
 
-        <ThemedView style={styles.statsCard}>
-          <ThemedText type="defaultSemiBold" style={styles.statLabel}>
-            Exercices complétés
-          </ThemedText>
-          <ThemedText type="title" style={styles.statValue}>
-            0
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedView style={styles.statsCard}>
-          <ThemedText type="defaultSemiBold" style={styles.statLabel}>
-            Séances suivies
-          </ThemedText>
-          <ThemedText type="title" style={styles.statValue}>
-            0
+        <ThemedView style={styles.sessionCard}>
+          <ThemedView style={styles.sessionHeader}>
+            <ThemedText type="defaultSemiBold" style={styles.sessionDate}>
+              Aujourd'hui
+            </ThemedText>
+            <ThemedText style={styles.sessionStatus}>En attente</ThemedText>
+          </ThemedView>
+          <ThemedText style={styles.sessionDescription}>
+            Enregistrez votre humeur et vos notes pour cette journée.
           </ThemedText>
         </ThemedView>
 
-        <ThemedView style={styles.statsCard}>
-          <ThemedText type="defaultSemiBold" style={styles.statLabel}>
-            Jours consécutifs
-          </ThemedText>
-          <ThemedText type="title" style={styles.statValue}>
-            0
+        <ThemedView style={styles.sessionCard}>
+          <ThemedView style={styles.sessionHeader}>
+            <ThemedText type="defaultSemiBold" style={styles.sessionDate}>
+              Prochaine séance
+            </ThemedText>
+            <ThemedText style={styles.sessionStatus}>À venir</ThemedText>
+          </ThemedView>
+          <ThemedText style={styles.sessionDescription}>
+            Préparez vos questions et notes pour votre prochaine séance avec votre thérapeute.
           </ThemedText>
         </ThemedView>
 
         <ThemedView style={styles.section}>
           <ThemedText type="subtitle" style={styles.sectionTitle}>
-            Graphiques
+            Historique
           </ThemedText>
           <ThemedText style={styles.description}>
-            Les graphiques de votre humeur et de vos progrès apparaîtront ici.
+            Consultez vos séances précédentes et vos notes.
+          </ThemedText>
+        </ThemedView>
+
+        <ThemedView style={styles.sessionCard}>
+          <ThemedView style={styles.sessionHeader}>
+            <ThemedText type="defaultSemiBold" style={styles.sessionDate}>
+              Séance précédente
+            </ThemedText>
+            <ThemedText style={styles.sessionStatus}>Terminée</ThemedText>
+          </ThemedView>
+          <ThemedText style={styles.sessionDescription}>
+            Aucune séance enregistrée pour le moment.
           </ThemedText>
         </ThemedView>
       </ThemedView>
@@ -99,22 +108,34 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
   },
-  statsCard: {
-    padding: 20,
+  sessionCard: {
+    padding: 16,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    alignItems: 'center',
-    gap: 8,
+    gap: 12,
     marginBottom: 12,
   },
-  statLabel: {
-    fontSize: 16,
-    opacity: 0.7,
+  sessionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  statValue: {
-    fontSize: 36,
-    fontWeight: 'bold',
+  sessionDate: {
+    fontSize: 18,
+  },
+  sessionStatus: {
+    fontSize: 14,
+    opacity: 0.7,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    backgroundColor: '#F0F0F0',
+  },
+  sessionDescription: {
+    fontSize: 14,
+    lineHeight: 20,
+    opacity: 0.8,
   },
 });
 

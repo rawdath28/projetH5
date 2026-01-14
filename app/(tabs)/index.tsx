@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -10,6 +11,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View
 } from "react-native";
 import { ExerciseBottomSheet } from '../../components/exercise-bottom-sheet';
@@ -39,6 +41,7 @@ const clearMoodHistoryStorage = async () => {
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
+  const router = useRouter();
   const [note, setNote] = useState("");
   const [moodHistory, setMoodHistory] = useState<MoodEntry[]>([]);
   const [moodTexts, setMoodTexts] = useState<{ [key: string]: string }>({});
@@ -222,28 +225,13 @@ export default function HomeScreen() {
       const result = await analyzeTextWithMistral(text);
       setAnalysisResult(result);
 
-      // Afficher le bottom sheet seulement si un problème est détecté
-      if (result.type !== 'none') {
+      // Si pensées suicidaires → afficher l'écran d'urgence en plein écran
+      if (result.type === 'suicidal_thoughts') {
+        setShowBottomSheet(false);
+        router.push('/emergency-screen');
+      } else if (result.type !== 'none') {
+        // Pour les autres troubles (ex : auto-dépréciation) → bottom sheet
         setShowBottomSheet(true);
-
-        // Pour les pensées suicidaires, afficher immédiatement une alerte
-        if (result.type === 'suicidal_thoughts') {
-          Alert.alert(
-            'Besoin d\'aide ?',
-            'Nous avons détecté des pensées difficiles. Voulez-vous appeler le numéro d\'aide ?',
-            [
-              {
-                text: 'Appeler',
-                onPress: () => callHelpNumber(),
-                style: 'default',
-              },
-              {
-                text: 'Plus tard',
-                style: 'cancel',
-              },
-            ]
-          );
-        }
       } else {
         setShowBottomSheet(false);
       }
@@ -391,7 +379,7 @@ export default function HomeScreen() {
             );
           })}
       </ScrollView>
-      {/* <TouchableOpacity
+      <TouchableOpacity
         style={colors === Colors.light ? {
           backgroundColor: '#000000',
           padding: 12,
@@ -406,7 +394,7 @@ export default function HomeScreen() {
         onPress={clearMoodHistory}
       >
         <Text style={colors === Colors.light ? { color: '#FFFFFF' } : { color: '#000000' }}>Effacer l'historique du jour</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
 
       {/* Bottom Sheet pour les suggestions d'exercices */}
       {showBottomSheet && analysisResult && getBottomSheetContent() && (
@@ -470,7 +458,7 @@ const styles = StyleSheet.create({
     minHeight: 120,
     textAlignVertical: "top",
     marginBottom: 12,
-    fontFamily: Fonts.serif.semiBoldItalic,
+    fontFamily: Fonts.serif.regular,
   },
   dateHeaderContainer: {
     width: "100%",

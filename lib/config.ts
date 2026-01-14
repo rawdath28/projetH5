@@ -14,36 +14,30 @@
 import Constants from 'expo-constants';
 
 export const getMistralApiKey = (): string | undefined => {
-  // Option 1 : Clé directement dans le code (pour développement rapide)
-  // Décommentez la ligne suivante et mettez votre clé :
-  // return 'votre_cle_api_mistral_ici';
-  
-  // Option 2 : Via expo-constants depuis app.json
-  const fromConstants = Constants.expoConfig?.extra?.mistralApiKey;
-  if (fromConstants && fromConstants !== 'your_mistral_api_key_here') {
-    return fromConstants;
+  // 1) Config Expo (via app.config.js / app.json -> extra.mistralApiKey)
+  const fromExtra = Constants.expoConfig?.extra?.mistralApiKey as
+    | string
+    | undefined;
+  if (typeof fromExtra === 'string' && fromExtra.trim().length > 0) {
+    console.log('✅ Clé API récupérée depuis Constants.expoConfig.extra.mistralApiKey');
+    return fromExtra.trim();
   }
-  
-  // Option 3 : Variables d'environnement Expo (EXPO_PUBLIC_*)
-  // Note: Pour que cela fonctionne, vous devez redémarrer Expo après avoir créé/modifié .env
-  const fromEnv = process.env.EXPO_PUBLIC_MISTRAL_API_KEY;
-  if (fromEnv) {
-    console.log('Clé API chargée depuis EXPO_PUBLIC_MISTRAL_API_KEY');
-    return fromEnv.trim(); // Enlever les espaces éventuels
+
+  // 2) Fallback: variables d'environnement (dev local, EAS secrets, etc.)
+  const fromEnv =
+    process.env.EXPO_PUBLIC_MISTRAL_API_KEY || process.env.MISTRAL_API_KEY;
+  if (typeof fromEnv === 'string' && fromEnv.trim().length > 0) {
+    console.log('✅ Clé API récupérée depuis process.env');
+    return fromEnv.trim();
   }
-  
-  // Option 4 : Variables d'environnement standard
-  if (process.env.MISTRAL_API_KEY) {
-    return process.env.MISTRAL_API_KEY.trim();
-  }
-  
-  // Option 5 : Lecture directe depuis .env (pour développement)
-  // Clé API Mistral depuis le fichier .env
-  // Note: Pour que les variables d'environnement fonctionnent avec Expo,
-  // vous devez redémarrer complètement le serveur Expo (pas juste reload)
-  return '2haQR5kEQFrjxvwVDuCuK4fgTK5TVKBb';
-  
-  // return undefined;
+
+  // Debug: afficher ce qui est disponible
+  console.error('❌ Aucune clé API trouvée');
+  console.error('   Constants.expoConfig?.extra?.mistralApiKey:', fromExtra);
+  console.error('   process.env.EXPO_PUBLIC_MISTRAL_API_KEY:', process.env.EXPO_PUBLIC_MISTRAL_API_KEY ? 'définie' : 'undefined');
+  console.error('   process.env.MISTRAL_API_KEY:', process.env.MISTRAL_API_KEY ? 'définie' : 'undefined');
+
+  return undefined;
 };
 
 // Numéro de téléphone d'aide (France)

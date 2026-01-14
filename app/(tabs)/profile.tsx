@@ -6,7 +6,7 @@ import { IconSymbol } from '../../components/ui/icon-symbol';
 import { Colors } from '../../constants/theme';
 import { useColorScheme } from '../../hooks/use-color-scheme';
 
-export default function SessionScreen() {
+export default function ProfilScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
@@ -16,7 +16,7 @@ export default function SessionScreen() {
         <ThemedView style={styles.header}>
           <IconSymbol size={48} name="list.triangle" color={colors.tint} />
           <ThemedText type="title" style={styles.title}>
-            Séances
+            Profil
           </ThemedText>
         </ThemedView>
 
