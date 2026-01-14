@@ -266,6 +266,7 @@ export default function HomeScreen() {
       // Pour l'auto-dépréciation, on pourrait naviguer vers un exercice de reformulation
       // Pour l'instant, on ferme juste le bottom sheet
       setShowBottomSheet(false);
+      router.push('/select-thought-screen');
       // TODO: Naviguer vers l'exercice de reformulation
     } else if (analysisResult?.type === 'suicidal_thoughts') {
       // Pour les pensées suicidaires, appeler le numéro d'aide
@@ -341,9 +342,9 @@ export default function HomeScreen() {
                 {/* Date si nécessaire */}
                 {showDateHeader && (
                   // <View style={styles.dateHeaderContainer}>
-                    <GradientText style={styles.dateHeader}>
-                      {formatDate(item.date)}
-                    </GradientText>
+                  <GradientText style={styles.dateHeader}>
+                    {formatDate(item.date)}
+                  </GradientText>
                   // </View>
                 )}
 

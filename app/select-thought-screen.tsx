@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import { Stack, useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-    View,
-    Text,
+    Animated,
     StyleSheet,
+    Text,
     TouchableOpacity,
+    View,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import FloatingBubble from './floating-bubble';
-import { Stack } from 'expo-router';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const ITEMS = [
     'Les silences pendant le dates',
@@ -23,6 +23,127 @@ const ITEMS = [
 
 const MAX_SELECTION = 5;
 
+// Component for animated bubble
+const AnimatedBubble: React.FC<{
+    item: string;
+    index: number;
+    isActive: boolean;
+    onPress: () => void;
+}> = ({ item, index, isActive, onPress }) => {
+    // Create unique animation values for each bubble
+    const floatAnim = useRef(new Animated.Value(0)).current;
+    const driftXAnim = useRef(new Animated.Value(0)).current;
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+
+    useEffect(() => {
+        // Each bubble has slightly different animation timing for natural movement
+        const duration = 8000 + (index * 500); // 8-11.5 seconds - much slower for calmer movement
+        const delay = index * 600; // Staggered start
+
+        // Floating animation (vertical)
+        const floatLoop = Animated.loop(
+            Animated.sequence([
+                Animated.delay(delay),
+                Animated.timing(floatAnim, {
+                    toValue: 1,
+                    duration: duration,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(floatAnim, {
+                    toValue: 0,
+                    duration: duration,
+                    useNativeDriver: true,
+                }),
+            ])
+        );
+
+        // Horizontal drift animation
+        const driftLoop = Animated.loop(
+            Animated.sequence([
+                Animated.delay(delay + 1000),
+                Animated.timing(driftXAnim, {
+                    toValue: 1,
+                    duration: duration + 2000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(driftXAnim, {
+                    toValue: 0,
+                    duration: duration + 2000,
+                    useNativeDriver: true,
+                }),
+            ])
+        );
+
+        // More noticeable scale pulse for larger movements
+        const scaleLoop = Animated.loop(
+            Animated.sequence([
+                Animated.delay(delay + 2000),
+                Animated.timing(scaleAnim, {
+                    toValue: 1.08,
+                    duration: duration * 2,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(scaleAnim, {
+                    toValue: 1,
+                    duration: duration * 2,
+                    useNativeDriver: true,
+                }),
+            ])
+        );
+
+        floatLoop.start();
+        driftLoop.start();
+        scaleLoop.start();
+
+        return () => {
+            floatLoop.stop();
+            driftLoop.stop();
+            scaleLoop.stop();
+        };
+    }, [index]);
+
+    // Interpolate animations - larger movement range
+    const translateY = floatAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-40, 40], // Much larger vertical movement
+    });
+
+    const translateX = driftXAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-50, 50], // Much larger horizontal drift
+    });
+
+    return (
+        <Animated.View
+            style={{
+                transform: [
+                    { translateY },
+                    { translateX },
+                    { scale: scaleAnim },
+                ],
+            }}
+        >
+            <TouchableOpacity
+                style={[
+                    styles.bubble,
+                    isActive && styles.bubbleActive,
+                ]}
+                onPress={onPress}
+                activeOpacity={0.8}
+            >
+                <Text
+                    style={[
+                        styles.bubbleText,
+                        isActive && styles.bubbleTextActive,
+                    ]}
+                >
+                    {item}
+                </Text>
+            </TouchableOpacity>
+        </Animated.View>
+    );
+};
+
 const SelectThoughtsScreen: React.FC = () => {
     const [selected, setSelected] = useState<string[]>([]);
 
@@ -35,48 +156,51 @@ const SelectThoughtsScreen: React.FC = () => {
             }
         }
     };
+    const router = useRouter();
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* Close */}
+            {/* Header */}
             <Stack.Screen options={{ headerShown: false }} />
-            <TouchableOpacity style={styles.close}>
-                <Icon name="close" size={24} color="#fff" />
-            </TouchableOpacity>
-            {/* Bulles */}
+            <View style={styles.header}>
+                <View style={styles.headerSpacer} />
+                <Text style={styles.headerTitle}>Cercles de contrôles</Text>
+                <TouchableOpacity style={styles.close}>
+                    <Icon name="close" size={24} color="#fff" />
+                </TouchableOpacity>
+            </View>
+            {/* Animated Bulles */}
             <View style={styles.bubblesContainer}>
-                {ITEMS.map((item) => {
+                {ITEMS.map((item, index) => {
                     const isActive = selected.includes(item);
 
                     return (
-                        <TouchableOpacity
+                        <AnimatedBubble
                             key={item}
-                            style={[
-                                styles.bubble,
-                                isActive && styles.bubbleActive,
-                            ]}
+                            item={item}
+                            index={index}
+                            isActive={isActive}
                             onPress={() => toggleItem(item)}
-                            activeOpacity={0.8}
-                        >
-                            <Text
-                                style={[
-                                    styles.bubbleText,
-                                    isActive && styles.bubbleTextActive,
-                                ]}
-                            >
-                                {item}
-                            </Text>
-                        </TouchableOpacity>
+                        />
                     );
                 })}
             </View>
 
             {/* Footer */}
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.nextButton}>
+                <TouchableOpacity
+                    style={styles.nextButton}
+                    onPress={() => {
+                        router.push({
+                            pathname: '/draganddrop-screen',
+                            params: {
+                                selected: JSON.stringify(selected) // Passer les items sélectionnés
+                            }
+                        });
+                    }}
+                >
                     <Text style={styles.nextText}>Suivant</Text>
                 </TouchableOpacity>
-
                 <Text style={styles.helper}>
                     Sélectionne jusqu’à {MAX_SELECTION} éléments
                 </Text>
@@ -93,13 +217,36 @@ const styles = StyleSheet.create({
         backgroundColor: '#0F6B1A',
     },
 
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        paddingBottom: 10,
+    },
+
+    headerSpacer: {
+        width: 24, // Same width as close icon to center the title
+    },
+
+    headerTitle: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: '500',
+        textAlign: 'center',
+        flex: 1,
+    },
+
     close: {
-        alignSelf: 'flex-end',
-        padding: 20,
+        padding: 8,
+        width: 40,
+        alignItems: 'flex-end',
     },
 
     bubblesContainer: {
         flex: 1,
+        marginTop: 100,
         paddingHorizontal: 20,
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -123,7 +270,7 @@ const styles = StyleSheet.create({
 
     bubbleText: {
         color: '#FFFFFF',
-        fontSize: 14,
+        fontSize: 18,
         fontStyle: 'italic',
         textAlign: 'center',
     },
