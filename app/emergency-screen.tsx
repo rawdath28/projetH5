@@ -99,10 +99,8 @@ const styles = StyleSheet.create({
     fontSize: 42,
     color: '#fff',
     textAlign: 'center',
-    fontWeight: '300',
-    fontStyle: 'italic',
     marginBottom: 20,
-    fontFamily: Fonts.sans.regularItalic,
+    fontFamily: Fonts.serif.light,
   },
 
   subtitle: {

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Fonts } from '../constants/theme';
 
 const ITEMS = [
     'Les silences pendant le dates',
@@ -271,13 +272,13 @@ const styles = StyleSheet.create({
     bubbleText: {
         color: '#FFFFFF',
         fontSize: 18,
-        fontStyle: 'italic',
+        fontFamily: Fonts.serif.regularItalic,
         textAlign: 'center',
     },
 
     bubbleTextActive: {
         color: '#0F6B1A',
-        fontWeight: '500',
+        fontFamily: Fonts.serif.semiBold,
     },
 
     footer: {
@@ -296,12 +297,13 @@ const styles = StyleSheet.create({
     nextText: {
         color: '#FFFFFF',
         fontSize: 16,
-        fontWeight: '600',
+        fontFamily: Fonts.sans.semiBold,
     },
 
     helper: {
         color: 'rgba(255,255,255,0.7)',
         fontSize: 13,
+        fontFamily: Fonts.sans.regular,
         textAlign: 'center',
     },
 });

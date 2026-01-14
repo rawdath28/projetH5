@@ -5,6 +5,7 @@ import { useState, useRef } from 'react';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Fonts } from '../constants/theme';
 
 interface ProcessedItem {
     text: string;
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        fontWeight: '600',
+        fontFamily: Fonts.sans.semiBold,
         color: '#FFFFFF',
         flex: 1,
         textAlign: 'center',
@@ -226,6 +227,6 @@ const styles = StyleSheet.create({
     finishButtonText: {
         color: '#FFFFFF',
         fontSize: 16,
-        fontWeight: '600',
+        fontFamily: Fonts.sans.semiBold,
     },
 });

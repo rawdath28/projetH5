@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
+import { Fonts } from '../constants/theme';
 
 const { height } = Dimensions.get('window');
 
@@ -220,7 +221,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         color: '#FFFFFF',
         fontSize: 18,
-        fontWeight: '500',
+        fontFamily: Fonts.sans.semiBold,
     },
     categoriesContainer: {
         paddingHorizontal: 20,
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
     categoryTitle: {
         color: '#FFFFFF',
         fontSize: 16,
-        fontWeight: '600',
+        fontFamily: Fonts.sans.semiBold,
         marginBottom: 10,
     },
     categoryContent: {
@@ -257,7 +258,7 @@ const styles = StyleSheet.create({
     categoryItemText: {
         color: '#FFFFFF',
         fontSize: 14,
-        fontStyle: 'italic',
+        fontFamily: Fonts.serif.regularItalic,
     },
     availableItemsContainer: {
         flex: 1,
@@ -267,6 +268,7 @@ const styles = StyleSheet.create({
     instructionText: {
         color: 'rgba(255, 255, 255, 0.8)',
         fontSize: 14,
+        fontFamily: Fonts.sans.regular,
         textAlign: 'center',
         marginBottom: 20,
     },
@@ -286,7 +288,7 @@ const styles = StyleSheet.create({
     draggableItemText: {
         color: '#FFFFFF',
         fontSize: 16,
-        fontStyle: 'italic',
+        fontFamily: Fonts.serif.regularItalic,
     },
     footer: {
         paddingHorizontal: 24,
@@ -304,6 +306,6 @@ const styles = StyleSheet.create({
     finishButtonText: {
         color: '#FFFFFF',
         fontSize: 16,
-        fontWeight: '600',
+        fontFamily: Fonts.sans.semiBold,
     },
 });
