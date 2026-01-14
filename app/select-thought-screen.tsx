@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
 
     bubbleTextActive: {
         color: '#0F6B1A',
-        fontFamily: Fonts.serif.semiBold,
+        fontFamily: Fonts.serif.regularItalic,
     },
 
     footer: {
@@ -297,13 +297,13 @@ const styles = StyleSheet.create({
     nextText: {
         color: '#FFFFFF',
         fontSize: 16,
-        fontFamily: Fonts.sans.semiBold,
+        fontFamily: Fonts.serif.semiBold,
     },
 
     helper: {
         color: 'rgba(255,255,255,0.7)',
         fontSize: 13,
-        fontFamily: Fonts.sans.regular,
+        fontFamily: Fonts.serif.regular,
         textAlign: 'center',
     },
 });

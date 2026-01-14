@@ -3,12 +3,12 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   FlatList,
   TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Fonts } from '../../constants/theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type RecordItem = {
   id: string;

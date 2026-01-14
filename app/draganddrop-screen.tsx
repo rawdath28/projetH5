@@ -1,17 +1,16 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
+    Animated,
+    Dimensions,
+    PanResponder,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
-    PanResponder,
-    Animated,
-    Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useRouter } from 'expo-router';
 import { Fonts } from '../constants/theme';
 
 const { height } = Dimensions.get('window');
