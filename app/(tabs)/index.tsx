@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Keyboard,
@@ -56,19 +57,7 @@ export default function HomeScreen() {
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
-  useEffect(() => {
-    loadNote();
-    loadMoodHistory();
-    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
-    });
-
-    return () => {
-      showSubscription.remove();
-    };
-  }, []);
-
-  const loadMoodHistory = async () => {
+  const loadMoodHistory = useCallback(async () => {
     try {
       // Charger tous les jours depuis AsyncStorage
       const allKeys = await AsyncStorage.getAllKeys();
@@ -85,7 +74,7 @@ export default function HomeScreen() {
         }
       }
 
-      // Trier par date/heure croissante
+      // Trier par date/heure croissante (les plus anciennes en haut, les plus récentes en bas)
       allMoods.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
       setMoodHistory(allMoods);
@@ -95,11 +84,34 @@ export default function HomeScreen() {
         const lastMood = allMoods[allMoods.length - 1];
         setEditingMoodId(lastMood.id);
         setNote(lastMood.text || ""); // On remet le texte dans l'input
+        
+        // Scroller vers le bas pour montrer les données les plus récentes après le rendu
+        setTimeout(() => {
+          scrollViewRef.current?.scrollToEnd({ animated: false });
+        }, 100);
       }
     } catch (error) {
       console.error("Erreur chargement historique moods", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadNote();
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    });
+
+    return () => {
+      showSubscription.remove();
+    };
+  }, []);
+
+  // Recharger les données chaque fois que l'écran devient actif
+  useFocusEffect(
+    useCallback(() => {
+      loadMoodHistory();
+    }, [loadMoodHistory])
+  );
 
   const loadNote = async () => {
     try {
@@ -172,23 +184,124 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    scrollViewRef.current?.scrollToEnd({ animated: true });
+    // Scroller vers le bas après un court délai pour laisser le rendu se terminer
+    // Cela permet d'afficher directement les données les plus récentes en bas
+    if (moodHistory.length > 0) {
+      const timer = setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: false });
+      }, 200);
+      return () => clearTimeout(timer);
+    }
   }, [moodHistory]);
 
   const clearMoodHistory = async () => {
     try {
-      // 1. Supprimer du téléphone
-      const today = new Date().toDateString();
-      await AsyncStorage.removeItem(`moods_${today}`);
+      // Date limite : mercredi 14 janvier 2026
+      const limitDate = new Date('2026-01-14T23:59:59.999Z');
+      
+      // Récupérer toutes les clés de moods
+      const allKeys = await AsyncStorage.getAllKeys();
+      const moodKeys = allKeys.filter(key => key.startsWith('moods_'));
 
-      // 2. Vider les états React
-      setMoodHistory([]);      // Vide la liste affichée
-      setNote("");             // Vide le texte en cours
-      setEditingMoodId(null);  // Réinitialise l'édition
+      // Supprimer tous les jours jusqu'au mercredi 14 janvier inclus
+      for (const key of moodKeys) {
+        // Extraire la date de la clé (format: "moods_Wed Jan 14 2026")
+        const dayKey = key.replace('moods_', '');
+        const dayDate = new Date(dayKey);
+        
+        // Si la date est avant ou égale au mercredi 14 janvier, supprimer
+        if (dayDate <= limitDate) {
+          await AsyncStorage.removeItem(key);
+          console.log(`Supprimé: ${key}`);
+        }
+      }
 
-      console.log("Historique supprimé");
+      // Recharger l'historique pour mettre à jour l'affichage
+      await loadMoodHistory();
+
+      Alert.alert(
+        "Historique supprimé",
+        "Toutes les données jusqu'au mercredi 14 janvier ont été supprimées.",
+        [{ text: "OK" }]
+      );
     } catch (error) {
       console.error("Erreur lors de la suppression :", error);
+      Alert.alert(
+        "Erreur",
+        "Une erreur est survenue lors de la suppression.",
+        [{ text: "OK" }]
+      );
+    }
+  };
+
+  // Fonction pour charger les données de démonstration
+  const loadDemoData = async () => {
+    try {
+      // Importer les données de démonstration
+      const demoData = require('../../demo-data.json');
+      const entries: MoodEntry[] = demoData.moodEntries;
+
+      // Supprimer d'abord toutes les anciennes données de démonstration pour éviter les doublons
+      const allKeys = await AsyncStorage.getAllKeys();
+      const moodKeys = allKeys.filter(key => key.startsWith('moods_'));
+      
+      for (const key of moodKeys) {
+        const savedMoods = await AsyncStorage.getItem(key);
+        if (savedMoods) {
+          const parsedMoods: MoodEntry[] = JSON.parse(savedMoods);
+          // Filtrer les entrées qui ne sont pas des données de démonstration
+          const nonDemoMoods = parsedMoods.filter(m => !m.id?.startsWith('demo_'));
+          
+          if (nonDemoMoods.length === 0) {
+            // Si toutes les entrées étaient des démos, supprimer la clé
+            await AsyncStorage.removeItem(key);
+          } else {
+            // Sinon, garder seulement les non-démos
+            await AsyncStorage.setItem(key, JSON.stringify(nonDemoMoods));
+          }
+        }
+      }
+
+      // Grouper les nouvelles entrées par jour
+      const entriesByDay: { [key: string]: MoodEntry[] } = {};
+      
+      for (const entry of entries) {
+        const entryDate = new Date(entry.date);
+        const dayKey = entryDate.toDateString();
+        
+        if (!entriesByDay[dayKey]) {
+          entriesByDay[dayKey] = [];
+        }
+        entriesByDay[dayKey].push(entry);
+      }
+
+      // Sauvegarder chaque jour dans AsyncStorage
+      for (const [dayKey, dayEntries] of Object.entries(entriesByDay)) {
+        // Récupérer les entrées existantes (non-démo) pour ce jour
+        const existingKey = `moods_${dayKey}`;
+        const existingMoods = await AsyncStorage.getItem(existingKey);
+        const nonDemoMoods = existingMoods ? JSON.parse(existingMoods).filter((m: MoodEntry) => !m.id?.startsWith('demo_')) : [];
+        
+        // Combiner les non-démos existantes avec les nouvelles démos
+        const allMoods = [...nonDemoMoods, ...dayEntries];
+        await AsyncStorage.setItem(existingKey, JSON.stringify(allMoods));
+      }
+
+      // Recharger l'historique
+      await loadMoodHistory();
+
+      Alert.alert(
+        "Données de démonstration chargées",
+        `${entries.length} entrées ont été chargées avec succès !`,
+        [{ text: "OK" }]
+      );
+    } catch (error) {
+      console.error("Erreur lors du chargement des données de démonstration :", error);
+      Alert.alert(
+        "Erreur",
+        "Impossible de charger les données de démonstration. Vérifiez que le fichier demo-data.json existe.",
+        [{ text: "OK" }]
+      );
     }
   };
 
@@ -277,9 +390,8 @@ export default function HomeScreen() {
   // Fonction pour obtenir le contenu du bottom sheet selon le type
   const getBottomSheetContent = () => {
     if (analysisResult?.type === 'self_deprecation') {
-      // Utiliser la réponse de Mistral si disponible, sinon message par défaut
-      const description = analysisResult.responseText ||
-        'La reformulation te permet de sortir de l\'émotion pour revenir aux faits. Le but est de reformuler ta pensée avec une approche moins dramatique.';
+      // Description de l'exercice des cercles de contrôle
+      const description = 'Les cercles de contrôle te permettent de distinguer ce que tu contrôles, ce sur quoi tu peux avoir une influence, et ce qui est hors de ton contrôle. Cet exercice t\'aide à te concentrer sur ce que tu peux réellement changer et à accepter ce qui ne dépend pas de toi.';
 
       return {
         titlePart1: 'Ici, tu fais une ',
@@ -326,6 +438,11 @@ export default function HomeScreen() {
         style={styles.container}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
+        onContentSizeChange={() => {
+          // Scroller vers le bas chaque fois que le contenu change
+          // pour toujours montrer les données les plus récentes
+          scrollViewRef.current?.scrollToEnd({ animated: false });
+        }}
       >
         {moodHistory
           // On trie une seule fois pour l'affichage

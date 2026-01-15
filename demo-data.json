@@ -1,0 +1,125 @@
+{
+  "moodEntries": [
+    {
+      "id": "demo_1",
+      "mood": {
+        "id": "alerte",
+        "label": "Alerte",
+        "color": "#92400E"
+      },
+      "text": "Jour de la présentation, je suis prêt",
+      "time": "08:00",
+      "date": "2026-01-12T08:00:00.000Z"
+    },
+    {
+      "id": "demo_2",
+      "mood": {
+        "id": "serein",
+        "label": "Serein",
+        "color": "#22C55E"
+      },
+      "text": "Tout s'est bien passé, je suis serein",
+      "time": "12:00",
+      "date": "2026-01-12T12:00:00.000Z"
+    },
+    {
+      "id": "demo_3",
+      "mood": {
+        "id": "content",
+        "label": "Content",
+        "color": "#3F6212"
+      },
+      "text": "Très content des retours positifs reçus",
+      "time": "14:30",
+      "date": "2026-01-12T14:30:00.000Z"
+    },
+    {
+      "id": "demo_4",
+      "mood": {
+        "id": "calme",
+        "label": "Calme",
+        "color": "#D97706"
+      },
+      "text": "Repos bien mérité après une semaine chargée",
+      "time": "09:00",
+      "date": "2026-01-13T09:00:00.000Z"
+    },
+    {
+      "id": "demo_5",
+      "mood": {
+        "id": "motivate",
+        "label": "Motivé(e)",
+        "color": "#1B5E20"
+      },
+      "text": "Nouveau projet qui commence, plein d'énergie",
+      "time": "11:30",
+      "date": "2026-01-13T11:30:00.000Z"
+    },
+    {
+      "id": "demo_6",
+      "mood": {
+        "id": "inspire",
+        "label": "Inspiré(e)",
+        "color": "#0EA5E9"
+      },
+      "text": "Beaucoup d'idées créatives qui émergent",
+      "time": "16:00",
+      "date": "2026-01-13T16:00:00.000Z"
+    },
+    {
+      "id": "demo_7",
+      "mood": {
+        "id": "detendu",
+        "label": "Détendu(e)",
+        "color": "#4D7C0F"
+      },
+      "text": "Belle journée de travail, je me sens bien",
+      "time": "18:30",
+      "date": "2026-01-13T18:30:00.000Z"
+    },
+    {
+      "id": "demo_8",
+      "mood": {
+        "id": "concentre",
+        "label": "Concentré",
+        "color": "#9A3412"
+      },
+      "text": "Focus total sur les tâches importantes",
+      "time": "08:30",
+      "date": "2026-01-14T08:30:00.000Z"
+    },
+    {
+      "id": "demo_9",
+      "mood": {
+        "id": "enthousiaste",
+        "label": "Enthousiaste",
+        "color": "#166534"
+      },
+      "text": "Super journée qui s'annonce",
+      "time": "10:15",
+      "date": "2026-01-14T10:15:00.000Z"
+    },
+    {
+      "id": "demo_10",
+      "mood": {
+        "id": "satisfait",
+        "label": "Satisfait",
+        "color": "#65A30D"
+      },
+      "text": "Objectifs de la journée atteints avec succès",
+      "time": "15:45",
+      "date": "2026-01-14T15:45:00.000Z"
+    },
+    {
+      "id": "demo_11",
+      "mood": {
+        "id": "reconnaissant",
+        "label": "Reconnaissant(e)",
+        "color": "#16A34A"
+      },
+      "text": "Reconnaissant pour cette belle semaine",
+      "time": "19:00",
+      "date": "2026-01-14T19:00:00.000Z"
+    }
+  ]
+}

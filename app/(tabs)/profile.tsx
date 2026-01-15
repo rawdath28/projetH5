@@ -1,7 +1,8 @@
 // profile-screen.tsx
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Fonts } from '../../constants/theme';
@@ -38,6 +39,89 @@ export default function ProfileScreen() {
         { icon: 'flame', label: 'Série', value: `${streak} jours` },
         { icon: 'trending-up', label: 'Progrès', value: '87%' },
     ];
+
+    // Fonction pour charger les données de démonstration
+    const loadDemoData = () => {
+        Alert.alert(
+            "Charger les données de démonstration ?",
+            "Cette action va charger 15 entrées de mood réparties sur 3 jours. Les données existantes ne seront pas supprimées.",
+            [
+                {
+                    text: "Annuler",
+                    style: "cancel"
+                },
+                {
+                    text: "Charger",
+                    onPress: async () => {
+                        try {
+                            // Importer les données de démonstration
+                            const demoData = require('../../demo-data.json');
+                            const entries = demoData.moodEntries;
+
+                            // Supprimer d'abord toutes les anciennes données de démonstration
+                            const allKeys = await AsyncStorage.getAllKeys();
+                            const moodKeys = allKeys.filter(key => key.startsWith('moods_'));
+                            
+                            for (const key of moodKeys) {
+                                const savedMoods = await AsyncStorage.getItem(key);
+                                if (savedMoods) {
+                                    const parsedMoods = JSON.parse(savedMoods);
+                                    // Filtrer les entrées qui ne sont pas des données de démonstration
+                                    const nonDemoMoods = parsedMoods.filter((m: any) => !m.id?.startsWith('demo_'));
+                                    
+                                    if (nonDemoMoods.length === 0) {
+                                        // Si toutes les entrées étaient des démos, supprimer la clé
+                                        await AsyncStorage.removeItem(key);
+                                    } else {
+                                        // Sinon, garder seulement les non-démos
+                                        await AsyncStorage.setItem(key, JSON.stringify(nonDemoMoods));
+                                    }
+                                }
+                            }
+
+                            // Grouper les nouvelles entrées par jour
+                            const entriesByDay: { [key: string]: any[] } = {};
+                            
+                            for (const entry of entries) {
+                                const entryDate = new Date(entry.date);
+                                const dayKey = entryDate.toDateString();
+                                
+                                if (!entriesByDay[dayKey]) {
+                                    entriesByDay[dayKey] = [];
+                                }
+                                entriesByDay[dayKey].push(entry);
+                            }
+
+                            // Sauvegarder chaque jour dans AsyncStorage
+                            for (const [dayKey, dayEntries] of Object.entries(entriesByDay)) {
+                                // Récupérer les entrées existantes (non-démo) pour ce jour
+                                const existingKey = `moods_${dayKey}`;
+                                const existingMoods = await AsyncStorage.getItem(existingKey);
+                                const nonDemoMoods = existingMoods ? JSON.parse(existingMoods).filter((m: any) => !m.id?.startsWith('demo_')) : [];
+                                
+                                // Combiner les non-démos existantes avec les nouvelles démos
+                                const allMoods = [...nonDemoMoods, ...dayEntries];
+                                await AsyncStorage.setItem(existingKey, JSON.stringify(allMoods));
+                            }
+
+                            Alert.alert(
+                                "✅ Données chargées !",
+                                `${entries.length} entrées ont été chargées avec succès !\n\nRevenez à l'écran d'accueil pour voir les données.`,
+                                [{ text: "OK" }]
+                            );
+                        } catch (error) {
+                            console.error("Erreur lors du chargement des données de démonstration :", error);
+                            Alert.alert(
+                                "❌ Erreur",
+                                "Impossible de charger les données de démonstration.\n\nVérifiez que le fichier demo-data.json existe à la racine du projet.",
+                                [{ text: "OK" }]
+                            );
+                        }
+                    }
+                }
+            ]
+        );
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -152,6 +236,18 @@ export default function ProfileScreen() {
                         </View>
                         <Text style={styles.actionButtonText}>Conseils & astuces</Text>
                         <Icon name="chevron-forward" size={20} color="#0F6B1A" />
+                    </TouchableOpacity>
+
+                    {/* Bouton pour charger les données de démonstration */}
+                    <TouchableOpacity 
+                        style={styles.demoButton}
+                        onPress={loadDemoData}
+                    >
+                        <View style={styles.demoIconContainer}>
+                            <Icon name="download-outline" size={22} color="#FFFFFF" />
+                        </View>
+                        <Text style={styles.demoButtonText}>Charger données de démo</Text>
+                        <Icon name="chevron-forward" size={20} color="#DC2626" />
                     </TouchableOpacity>
                 </View>
 
@@ -380,6 +476,36 @@ const styles = StyleSheet.create({
         color: '#333333',
         fontSize: 16,
         fontWeight: '600',
+        flex: 1,
+    },
+    demoButton: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        padding: 18,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+        borderWidth: 2,
+        borderColor: '#DC2626',
+        shadowColor: '#DC2626',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    demoIconContainer: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: '#DC2626',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 15,
+    },
+    demoButtonText: {
+        color: '#DC2626',
+        fontSize: 16,
+        fontFamily: Fonts.sans.semiBold,
         flex: 1,
     },
     achievementsGrid: {

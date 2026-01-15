@@ -46,6 +46,7 @@ export function MoodGrid({ onComplete }: Props) {
   const selectedMoodX = useSharedValue(0);
   const selectedMoodY = useSharedValue(0);
   const selectedMoodLabel = useSharedValue<string>('');
+  const closestDistance = useSharedValue<number>(Infinity);
 
   // État React pour afficher le nom de l'émotion
   const [displayedMood, setDisplayedMood] = useState<string>('');
@@ -139,14 +140,27 @@ export function MoodGrid({ onComplete }: Props) {
   const viewportCenterY = useSharedValue(SPACE_HEIGHT / 2);
 
   useAnimatedReaction(
-    () => ({ x: cameraX.value, y: cameraY.value }),
+    () => ({ x: cameraX.value, y: cameraY.value, width: containerWidth.value, height: containerHeight.value }),
     (current) => {
       'worklet';
-      if (containerWidth.value > 0 && containerHeight.value > 0) {
-        viewportCenterX.value = -current.x + containerWidth.value / 2;
-        viewportCenterY.value = -current.y + containerHeight.value / 2;
+      if (current.width > 0 && current.height > 0) {
+        viewportCenterX.value = -current.x + current.width / 2;
+        viewportCenterY.value = -current.y + current.height / 2;
+        // Réinitialiser la distance la plus proche quand la caméra bouge pour recalculer
+        closestDistance.value = Infinity;
       }
     }
+  );
+  
+  // Réinitialiser la distance la plus proche à chaque frame pour trouver le vrai plus proche
+  useAnimatedReaction(
+    () => ({ cx: cameraX.value, cy: cameraY.value }),
+    () => {
+      'worklet';
+      // Réinitialiser avant que les moods ne soient évalués
+      closestDistance.value = Infinity;
+    },
+    [closestDistance]
   );
 
   const handleMoodSelect = useCallback(
@@ -270,6 +284,7 @@ export function MoodGrid({ onComplete }: Props) {
                   selectedMoodX={selectedMoodX}
                   selectedMoodY={selectedMoodY}
                   selectedMoodLabel={selectedMoodLabel}
+                  closestDistance={closestDistance}
                 />
               );
             })}

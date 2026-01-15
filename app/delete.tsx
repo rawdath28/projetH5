@@ -1,6 +1,6 @@
 // deletescreen.tsx
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Animated, PanResponder, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -10,6 +10,11 @@ interface ProcessedItem {
     text: string;
     action: string;
     category: string;
+}
+
+interface BubbleAnimationRefs {
+    pan: Animated.ValueXY;
+    opacity: Animated.Value;
 }
 
 export default function DeleteScreen() {
@@ -30,20 +35,40 @@ export default function DeleteScreen() {
         : [];
 
     const [items, setItems] = useState<string[]>(externalItems);
+    const bubbleRefs = useRef<Map<string, BubbleAnimationRefs>>(new Map());
 
-    const handleRemoveItem = (itemToRemove: string) => {
-        setItems(items.filter(item => item !== itemToRemove));
-    };
+    const handleSwipeAll = (swipeDirection: number) => {
+        // Animer toutes les bulles simultanément
+        const animations = Array.from(bubbleRefs.current.values()).map(ref => 
+            Animated.parallel([
+                Animated.timing(ref.pan, {
+                    toValue: { 
+                        x: swipeDirection > 0 ? 400 : -400, 
+                        y: 0 
+                    },
+                    duration: 300,
+                    useNativeDriver: false,
+                }),
+                Animated.timing(ref.opacity, {
+                    toValue: 0,
+                    duration: 300,
+                    useNativeDriver: false,
+                })
+            ])
+        );
 
-    const handleFinish = () => {
-        // Aller vers l'écran final avec toutes les données
-        router.push({
-            pathname: '/final-screen',
-            params: {
-                categories: JSON.stringify(categories),
-                processedItems: JSON.stringify(processedItems),
-                externalItems: JSON.stringify(items)
-            }
+        // Lancer toutes les animations en parallèle
+        Animated.parallel(animations).start(() => {
+            // Une fois toutes les animations terminées, naviguer
+            setItems([]);
+            router.push({
+                pathname: '/final-screen',
+                params: {
+                    categories: JSON.stringify(categories),
+                    processedItems: JSON.stringify(processedItems),
+                    externalItems: JSON.stringify([])
+                }
+            });
         });
     };
 
@@ -65,7 +90,9 @@ export default function DeleteScreen() {
                         <SwipeableItem
                             key={`${item}-${index}`}
                             item={item}
-                            onRemove={() => handleRemoveItem(item)}
+                            itemId={`${item}-${index}`}
+                            onSwipe={handleSwipeAll}
+                            bubbleRefs={bubbleRefs}
                         />
                     ))}
                 </View>
@@ -74,15 +101,6 @@ export default function DeleteScreen() {
                     Swipe pour supprimer les éléments hors de ton contrôle.
                 </Text>
             </View>
-
-            <View style={styles.footer}>
-                <TouchableOpacity
-                    style={styles.nextButton}
-                    onPress={handleFinish}
-                >
-                    <Text style={styles.finishButtonText}>Terminer</Text>
-                </TouchableOpacity>
-            </View>
         </SafeAreaView>
     );
 }
@@ -90,10 +108,20 @@ export default function DeleteScreen() {
 // Composant pour un élément swipeable
 const SwipeableItem: React.FC<{
     item: string;
-    onRemove: () => void;
-}> = ({ item, onRemove }) => {
+    itemId: string;
+    onSwipe: (swipeDirection: number) => void;
+    bubbleRefs: React.MutableRefObject<Map<string, BubbleAnimationRefs>>;
+}> = ({ item, itemId, onSwipe, bubbleRefs }) => {
     const pan = useRef(new Animated.ValueXY()).current;
     const opacity = useRef(new Animated.Value(1)).current;
+
+    // Enregistrer les références d'animation dans le Map
+    React.useEffect(() => {
+        bubbleRefs.current.set(itemId, { pan, opacity });
+        return () => {
+            bubbleRefs.current.delete(itemId);
+        };
+    }, [itemId]);
 
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
@@ -105,25 +133,10 @@ const SwipeableItem: React.FC<{
             pan.setValue({ x: gestureState.dx, y: 0 });
         },
         onPanResponderRelease: (_, gestureState) => {
-            // Si swipé de plus de 100px, supprimer l'élément
+            // Si swipé de plus de 100px, supprimer toutes les bulles et naviguer
             if (Math.abs(gestureState.dx) > 100) {
-                Animated.parallel([
-                    Animated.timing(pan, {
-                        toValue: { 
-                            x: gestureState.dx > 0 ? 400 : -400, 
-                            y: 0 
-                        },
-                        duration: 200,
-                        useNativeDriver: false,
-                    }),
-                    Animated.timing(opacity, {
-                        toValue: 0,
-                        duration: 200,
-                        useNativeDriver: false,
-                    })
-                ]).start(() => {
-                    onRemove();
-                });
+                // Déclencher l'animation de toutes les bulles
+                onSwipe(gestureState.dx);
             } else {
                 // Retour à la position initiale
                 Animated.spring(pan, {
@@ -203,29 +216,15 @@ const styles = StyleSheet.create({
     bubbleText: {
         color: '#FFFFFF',
         fontSize: 17,
-        fontStyle: 'italic',
+        fontFamily: Fonts.serif.regularItalic,
         textAlign: 'center',
     },
     instructionText: {
         color: 'rgba(255, 255, 255, 0.8)',
         fontSize: 14,
+        fontFamily: Fonts.sans.regular,
         textAlign: 'center',
         marginBottom: 30,
         paddingHorizontal: 20,
-    },
-    footer: {
-        paddingHorizontal: 24,
-        paddingBottom: 30,
-    },
-    nextButton: {
-        backgroundColor: 'rgba(255, 255, 255, 0.25)',
-        borderRadius: 30,
-        paddingVertical: 14,
-        alignItems: 'center',
-    },
-    finishButtonText: {
-        color: '#FFFFFF',
-        fontSize: 16,
-        fontFamily: Fonts.sans.semiBold,
     },
 });

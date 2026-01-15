@@ -6,8 +6,7 @@ import Animated, {
   interpolate,
   runOnJS,
   SharedValue,
-  useAnimatedStyle,
-  withSpring
+  useAnimatedStyle
 } from 'react-native-reanimated';
 
 import { Mood } from '../../constants/moods';
@@ -25,16 +24,17 @@ type Props = {
   selectedMoodX: SharedValue<number>;
   selectedMoodY: SharedValue<number>;
   selectedMoodLabel: SharedValue<string>;
+  closestDistance: SharedValue<number>;
   onSelect: (id: string) => void;
 };
 
 // Cercles optimisés pour éviter les superpositions
 const BASE_SIZE = 115;
 const MIN_SIZE = 95;
-const MAX_SIZE = 170;
+const MAX_SIZE = 250; // Augmenté encore plus pour un mood au centre vraiment plus grand
 
 // Distances pour un effet de grossissement progressif et doux
-const CLOSE_DISTANCE = 150;
+const CLOSE_DISTANCE = 120; // Réduit pour sélectionner uniquement le mood vraiment au centre
 const FAR_DISTANCE = 320;
 
 function MoodDraggableComponent({
@@ -50,6 +50,7 @@ function MoodDraggableComponent({
   selectedMoodX,
   selectedMoodY,
   selectedMoodLabel,
+  closestDistance,
 }: Props) {
   const centerX = viewportCenterX;
   const centerY = viewportCenterY;
@@ -62,7 +63,14 @@ function MoodDraggableComponent({
     const dy = screenY - centerY.value;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    const isCenter = distance < CLOSE_DISTANCE;
+    // Mettre à jour la distance la plus proche si ce mood est plus proche
+    if (distance < closestDistance.value) {
+      closestDistance.value = distance;
+    }
+    
+    // Ce mood est au centre seulement s'il est le plus proche (distance minimale) ET dans la zone de sélection
+    // Utiliser une petite tolérance pour la comparaison de distance à cause de la précision des calculs
+    const isCenter = Math.abs(distance - closestDistance.value) < 1 && distance < CLOSE_DISTANCE;
     
     // Calculer le déplacement si une autre émotion est au centre
     let offsetX = 0;
@@ -91,13 +99,14 @@ function MoodDraggableComponent({
     const shadowRadius = isCenter ? 25 : 10;
     const zIndex = isCenter ? 1000 : 1;
 
-    // Mettre à jour la position de l'émotion sélectionnée
+    // Mettre à jour la position de l'émotion sélectionnée seulement si c'est le plus proche
     if (isCenter) {
       selectedMoodId.value = mood.id;
       selectedMoodX.value = x;
       selectedMoodY.value = y;
       selectedMoodLabel.value = mood.label;
     } else if (selectedMoodId.value === mood.id) {
+      // Réinitialiser seulement si ce mood n'est plus le plus proche
       selectedMoodId.value = null;
       selectedMoodLabel.value = '';
     }
