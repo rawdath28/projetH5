@@ -12,7 +12,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View
 } from "react-native";
 import { ExerciseBottomSheet } from '../../components/exercise-bottom-sheet';
@@ -416,15 +415,26 @@ export default function HomeScreen() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    const formatted = date.toLocaleDateString("fr-FR", {
-      weekday: "short",
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    }); // ex: jeu. 18 décembre 2025
-
-    // Première lettre en majuscule
-    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+    
+    // Utiliser une méthode plus fiable pour formater la date
+    const weekday = date.toLocaleDateString("fr-FR", { weekday: "short" });
+    const day = date.toLocaleDateString("fr-FR", { day: "2-digit" });
+    const month = date.toLocaleDateString("fr-FR", { month: "long" });
+    const year = date.toLocaleDateString("fr-FR", { year: "numeric" });
+    
+    // Construire la date manuellement pour éviter les problèmes de locale
+    const months = ['Janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    const monthIndex = date.getMonth();
+    const monthName = months[monthIndex];
+    
+    const weekdays = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'];
+    const weekdayIndex = date.getDay();
+    const weekdayName = weekdays[weekdayIndex];
+    
+    // Première lettre en majuscule pour le jour de la semaine
+    const capitalizedWeekday = weekdayName.charAt(0).toUpperCase() + weekdayName.slice(1);
+    
+    return `${capitalizedWeekday} ${day} ${monthName} ${year}`;
   };
 
   return (
@@ -497,7 +507,7 @@ export default function HomeScreen() {
             );
           })}
       </ScrollView>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={colors === Colors.light ? {
           backgroundColor: '#000000',
           padding: 12,
@@ -512,7 +522,7 @@ export default function HomeScreen() {
         onPress={clearMoodHistory}
       >
         <Text style={colors === Colors.light ? { color: '#FFFFFF' } : { color: '#000000' }}>Effacer l'historique du jour</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       {/* Bottom Sheet pour les suggestions d'exercices */}
       {showBottomSheet && analysisResult && getBottomSheetContent() && (

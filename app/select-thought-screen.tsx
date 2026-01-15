@@ -215,7 +215,7 @@ export default SelectThoughtsScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0F6B1A',
+        backgroundColor: '#027A54',
     },
 
     header: {
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     },
 
     bubbleTextActive: {
-        color: '#0F6B1A',
+        color: '#027A54',
         fontFamily: Fonts.serif.regularItalic,
     },
 

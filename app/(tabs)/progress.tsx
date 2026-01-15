@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { IconSymbol } from '../../components/ui/icon-symbol';
 import { Colors, Fonts } from '../../constants/theme';
 import { useColorScheme } from '../../hooks/use-color-scheme';
@@ -115,7 +115,7 @@ export default function ProgressScreen() {
             <TouchableOpacity style={styles.sessionCard}>
               <View style={styles.sessionIconWrapper}>
                 <View style={[styles.sessionIcon, styles.sessionIconCompleted]}>
-                  <IconSymbol size={24} name="checkmark.circle.fill" color="#34C759" />
+                  <IconSymbol size={24} name="checkmark.circle.fill" color="#027A54" />
                 </View>
               </View>
               <View style={styles.sessionContent}>
@@ -138,7 +138,7 @@ export default function ProgressScreen() {
             <TouchableOpacity style={styles.sessionCard}>
               <View style={styles.sessionIconWrapper}>
                 <View style={[styles.sessionIcon, styles.sessionIconCompleted]}>
-                  <IconSymbol size={24} name="checkmark.circle.fill" color="#34C759" />
+                  <IconSymbol size={24} name="checkmark.circle.fill" color="#027A54" />
                 </View>
               </View>
               <View style={styles.sessionContent}>
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(2, 122, 84, 0.15)',
   },
   sessionIconCompleted: {
-    backgroundColor: 'rgba(52, 199, 89, 0.15)',
+    backgroundColor: 'rgba(2, 122, 84, 0.15)',
   },
   sessionContent: {
     flex: 1,
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(2, 122, 84, 0.15)',
   },
   statusCompleted: {
-    backgroundColor: 'rgba(52, 199, 89, 0.15)',
+    backgroundColor: 'rgba(2, 122, 84, 0.15)',
   },
   statusText: {
     fontSize: 12,
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
     color: '#027A54',
   },
   statusTextCompleted: {
-    color: '#34C759',
+    color: '#027A54',
   },
   sessionDescription: {
     fontSize: 14,

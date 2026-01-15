@@ -143,7 +143,7 @@ export default function ControleScreen() {
                                     </Text>
                                     {isProcessed && (
                                         <View style={styles.checkmark}>
-                                            <Icon name="checkmark-circle" size={20} color="#0F6B1A" />
+                                            <Icon name="checkmark-circle" size={20} color="#027A54" />
                                         </View>
                                     )}
                                 </TouchableOpacity>
@@ -190,7 +190,7 @@ export default function ControleScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0F6B1A',
+        backgroundColor: '#027A54',
     },
     header: {
         flexDirection: 'row',
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     circleTextActive: {
-        color: '#0F6B1A',
+        color: '#027A54',
     },
     controlLabel: {
         color: '#FFFFFF',

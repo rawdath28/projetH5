@@ -9,7 +9,7 @@ import { Fonts } from '../../constants/theme';
 
 export default function ProfileScreen() {
     const router = useRouter();
-    const [userName] = useState('Marie');
+    const [userName] = useState('Sarah');
     const [completedExercises] = useState(12);
     const [streak] = useState(7);
 
@@ -180,7 +180,7 @@ export default function ProfileScreen() {
                         >
                             <View style={styles.circleCardHeader}>
                                 <Text style={styles.circleTitle}>{circle.title}</Text>
-                                <Icon name="chevron-forward" size={20} color="#0F6B1A" />
+                                <Icon name="chevron-forward" size={20} color="#027A54" />
                             </View>
                             <Text style={styles.circleDate}>{circle.date}</Text>
                             <View style={styles.circleStats}>
@@ -213,7 +213,7 @@ export default function ProfileScreen() {
                             <Icon name="add-circle-outline" size={22} color="#FFFFFF" />
                         </View>
                         <Text style={styles.actionButtonText}>Nouveau cercle</Text>
-                        <Icon name="chevron-forward" size={20} color="#0F6B1A" />
+                        <Icon name="chevron-forward" size={20} color="#027A54" />
                     </TouchableOpacity>
 
                     <TouchableOpacity 
@@ -224,7 +224,7 @@ export default function ProfileScreen() {
                             <Icon name="book-outline" size={22} color="#FFFFFF" />
                         </View>
                         <Text style={styles.actionButtonText}>Mon journal</Text>
-                        <Icon name="chevron-forward" size={20} color="#0F6B1A" />
+                        <Icon name="chevron-forward" size={20} color="#027A54" />
                     </TouchableOpacity>
 
                     <TouchableOpacity 
@@ -235,7 +235,7 @@ export default function ProfileScreen() {
                             <Icon name="bulb-outline" size={22} color="#FFFFFF" />
                         </View>
                         <Text style={styles.actionButtonText}>Conseils & astuces</Text>
-                        <Icon name="chevron-forward" size={20} color="#0F6B1A" />
+                        <Icon name="chevron-forward" size={20} color="#027A54" />
                     </TouchableOpacity>
 
                     {/* Bouton pour charger les données de démonstration */}
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.sans.semiBold,
     },
     userName: {
-        color: '#0F6B1A',
+        color: '#027A54',
         fontSize: 28,
         fontFamily: Fonts.serif.bold,
         marginBottom: 8,
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 18,
-        backgroundColor: '#0F6B1A',
+        backgroundColor: '#027A54',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 15,
@@ -549,7 +549,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     achievementText: {
-        color: '#0F6B1A',
+        color: '#027A54',
         fontSize: 12,
         fontFamily: Fonts.sans.semiBold,
         textAlign: 'center',

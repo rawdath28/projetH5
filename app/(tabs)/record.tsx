@@ -1,14 +1,14 @@
 import React from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
   FlatList,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Fonts } from '../../constants/theme';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 type RecordItem = {
   id: string;
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
 
   cardTitle: {
     fontSize: 20,
-    color: '#0F7A63',
+    color: '#027A54',
     fontWeight: '600',
     fontFamily: Fonts.sans.semiBoldItalic
   },

@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     },
   
     textActive: {
-      color: '#0F6B1A',
+      color: '#027A54',
       fontWeight: '500',
     },
   });

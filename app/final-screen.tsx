@@ -63,7 +63,7 @@ export default function FinalScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0F6B1A',
+        backgroundColor: '#027A54',
     },
     header: {
         flexDirection: 'row',
