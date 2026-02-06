@@ -9,7 +9,7 @@ import { Fonts } from '../../constants/theme';
 
 export default function ProfileScreen() {
     const router = useRouter();
-    const [userName] = useState('Sarah');
+    const [userName] = useState('Sophie');
     const [completedExercises] = useState(12);
     const [streak] = useState(7);
 

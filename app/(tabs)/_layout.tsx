@@ -29,7 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ color, focused }) =>
+          tabBarIcon: ({ color, focused }) => 
             focused ? (
               <GradientIcon name="vector-pen-fill" size={24} />
             ) : (
@@ -40,7 +40,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="exercise"
         options={{
-          tabBarIcon: ({ color, focused }) =>
+          tabBarIcon: ({ color, focused }) => 
             focused ? (
               <GradientIcon name="lightbulb-fill" size={24} />
             ) : (
@@ -51,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="record"
         options={{
-          tabBarIcon: ({ color, focused }) =>
+          tabBarIcon: ({ color, focused }) => 
             focused ? (
               <GradientIcon name="mic-fill" size={24} />
             ) : (
@@ -62,7 +62,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="progress"
         options={{
-          tabBarIcon: ({ color, focused }) =>
+          tabBarIcon: ({ color, focused }) => 
             focused ? (
               <GradientIcon name="bar-chart-fill" size={24} />
             ) : (
@@ -73,7 +73,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          tabBarIcon: ({ color, focused }) =>
+          tabBarIcon: ({ color, focused }) => 
             focused ? (
               <GradientIcon name="person-fill" size={24} />
             ) : (

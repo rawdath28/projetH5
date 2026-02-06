@@ -16,41 +16,31 @@ export type AnalysisResult = {
 export async function analyzeTextWithMistral(text: string): Promise<AnalysisResult> {
   // Récupérer la clé API depuis la configuration
   const apiKey = getMistralApiKey();
-
-  // Ne jamais logguer la clé (même masquée) : les logs peuvent être collectés/partagés.
+  
   if (!apiKey) {
-    console.error('EXPO_PUBLIC_MISTRAL_API_KEY non trouvée (env/extra).');
     // Fallback: analyse basique avec mots-clés
     return analyzeTextBasic(text);
   }
 
   try {
-    const prompt = `
-Rôle : Tu es un assistant psychologique expert en analyse de pensée.
-Tâche : Analyse le texte suivant et détermine s'il contient :
-- de l'auto-dépréciation (se dévaloriser soi-même)
-- des pensées suicidaires (envies de mourir, en finir, se faire du mal)
-- ou aucun de ces deux troubles.
+    const prompt = `Tu es un assistant bienveillant qui aide les personnes en détresse psychologique. 
 
-Format de réponse attendu :
-Réponds UNIQUEMENT au format JSON strict avec deux champs :
-{
-  "type": "self_deprecation" | "suicidal_thoughts" | "none",
-  "explication": "2 à 3 phrases qui expliquent le trouble détecté ET résument l'exercice proposé pour y répondre"
-}
+Analyse ce texte et détermine s'il contient:
+- De l'auto-dépréciation (ex: "je suis nul", "je suis une merde", "personne ne m'aime")
+- Des pensées suicidaires (ex: "je vais en finir", "je préférerais être mort", "je veux mourir")
 
-- "type" doit être strictement l'une des valeurs suivantes :
-  - "self_deprecation" si tu détectes une auto-dépréciation
-  - "suicidal_thoughts" si tu détectes des pensées suicidaires
-  - "none" si tu ne détectes pas de trouble significatif.
-- "explication" doit être une description courte et concrète qui :
-  - explique pourquoi tu as choisi ce type de trouble à partir du texte
-  - décrit en 1 à 2 phrases l'objectif de l'exercice TCC associé (par ex. reformuler la pensée, prendre du recul, chercher des preuves, etc.).
-- Ne rajoute AUCUN texte avant ou après le JSON (pas de phrase, pas de markdown).
+Si tu détectes de l'auto-dépréciation:
+Rédige un message d'auto-éducation bienveillant (3-4 phrases) qui:
+1. Explique pourquoi ces pensées sont des distorsions cognitives
+2. Explique comment on peut les travailler
+3. Présente l'exercice de reformulation: "La reformulation te permet de sortir de l'émotion pour revenir aux faits. Le but est de reformuler ta pensée avec une approche moins dramatique."
 
-Texte de l'utilisateur :
-"""${text}"""
-`;
+Si tu détectes des pensées suicidaires:
+Rédige un message bienveillant et encourageant (2-3 phrases) qui invite à chercher de l'aide et mentionne qu'il existe des professionnels disponibles.
+
+Si tu ne détectes rien de particulier, réponds simplement "none".
+
+Texte à analyser: "${text}"`;
 
     const requestBody = {
       model: 'mistral-small', // Modèle Mistral (peut aussi être 'mistral-tiny', 'mistral-medium', 'mistral-large-latest')
@@ -60,11 +50,9 @@ Texte de l'utilisateur :
           content: prompt,
         },
       ],
-      temperature: 0,
+      temperature: 0.3,
       max_tokens: 300, // Augmenté pour permettre une réponse plus détaillée avec le message bienveillant
     };
-
-    console.log('Envoi requête à Mistral API...');
 
     const response = await fetch(MISTRAL_API_URL, {
       method: 'POST',
@@ -79,49 +67,60 @@ Texte de l'utilisateur :
       const errorText = await response.text();
       console.error('Erreur API Mistral:', response.status, response.statusText);
       console.error('Détails erreur:', errorText);
-
+      
       // Si c'est une erreur 401, la clé API est probablement invalide
       if (response.status === 401) {
         console.error('Erreur 401: Clé API invalide ou expirée. Vérifiez votre clé API Mistral.');
       }
-      if (response.status === 429) {
-        console.log("Trop de requêtes, réessaie plus tard");
-      }
-
+      
       return analyzeTextBasic(text);
     }
 
     const data = await response.json();
-    let rawContent = data.choices[0].message.content as string;
-
-    // Parfois le modèle renvoie le JSON entouré de ``` ou ```json ... ```
-    // → on nettoie pour garder uniquement le bloc JSON.
-    let cleaned = rawContent.trim();
-    if (cleaned.startsWith('```')) {
-      // Supprimer le premier fence ``` ou ```json
-      cleaned = cleaned.replace(/^```[a-zA-Z]*\s*/, '');
-      // Supprimer le dernier fence ```
-      cleaned = cleaned.replace(/```$/, '').trim();
+    const content = data.choices[0]?.message?.content || '';
+    
+    // Analyser le contenu pour déterminer le type (sans JSON)
+    const lowerContent = content.toLowerCase();
+    let type: 'self_deprecation' | 'suicidal_thoughts' | 'none' = 'none';
+    let confidence = 0.7;
+    
+    // Vérifier si la réponse contient des indices de pensées suicidaires
+    const suicidalIndicators = ['suicide', 'mourir', 'en finir', 'aide', 'professionnel', 'appeler'];
+    const hasSuicidalIndicators = suicidalIndicators.some(indicator => lowerContent.includes(indicator));
+    
+    // Vérifier si la réponse contient des indices d'auto-dépréciation
+    const selfDeprecationIndicators = ['auto-dépréciation', 'distorsion', 'reformulation', 'pensée négative', 'cognitif'];
+    const hasSelfDeprecationIndicators = selfDeprecationIndicators.some(indicator => lowerContent.includes(indicator));
+    
+    // Vérifier si c'est "none"
+    if (lowerContent.includes('none') || content.trim().toLowerCase() === 'none') {
+      type = 'none';
+      confidence = 0.5;
+    } else if (hasSuicidalIndicators && !hasSelfDeprecationIndicators) {
+      type = 'suicidal_thoughts';
+      confidence = 0.8;
+    } else if (hasSelfDeprecationIndicators || lowerContent.includes('reformulation')) {
+      type = 'self_deprecation';
+      confidence = 0.8;
+    } else {
+      // Analyser aussi le texte original pour déterminer le type
+      const lowerText = text.toLowerCase();
+      const suicidalKeywords = ['en finir', 'préférerais être mort', 'veux mourir', 'suicide', 'mourir'];
+      const selfDeprecationKeywords = ['je suis nul', 'je suis une merde', 'personne ne m\'aime'];
+      
+      if (suicidalKeywords.some(kw => lowerText.includes(kw))) {
+        type = 'suicidal_thoughts';
+        confidence = 0.8;
+      } else if (selfDeprecationKeywords.some(kw => lowerText.includes(kw))) {
+        type = 'self_deprecation';
+        confidence = 0.8;
+      }
     }
 
-    // Exemple de réponse attendue de Mistral :
-    // {
-    //   "type": "self_deprecation" | "suicidal_thoughts" | "none",
-    //   "explication": "L'utilisateur se dévalorise en disant 'il me déteste'. L'exercice proposé..."
-    // }
-    const parsed = JSON.parse(cleaned) as {
-      type: 'self_deprecation' | 'suicidal_thoughts' | 'none';
-      explication: string;
-    };
-
-    const type = parsed.type;
-    const confidence = type === 'none' ? 0.5 : 0.9;
-
-    // Mapper la réponse de l'IA vers la structure utilisée dans l'app
     return {
       type,
       confidence,
-      responseText: parsed.explication, // L'explication de l'IA sera affichée dans le bottom sheet ou l'écran d'urgence
+      responseText: content.trim() || undefined,
     };
   } catch (error) {
     console.error('Erreur lors de l\'analyse Mistral:', error);
@@ -134,7 +133,7 @@ Texte de l'utilisateur :
  */
 function analyzeTextBasic(text: string): AnalysisResult {
   const lowerText = text.toLowerCase();
-
+  
   // Mots-clés pour pensées suicidaires (priorité haute)
   const suicidalKeywords = [
     'en finir',
@@ -152,7 +151,7 @@ function analyzeTextBasic(text: string): AnalysisResult {
     'mort',
     'finir ma vie',
   ];
-
+  
   // Mots-clés pour auto-dépréciation
   const selfDeprecationKeywords = [
     'je suis nul',

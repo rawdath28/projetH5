@@ -1,7 +1,7 @@
-import MaskedView from "@react-native-masked-view/masked-view";
+import React, { useState, useMemo } from "react";
+import { Text, View, StyleSheet, TextStyle, LayoutChangeEvent } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
-import { LayoutChangeEvent, StyleSheet, Text, TextStyle, View } from "react-native";
+import MaskedView from "@react-native-masked-view/masked-view";
 import { Fonts } from "../constants/theme";
 
 interface GradientTextProps {
@@ -9,7 +9,7 @@ interface GradientTextProps {
   style?: TextStyle;
 }
 
-export default function GradientText({ children, style }: GradientTextProps) {
+function GradientTextComponent({ children, style }: GradientTextProps) {
   const [textHeight, setTextHeight] = useState<number | null>(null);
   
   // On récupère la taille du texte (par défaut 20)
@@ -23,8 +23,10 @@ export default function GradientText({ children, style }: GradientTextProps) {
     }
   };
   
-  // Hauteur calculée : utiliser la hauteur mesurée ou une estimation
-  const containerHeight = textHeight || Math.max(lineHeight, fontSize * 1.5);
+  // Hauteur calculée : utiliser la hauteur mesurée ou une estimation (memoized)
+  const containerHeight = useMemo(() => {
+    return textHeight || Math.max(lineHeight, fontSize * 1.5);
+  }, [textHeight, lineHeight, fontSize]);
   
   return (
     <View style={styles.outerContainer}>
@@ -35,7 +37,7 @@ export default function GradientText({ children, style }: GradientTextProps) {
           {
             position: 'absolute',
             opacity: 0,
-            fontFamily: style?.fontFamily || (style?.fontStyle === 'italic' ? Fonts.serif.regularItalic : Fonts.serif.regular),
+            fontFamily: style?.fontStyle === 'italic' ? Fonts.serif.regularItalic : Fonts.serif.regular,
             fontStyle: style?.fontStyle,
             textAlign: style?.textAlign || 'center',
             paddingHorizontal: style?.paddingHorizontal || 20,
@@ -54,13 +56,13 @@ export default function GradientText({ children, style }: GradientTextProps) {
           minHeight: fontSize * 1.5,
         }}
         maskElement={
-          <View style={{ paddingHorizontal: style?.paddingHorizontal || 0 }}>
+          <View style={{ paddingHorizontal: style?.paddingHorizontal || 20 }}>
             <Text 
               style={[
                 style, 
                 { 
                   backgroundColor: "transparent", 
-                  fontFamily: style?.fontFamily || Fonts.serif.regular,
+                  fontFamily: Fonts.serif.regular,
                   fontStyle: style?.fontStyle,
                   textAlign: style?.textAlign || 'center',
                 }
@@ -85,7 +87,7 @@ export default function GradientText({ children, style }: GradientTextProps) {
                 style, 
                 { 
                   opacity: 0, 
-                  fontFamily: style?.fontFamily || Fonts.serif.regular,
+                  fontFamily: Fonts.serif.regular,
                   fontStyle: style?.fontStyle,
                   textAlign: style?.textAlign || 'center',
                 }
@@ -108,3 +110,6 @@ const styles = StyleSheet.create({
     width: '100%',
   }
 });
+
+// Memoize le composant pour éviter les re-renders inutiles
+export default React.memo(GradientTextComponent);

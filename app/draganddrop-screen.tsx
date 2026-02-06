@@ -1,8 +1,9 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import {
     Animated,
     Dimensions,
+    LayoutChangeEvent,
     PanResponder,
     StyleSheet,
     Text,
@@ -40,32 +41,45 @@ const DragAndDropScreen: React.FC = () => {
 
     const [availableItems, setAvailableItems] = useState<string[]>(selectedItems);
     const [draggedItem, setDraggedItem] = useState<string | null>(null);
+    
+    // Refs pour stocker les refs des vues des catégories
+    const categoryRefs = useRef<{
+        control: View | null;
+        influence: View | null;
+        external: View | null;
+    }>({
+        control: null,
+        influence: null,
+        external: null,
+    });
 
     // Fonction pour gérer le drop dans une catégorie
     const handleDrop = (categoryId: 'control' | 'influence' | 'external', item: string) => {
         // Ajouter l'item à la catégorie
-        setCategories(categories.map(cat => 
-            cat.id === categoryId 
-                ? { ...cat, items: [...cat.items, item] }
-                : cat
-        ));
+        setCategories(prevCategories => 
+            prevCategories.map(cat => 
+                cat.id === categoryId 
+                    ? { ...cat, items: [...cat.items, item] }
+                    : cat
+            )
+        );
         
         // Retirer l'item des disponibles
-        setAvailableItems(availableItems.filter(i => i !== item));
+        setAvailableItems(prevItems => prevItems.filter(i => i !== item));
         setDraggedItem(null);
     };
 
     // Fonction pour retirer un item d'une catégorie
     const removeFromCategory = (categoryId: 'control' | 'influence' | 'external', item: string) => {
         // Retirer de la catégorie
-        setCategories(categories.map(cat =>
+        setCategories(prevCategories => prevCategories.map(cat =>
             cat.id === categoryId
                 ? { ...cat, items: cat.items.filter(i => i !== item) }
                 : cat
         ));
         
         // Remettre dans les disponibles
-        setAvailableItems([...availableItems, item]);
+        setAvailableItems(prevItems => [...prevItems, item]);
     };
 
     return (
@@ -86,7 +100,15 @@ const DragAndDropScreen: React.FC = () => {
             {/* Categories */}
             <View style={styles.categoriesContainer}>
                 {categories.map((category) => (
-                    <View key={category.id} style={styles.categoryBox}>
+                    <View 
+                        key={category.id} 
+                        ref={(ref) => {
+                            if (ref) {
+                                categoryRefs.current[category.id] = ref;
+                            }
+                        }}
+                        style={styles.categoryBox}
+                    >
                         <Text style={styles.categoryTitle}>{category.title}</Text>
                         <View style={styles.categoryContent}>
                             {category.items.map((item, index) => (
@@ -114,7 +136,7 @@ const DragAndDropScreen: React.FC = () => {
                             key={index}
                             item={item}
                             onDrop={(categoryId) => handleDrop(categoryId, item)}
-                            categories={categories}
+                            categoryRefs={categoryRefs.current}
                         />
                     ))}
                 </View>
@@ -149,10 +171,15 @@ const DragAndDropScreen: React.FC = () => {
 const DraggableItem: React.FC<{
     item: string;
     onDrop: (categoryId: 'control' | 'influence' | 'external') => void;
-    categories: Category[];
-}> = ({ item, onDrop, categories }) => {
+    categoryRefs: {
+        control: View | null;
+        influence: View | null;
+        external: View | null;
+    };
+}> = ({ item, onDrop, categoryRefs }) => {
     const pan = useState(new Animated.ValueXY())[0];
     const [isDragging, setIsDragging] = useState(false);
+    const itemRef = useRef<View>(null);
 
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
@@ -166,17 +193,127 @@ const DraggableItem: React.FC<{
         onPanResponderRelease: (e, gesture) => {
             setIsDragging(false);
             
-            // Déterminer dans quelle zone on a relâché
-            const dropY = gesture.moveY;
+            // Utiliser e.nativeEvent.pageY qui donne la position Y absolue de l'événement de toucher
+            // C'est plus fiable que gesture.moveY car c'est la position réelle du doigt
+            const dropY = e.nativeEvent.pageY;
             
-            // Zones approximatives (à ajuster selon votre layout)
-            if (dropY < height * 0.3) {
-                onDrop('control');
-            } else if (dropY < height * 0.5) {
-                onDrop('influence');
-            } else if (dropY < height * 0.7) {
-                onDrop('external');
-            }
+            // Obtenir les positions actuelles des catégories en les mesurant maintenant
+            const positions: {
+                control: { top: number; bottom: number } | null;
+                influence: { top: number; bottom: number } | null;
+                external: { top: number; bottom: number } | null;
+            } = {
+                control: null,
+                influence: null,
+                external: null,
+            };
+            
+            // Mesurer chaque catégorie et stocker les positions
+            const measureAndStore = (categoryId: 'control' | 'influence' | 'external'): Promise<void> => {
+                return new Promise((resolve) => {
+                    const categoryRef = categoryRefs[categoryId];
+                    if (categoryRef) {
+                        // Utiliser measureInWindow pour obtenir la position absolue dans la fenêtre
+                        categoryRef.measureInWindow((x, y, width, height) => {
+                            positions[categoryId] = {
+                                top: y,
+                                bottom: y + height,
+                            };
+                            resolve();
+                        });
+                    } else {
+                        resolve();
+                    }
+                });
+            };
+            
+            // Mesurer toutes les catégories de manière synchrone
+            Promise.all([
+                measureAndStore('control'),
+                measureAndStore('influence'),
+                measureAndStore('external'),
+            ]).then(() => {
+                // Vérifier que toutes les catégories ont été mesurées
+                if (!positions.control || !positions.influence || !positions.external) {
+                    // console.error('❌ Some categories were not measured!');
+                    // console.log('Control:', positions.control);
+                    // console.log('Influence:', positions.influence);
+                    // console.log('External:', positions.external);
+                    // Réinitialiser quand même la position
+                    return;
+                }
+                
+                // Déterminer dans quelle catégorie on a relâché
+                let targetCategory: 'control' | 'influence' | 'external' | null = null;
+                
+                // Debug: afficher les positions
+                // console.log('=== DROP DEBUG ===');
+                // console.log('Drop Y:', dropY);
+                // console.log('Control:', positions.control);
+                // console.log('Influence:', positions.influence);
+                // console.log('External:', positions.external);
+                
+                // Vérifier toutes les catégories et trouver celle qui contient le point de drop
+                // Les catégories sont dans l'ordre : control (haut), influence (milieu), external (bas)
+                const categories: Array<{ id: 'control' | 'influence' | 'external'; pos: { top: number; bottom: number } | null }> = [
+                    { id: 'control', pos: positions.control },
+                    { id: 'influence', pos: positions.influence },
+                    { id: 'external', pos: positions.external },
+                ];
+                
+                // Vérifier toutes les catégories qui contiennent le point de drop
+                // On utilise une marge de tolérance pour être plus flexible
+                const margin = 20; // Marge plus grande pour être plus tolérant
+                const matchingCategories: Array<{ id: 'control' | 'influence' | 'external'; distance: number }> = [];
+                
+                for (const cat of categories) {
+                    if (cat.pos) {
+                        // Vérifier si le point de drop est dans les limites de la catégorie (avec marge)
+                        const isInBounds = dropY >= (cat.pos.top - margin) && dropY <= (cat.pos.bottom + margin);
+                        const categoryCenter = (cat.pos.top + cat.pos.bottom) / 2;
+                        const distance = Math.abs(dropY - categoryCenter);
+                        
+                        console.log(`Checking ${cat.id}: top=${cat.pos.top}, bottom=${cat.pos.bottom}, center=${categoryCenter}, dropY=${dropY}, inBounds=${isInBounds}, distance=${distance}`);
+                        
+                        if (isInBounds) {
+                            matchingCategories.push({ id: cat.id, distance });
+                        }
+                    }
+                }
+                
+                // Si plusieurs catégories correspondent, prendre celle qui est la plus proche du centre
+                if (matchingCategories.length > 0) {
+                    // Trier par distance (la plus proche en premier)
+                    matchingCategories.sort((a, b) => a.distance - b.distance);
+                    targetCategory = matchingCategories[0].id;
+                    console.log(`Selected category (in bounds): ${targetCategory}`);
+                } else {
+                    // Si aucune catégorie ne contient le point, trouver la plus proche
+                    console.log('Not in any category bounds, finding closest...');
+                    let minDistance = Infinity;
+                    for (const cat of categories) {
+                        if (cat.pos) {
+                            const categoryCenter = (cat.pos.top + cat.pos.bottom) / 2;
+                            const distance = Math.abs(dropY - categoryCenter);
+                            console.log(`Distance to ${cat.id} center: ${distance}`);
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                targetCategory = cat.id;
+                            }
+                        }
+                    }
+                    console.log(`Closest category: ${targetCategory} (distance: ${minDistance})`);
+                }
+                
+                // Si on a trouvé une catégorie, faire le drop
+                if (targetCategory) {
+                    console.log(`✅ Dropping into: ${targetCategory}`);
+                    onDrop(targetCategory);
+                } else {
+                    console.log('❌ No category found!');
+                }
+                console.log('=== END DEBUG ===');
+            });
             
             // Réinitialiser la position
             Animated.spring(pan, {
@@ -188,6 +325,7 @@ const DraggableItem: React.FC<{
 
     return (
         <Animated.View
+            ref={itemRef}
             style={[
                 styles.draggableItem,
                 {

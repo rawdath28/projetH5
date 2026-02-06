@@ -590,14 +590,14 @@ const styles = StyleSheet.create({
   },
   dateHeaderContainer: {
     width: "100%",
-    alignItems: "flex-start", // force à gauche
+    alignItems: "center", // force à gauche
   },
   dateHeader: {
     fontSize: 24,
     fontFamily: Fonts.serif.semiBoldItalic,
     lineHeight: 28,
     textAlignVertical: "top",
-    textAlign: "left",
+    textAlign: "center",
     marginVertical: 12,
     paddingVertical: 20,
   },
