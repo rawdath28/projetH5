@@ -326,31 +326,52 @@ export default function HomeScreen() {
 
   // Fonction pour analyser le texte avec Mistral
   const analyzeText = async (text: string) => {
+    console.log('🚀 [ANALYZE TEXT] Fonction analyzeText appelée');
+    console.log('📝 [ANALYZE TEXT] Texte reçu:', text.substring(0, 100) + (text.length > 100 ? '...' : ''));
+    console.log('📏 [ANALYZE TEXT] Longueur du texte:', text.length);
+    
     if (!text.trim() || text.trim().length < 10) {
+      console.log('⚠️ [ANALYZE TEXT] Texte trop court, analyse annulée');
       // Ne pas analyser si le texte est trop court
       setShowBottomSheet(false);
       return;
     }
 
+    console.log('✅ [ANALYZE TEXT] Texte valide, démarrage de l\'analyse...');
     setIsAnalyzing(true);
     try {
+      console.log('📞 [ANALYZE TEXT] Appel de analyzeTextWithMistral...');
       const result = await analyzeTextWithMistral(text);
+      console.log('✅ [ANALYZE TEXT] Résultat reçu de l\'API:', {
+        type: result.type,
+        confidence: result.confidence,
+        hasResponseText: !!result.responseText,
+      });
+      
       setAnalysisResult(result);
 
       // Si pensées suicidaires → afficher l'écran d'urgence en plein écran
       if (result.type === 'suicidal_thoughts') {
+        console.log('🚨 [ANALYZE TEXT] Pensées suicidaires détectées, redirection vers emergency-screen');
         setShowBottomSheet(false);
         router.push('/emergency-screen');
       } else if (result.type !== 'none') {
+        console.log('📋 [ANALYZE TEXT] Trouble détecté:', result.type, '- Affichage du bottom sheet');
         // Pour les autres troubles (ex : auto-dépréciation) → bottom sheet
         setShowBottomSheet(true);
       } else {
+        console.log('ℹ️ [ANALYZE TEXT] Aucun trouble détecté (type: none)');
         setShowBottomSheet(false);
       }
     } catch (error) {
-      console.error('Erreur lors de l\'analyse:', error);
+      console.error('❌ [ANALYZE TEXT] Erreur lors de l\'analyse:', error);
+      if (error instanceof Error) {
+        console.error('❌ [ANALYZE TEXT] Message d\'erreur:', error.message);
+        console.error('❌ [ANALYZE TEXT] Stack:', error.stack);
+      }
       setShowBottomSheet(false);
     } finally {
+      console.log('🏁 [ANALYZE TEXT] Analyse terminée, setIsAnalyzing(false)');
       setIsAnalyzing(false);
     }
   };
@@ -375,11 +396,13 @@ export default function HomeScreen() {
   // Fonction pour gérer le bouton du bottom sheet selon le type
   const handleBottomSheetButtonPress = () => {
     if (analysisResult?.type === 'self_deprecation') {
-      // Pour l'auto-dépréciation, on pourrait naviguer vers un exercice de reformulation
-      // Pour l'instant, on ferme juste le bottom sheet
+      // Pour l'auto-dépréciation, naviguer vers l'exercice des cercles de contrôle
       setShowBottomSheet(false);
       router.push('/select-thought-screen');
-      // TODO: Naviguer vers l'exercice de reformulation
+    } else if (analysisResult?.type === 'anxiety' || analysisResult?.type === 'stress') {
+      // Pour l'anxiété et le stress, naviguer vers l'exercice des cercles de contrôle
+      setShowBottomSheet(false);
+      router.push('/select-thought-screen');
     } else if (analysisResult?.type === 'suicidal_thoughts') {
       // Pour les pensées suicidaires, appeler le numéro d'aide
       callHelpNumber();
@@ -389,7 +412,7 @@ export default function HomeScreen() {
   // Fonction pour obtenir le contenu du bottom sheet selon le type
   const getBottomSheetContent = () => {
     if (analysisResult?.type === 'self_deprecation') {
-      // Description de l'exercice des cercles de contrôle
+      // Description de l'exercice adapté (cercles de contrôle)
       const description = 'Les cercles de contrôle te permettent de distinguer ce que tu contrôles, ce sur quoi tu peux avoir une influence, et ce qui est hors de ton contrôle. Cet exercice t\'aide à te concentrer sur ce que tu peux réellement changer et à accepter ce qui ne dépend pas de toi.';
 
       return {
@@ -398,10 +421,29 @@ export default function HomeScreen() {
         description: description,
         buttonText: 'Démarrer l\'exercice',
       };
+    } else if (analysisResult?.type === 'anxiety') {
+      // Description de l'exercice adapté (cercles de contrôle)
+      const description = 'Les cercles de contrôle peuvent t\'aider à distinguer ce qui dépend de toi et ce qui ne dépend pas de toi. En te concentrant sur ce que tu peux réellement contrôler, tu peux réduire l\'anxiété liée à l\'incertitude.';
+
+      return {
+        titlePart1: 'Tu ressens de l\'',
+        titlePart2: 'anxiété',
+        description: description,
+        buttonText: 'Démarrer l\'exercice',
+      };
+    } else if (analysisResult?.type === 'stress') {
+      // Description de l'exercice adapté (cercles de contrôle)
+      const description = 'Les cercles de contrôle t\'aident à identifier ce que tu peux réellement contrôler et à accepter ce qui est hors de ta portée. Cet exercice te permet de prioriser et de réduire le sentiment de surcharge.';
+
+      return {
+        titlePart1: 'Tu ressens du ',
+        titlePart2: 'stress',
+        description: description,
+        buttonText: 'Démarrer l\'exercice',
+      };
     } else if (analysisResult?.type === 'suicidal_thoughts') {
-      // Utiliser la réponse de Mistral si disponible, sinon message par défaut
-      const description = analysisResult.responseText ||
-        'Si tu traverses une période difficile, n\'hésite pas à appeler le numéro d\'aide. Des professionnels sont disponibles 24h/24 pour t\'écouter.';
+      // Message d'aide pour les pensées suicidaires
+      const description = 'Si tu traverses une période difficile, n\'hésite pas à appeler le numéro d\'aide. Des professionnels sont disponibles 24h/24 pour t\'écouter.';
 
       return {
         titlePart1: 'Besoin d\'aide ?',
