@@ -22,17 +22,17 @@ export default function ControleScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
     const scrollViewRef = useRef<ScrollView>(null);
-    
+
     // Récupérer les catégories depuis les paramètres
-    const categories: Category[] = params.categories 
-        ? JSON.parse(params.categories as string) 
+    const categories: Category[] = params.categories
+        ? JSON.parse(params.categories as string)
         : [];
-    
+
     // Extraire les items de "Je contrôle" et "J'influence" uniquement
     const controlCategory = categories.find(cat => cat.id === 'control');
     const influenceCategory = categories.find(cat => cat.id === 'influence');
     const externalCategory = categories.find(cat => cat.id === 'external');
-    
+
     // Combiner les deux catégories pour traiter les actions
     const itemsNeedingActions = [
         ...(controlCategory?.items || []),
@@ -42,7 +42,7 @@ export default function ControleScreen() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [processedItems, setProcessedItems] = useState<ProcessedItem[]>([]);
     const [customText, setCustomText] = useState<string>('');
-    
+
     const currentItem = itemsNeedingActions[currentIndex];
 
     // Déterminer la catégorie de l'élément actuel
@@ -62,16 +62,16 @@ export default function ControleScreen() {
             action: customText,
             category: getCurrentCategory(currentItem)
         };
-        
+
         const updatedProcessedItems = [...processedItems, newProcessedItem];
-        
+
         // Vérifier s'il reste des éléments à traiter
         if (currentIndex < itemsNeedingActions.length - 1) {
             // Passer à l'élément suivant
             setCurrentIndex(currentIndex + 1);
             setProcessedItems(updatedProcessedItems);
             setCustomText('');
-            
+
             // Scroller vers la prochaine bulle
             setTimeout(() => {
                 scrollViewRef.current?.scrollTo({
@@ -105,6 +105,9 @@ export default function ControleScreen() {
         <SafeAreaView style={styles.container}>
             <Stack.Screen options={{ headerShown: false }} />
             <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()}>
+                    <Icon name="chevron-back" size={24} color="#fff" />
+                </TouchableOpacity>
                 <View style={styles.headerLeft} />
                 <Text style={styles.title}>Cercles de contrôles</Text>
                 <TouchableOpacity onPress={() => router.push('/')}>
@@ -114,9 +117,9 @@ export default function ControleScreen() {
 
             <View style={styles.content}>
                 {/* Scroll horizontal des bulles */}
-                <ScrollView 
+                <ScrollView
                     ref={scrollViewRef}
-                    horizontal 
+                    horizontal
                     showsHorizontalScrollIndicator={false}
                     style={styles.bubblesScroll}
                     contentContainerStyle={styles.bubblesContainer}
@@ -124,7 +127,7 @@ export default function ControleScreen() {
                     {itemsNeedingActions.map((item, index) => {
                         const isActive = index === currentIndex;
                         const isProcessed = index < currentIndex;
-                        
+
                         return (
                             <View key={index} style={styles.bubbleWrapper}>
                                 <TouchableOpacity

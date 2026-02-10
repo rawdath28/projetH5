@@ -92,7 +92,7 @@ const DragAndDropScreen: React.FC = () => {
                     <Icon name="chevron-back" size={24} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Cercles de contrôles</Text>
-                <TouchableOpacity onPress={() => router.push('/')}>
+                <TouchableOpacity onPress={() => router.replace('/(tabs)' as any)}>
                     <Icon name="close" size={24} color="#fff" />
                 </TouchableOpacity>
             </View>

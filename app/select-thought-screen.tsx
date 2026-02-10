@@ -164,9 +164,12 @@ const SelectThoughtsScreen: React.FC = () => {
             {/* Header */}
             <Stack.Screen options={{ headerShown: false }} />
             <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()}>
+                    <Icon name="chevron-back" size={24} color="#fff" />
+                </TouchableOpacity>
                 <View style={styles.headerSpacer} />
                 <Text style={styles.headerTitle}>Cercles de contrôles</Text>
-                <TouchableOpacity style={styles.close}>
+                <TouchableOpacity onPress={() => router.back()}>
                     <Icon name="close" size={24} color="#fff" />
                 </TouchableOpacity>
             </View>

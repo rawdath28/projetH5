@@ -13,16 +13,19 @@ interface ProcessedItem {
 export default function FinalScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
-    
-    const processedItems: ProcessedItem[] = params.processedItems 
-        ? JSON.parse(params.processedItems as string) 
+
+    const processedItems: ProcessedItem[] = params.processedItems
+        ? JSON.parse(params.processedItems as string)
         : [];
 
     return (
         <SafeAreaView style={styles.container}>
             <Stack.Screen options={{ headerShown: false }} />
-            
+
             <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()}>
+                    <Icon name="chevron-back" size={24} color="#fff" />
+                </TouchableOpacity>
                 <View style={styles.headerLeft} />
                 <Text style={styles.title}>Cercles de contrôles</Text>
                 <TouchableOpacity onPress={() => router.push('/')}>
@@ -30,8 +33,8 @@ export default function FinalScreen() {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView 
-                style={styles.scrollContent} 
+            <ScrollView
+                style={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContentContainer}
             >
