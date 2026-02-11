@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Fonts } from '../constants/theme';
+import { Fonts } from '../../constants/theme';
 
 const { height } = Dimensions.get('window');
 
@@ -153,7 +153,7 @@ const DragAndDropScreen: React.FC = () => {
                     onPress={() => {
                         // Navigation vers l'écran suivant avec les données
                         router.push({
-                            pathname: '/controle',
+                            pathname: '/screens/controle',
                             params: {
                                 categories: JSON.stringify(categories)
                             }

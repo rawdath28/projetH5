@@ -3,7 +3,7 @@
  * Détecte l'auto-dépréciation, l'anxiété, les pensées suicidaires et d'autres troubles
  */
 
-import { getMistralApiKey } from './config';
+import { getMistralApiKey } from '../config';
 
 const MISTRAL_API_URL = 'https://api.mistral.ai/v1/chat/completions';
 

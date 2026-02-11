@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Fonts } from '../constants/theme';
+import { Fonts } from '../../constants/theme';
 
 const ITEMS = [
     'Les silences pendant le dates',
@@ -196,7 +196,7 @@ const SelectThoughtsScreen: React.FC = () => {
                     style={styles.nextButton}
                     onPress={() => {
                         router.push({
-                            pathname: '/draganddrop-screen',
+                            pathname: '/screens/draganddrop-screen',
                             params: {
                                 selected: JSON.stringify(selected) // Passer les items sélectionnés
                             }

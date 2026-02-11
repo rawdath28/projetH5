@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 import { Animated, PanResponder, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Fonts } from '../constants/theme';
+import { Fonts } from '../../constants/theme';
 
 interface ProcessedItem {
     text: string;
@@ -62,7 +62,7 @@ export default function DeleteScreen() {
             // Une fois toutes les animations terminées, naviguer
             setItems([]);
             router.push({
-                pathname: '/final-screen',
+                pathname: '/screens/final-screen',
                 params: {
                     categories: JSON.stringify(categories),
                     processedItems: JSON.stringify(processedItems),

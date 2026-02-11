@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Fonts } from '../constants/theme';
+import { Fonts } from '../../constants/theme';
 
 interface Category {
     id: 'control' | 'influence' | 'external';
@@ -82,7 +82,7 @@ export default function ControleScreen() {
         } else {
             // Tous les éléments sont traités, aller à l'écran final
             router.push({
-                pathname: '/delete',
+                pathname: '/screens/delete',
                 params: {
                     categories: JSON.stringify(categories),
                     processedItems: JSON.stringify(updatedProcessedItems),

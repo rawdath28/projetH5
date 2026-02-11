@@ -20,7 +20,7 @@ import { Mood } from '../../constants/moods';
 import { Colors, Fonts } from '../../constants/theme';
 import { useColorScheme } from '../../hooks/use-color-scheme';
 import { HELP_PHONE_NUMBER } from '../../lib/config';
-import { AnalysisResult, analyzeTextWithMistral } from '../../lib/mistral';
+import { AnalysisResult, analyzeTextWithMistral } from '../../lib/services/mistral';
 
 type MoodEntry = {
   id: string;
@@ -508,6 +508,9 @@ export default function HomeScreen() {
 
             return (
               <View key={item.id} style={styles.moodItem}>
+                {/* <TouchableOpacity onPress={() => router.replace('/components/mood-grid/MoodDraggable')}>
+                    <Icon name="close" size={24} color="red" />
+                </TouchableOpacity> */}
                 {/* Date si nécessaire */}
                 {showDateHeader && (
                   // <View style={styles.dateHeaderContainer}>

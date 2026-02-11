@@ -61,14 +61,14 @@ export default function ProfileScreen() {
                             // Supprimer d'abord toutes les anciennes données de démonstration
                             const allKeys = await AsyncStorage.getAllKeys();
                             const moodKeys = allKeys.filter(key => key.startsWith('moods_'));
-                            
+
                             for (const key of moodKeys) {
                                 const savedMoods = await AsyncStorage.getItem(key);
                                 if (savedMoods) {
                                     const parsedMoods = JSON.parse(savedMoods);
                                     // Filtrer les entrées qui ne sont pas des données de démonstration
                                     const nonDemoMoods = parsedMoods.filter((m: any) => !m.id?.startsWith('demo_'));
-                                    
+
                                     if (nonDemoMoods.length === 0) {
                                         // Si toutes les entrées étaient des démos, supprimer la clé
                                         await AsyncStorage.removeItem(key);
@@ -81,11 +81,11 @@ export default function ProfileScreen() {
 
                             // Grouper les nouvelles entrées par jour
                             const entriesByDay: { [key: string]: any[] } = {};
-                            
+
                             for (const entry of entries) {
                                 const entryDate = new Date(entry.date);
                                 const dayKey = entryDate.toDateString();
-                                
+
                                 if (!entriesByDay[dayKey]) {
                                     entriesByDay[dayKey] = [];
                                 }
@@ -98,7 +98,7 @@ export default function ProfileScreen() {
                                 const existingKey = `moods_${dayKey}`;
                                 const existingMoods = await AsyncStorage.getItem(existingKey);
                                 const nonDemoMoods = existingMoods ? JSON.parse(existingMoods).filter((m: any) => !m.id?.startsWith('demo_')) : [];
-                                
+
                                 // Combiner les non-démos existantes avec les nouvelles démos
                                 const allMoods = [...nonDemoMoods, ...dayEntries];
                                 await AsyncStorage.setItem(existingKey, JSON.stringify(allMoods));
@@ -126,19 +126,19 @@ export default function ProfileScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <Stack.Screen options={{ headerShown: false }} />
-            
+
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()}>
                     <Icon name="chevron-back" size={24} color="white" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Mon Profil</Text>
-                <TouchableOpacity onPress={() => {}}>
+                <TouchableOpacity onPress={() => { }}>
                     <Icon name="settings-outline" size={24} color="#027A54" />
                 </TouchableOpacity>
             </View>
 
-            <ScrollView 
+            <ScrollView
                 style={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
@@ -171,12 +171,12 @@ export default function ProfileScreen() {
                 {/* Recent Circles */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Mes cercles récents</Text>
-                    
+
                     {recentCircles.map((circle, index) => (
-                        <TouchableOpacity 
-                            key={index} 
+                        <TouchableOpacity
+                            key={index}
                             style={styles.circleCard}
-                            onPress={() => {}}
+                            onPress={() => { }}
                         >
                             <View style={styles.circleCardHeader}>
                                 <Text style={styles.circleTitle}>{circle.title}</Text>
@@ -204,10 +204,10 @@ export default function ProfileScreen() {
                 {/* Quick Actions */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Actions rapides</Text>
-                    
-                    <TouchableOpacity 
+
+                    <TouchableOpacity
                         style={styles.actionButton}
-                        onPress={() => router.push('/select-thought-screen')}
+                        onPress={() => router.push('/screens/select-thought-screen' as any)}
                     >
                         <View style={styles.actionIconContainer}>
                             <Icon name="add-circle-outline" size={22} color="#FFFFFF" />
@@ -216,9 +216,9 @@ export default function ProfileScreen() {
                         <Icon name="chevron-forward" size={20} color="#027A54" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.actionButton}
-                        onPress={() => {}}
+                        onPress={() => router.push('/(tabs)/index' as any)}
                     >
                         <View style={styles.actionIconContainer}>
                             <Icon name="book-outline" size={22} color="#FFFFFF" />
@@ -227,9 +227,9 @@ export default function ProfileScreen() {
                         <Icon name="chevron-forward" size={20} color="#027A54" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.actionButton}
-                        onPress={() => {}}
+                        onPress={() => { }}
                     >
                         <View style={styles.actionIconContainer}>
                             <Icon name="bulb-outline" size={22} color="#FFFFFF" />
@@ -239,7 +239,7 @@ export default function ProfileScreen() {
                     </TouchableOpacity>
 
                     {/* Bouton pour charger les données de démonstration */}
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.demoButton}
                         onPress={loadDemoData}
                     >
@@ -254,7 +254,7 @@ export default function ProfileScreen() {
                 {/* Achievements */}
                 <View style={[styles.section, styles.lastSection]}>
                     <Text style={styles.sectionTitle}>Accomplissements</Text>
-                    
+
                     <View style={styles.achievementsGrid}>
                         <View style={styles.achievementBadge}>
                             <View style={styles.achievementIconContainer}>

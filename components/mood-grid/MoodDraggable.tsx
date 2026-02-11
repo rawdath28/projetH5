@@ -66,11 +66,15 @@ function MoodDraggableComponent({
     // Mettre à jour la distance la plus proche si ce mood est plus proche
     if (distance < closestDistance.value) {
       closestDistance.value = distance;
+      // Mettre à jour immédiatement l'émotion sélectionnée si c'est la plus proche
+      selectedMoodId.value = mood.id;
+      selectedMoodX.value = x;
+      selectedMoodY.value = y;
+      selectedMoodLabel.value = mood.label;
     }
     
-    // Ce mood est au centre seulement s'il est le plus proche (distance minimale) ET dans la zone de sélection
-    // Utiliser une petite tolérance pour la comparaison de distance à cause de la précision des calculs
-    const isCenter = Math.abs(distance - closestDistance.value) < 1 && distance < CLOSE_DISTANCE;
+    // Ce mood est au centre s'il est actuellement sélectionné
+    const isCenter = selectedMoodId.value === mood.id && distance < CLOSE_DISTANCE;
     
     // Calculer le déplacement si une autre émotion est au centre
     let offsetX = 0;
@@ -99,18 +103,6 @@ function MoodDraggableComponent({
     const shadowRadius = isCenter ? 25 : 10;
     const zIndex = isCenter ? 1000 : 1;
 
-    // Mettre à jour la position de l'émotion sélectionnée seulement si c'est le plus proche
-    if (isCenter) {
-      selectedMoodId.value = mood.id;
-      selectedMoodX.value = x;
-      selectedMoodY.value = y;
-      selectedMoodLabel.value = mood.label;
-    } else if (selectedMoodId.value === mood.id) {
-      // Réinitialiser seulement si ce mood n'est plus le plus proche
-      selectedMoodId.value = null;
-      selectedMoodLabel.value = '';
-    }
-
     return {
       position: 'absolute',
       left: x - BASE_SIZE / 2 + offsetX,
@@ -136,7 +128,7 @@ function MoodDraggableComponent({
     const dy = screenY - centerY.value;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    const isCenter = distance < CLOSE_DISTANCE;
+    const isCenter = selectedMoodId.value === mood.id && distance < CLOSE_DISTANCE;
 
     const fontSize = isCenter ? 18 : 15;
 

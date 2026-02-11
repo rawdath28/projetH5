@@ -3,12 +3,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { router } from 'expo-router';
 
-import { Colors } from '../constants/theme';
-import { useColorScheme } from '../hooks/use-color-scheme';
-import { MoodGrid } from '../components/mood-grid/MoodGrid';
+import { Colors } from '../../constants/theme';
+import { useColorScheme } from '../../hooks/use-color-scheme';
+import { MoodGrid } from '../../components/mood-grid/MoodGrid';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MOODS } from '../constants/moods';
+import { MOODS } from '../../constants/moods';
 
 export default function OnboardingScreen() {
   const colorScheme = useColorScheme();
