@@ -20,7 +20,7 @@ import { Mood } from '../../constants/moods';
 import { Colors, Fonts } from '../../constants/theme';
 import { useColorScheme } from '../../hooks/use-color-scheme';
 import { HELP_PHONE_NUMBER } from '../../lib/config';
-import { AnalysisResult, analyzeTextWithMistral } from '../../lib/services/mistral';
+import { AnalysisResult, analyzeTextWithMistral } from '../../services/mistral';
 
 type MoodEntry = {
   id: string;
@@ -354,7 +354,7 @@ export default function HomeScreen() {
       if (result.type === 'suicidal_thoughts') {
         console.log('🚨 [ANALYZE TEXT] Pensées suicidaires détectées, redirection vers emergency-screen');
         setShowBottomSheet(false);
-        router.push('/emergency-screen');
+        router.push('/screens/emergency-screen');
       } else if (result.type !== 'none') {
         console.log('📋 [ANALYZE TEXT] Trouble détecté:', result.type, '- Affichage du bottom sheet');
         // Pour les autres troubles (ex : auto-dépréciation) → bottom sheet
@@ -398,11 +398,11 @@ export default function HomeScreen() {
     if (analysisResult?.type === 'self_deprecation') {
       // Pour l'auto-dépréciation, naviguer vers l'exercice des cercles de contrôle
       setShowBottomSheet(false);
-      router.push('/select-thought-screen');
+      router.push('/screens/select-thought-screen');
     } else if (analysisResult?.type === 'anxiety' || analysisResult?.type === 'stress') {
       // Pour l'anxiété et le stress, naviguer vers l'exercice des cercles de contrôle
       setShowBottomSheet(false);
-      router.push('/select-thought-screen');
+      router.push('/screens/select-thought-screen');
     } else if (analysisResult?.type === 'suicidal_thoughts') {
       // Pour les pensées suicidaires, appeler le numéro d'aide
       callHelpNumber();

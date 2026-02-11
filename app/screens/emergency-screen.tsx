@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Colors, Fonts } from '../constants/theme';
-import { useColorScheme } from '../hooks/use-color-scheme';
+import { Colors, Fonts } from '../../constants/theme';
+import { useColorScheme } from '../../hooks/use-color-scheme';
 import { Stack } from 'expo-router';
 
 const EmergencyScreen: React.FC = () => {

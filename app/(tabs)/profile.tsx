@@ -6,9 +6,11 @@ import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Fonts } from '../../constants/theme';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function ProfileScreen() {
     const router = useRouter();
+    const { signOut } = useAuth();
     const [userName] = useState('Sophie');
     const [completedExercises] = useState(12);
     const [streak] = useState(7);
@@ -39,6 +41,28 @@ export default function ProfileScreen() {
         { icon: 'flame', label: 'Série', value: `${streak} jours` },
         { icon: 'trending-up', label: 'Progrès', value: '87%' },
     ];
+
+    // Fonction pour gérer la déconnexion
+    const handleSignOut = () => {
+        Alert.alert(
+            "Déconnexion",
+            "Êtes-vous sûr de vouloir vous déconnecter ?",
+            [
+                {
+                    text: "Annuler",
+                    style: "cancel"
+                },
+                {
+                    text: "Déconnexion",
+                    style: "destructive",
+                    onPress: async () => {
+                        await signOut();
+                        router.replace('/screens/Auth/LoginScreen' as any);
+                    }
+                }
+            ]
+        );
+    };
 
     // Fonction pour charger les données de démonstration
     const loadDemoData = () => {
@@ -247,6 +271,18 @@ export default function ProfileScreen() {
                             <Icon name="download-outline" size={22} color="#FFFFFF" />
                         </View>
                         <Text style={styles.demoButtonText}>Charger données de démo</Text>
+                        <Icon name="chevron-forward" size={20} color="#DC2626" />
+                    </TouchableOpacity>
+
+                    {/* Bouton de déconnexion */}
+                    <TouchableOpacity
+                        style={styles.logoutButton}
+                        onPress={handleSignOut}
+                    >
+                        <View style={styles.logoutIconContainer}>
+                            <Icon name="log-out-outline" size={22} color="#FFFFFF" />
+                        </View>
+                        <Text style={styles.logoutButtonText}>Déconnexion</Text>
                         <Icon name="chevron-forward" size={20} color="#DC2626" />
                     </TouchableOpacity>
                 </View>
@@ -503,6 +539,37 @@ const styles = StyleSheet.create({
         marginRight: 15,
     },
     demoButtonText: {
+        color: '#DC2626',
+        fontSize: 16,
+        fontFamily: Fonts.sans.semiBold,
+        flex: 1,
+    },
+    logoutButton: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        padding: 18,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+        marginTop: 20,
+        borderWidth: 2,
+        borderColor: '#DC2626',
+        shadowColor: '#DC2626',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    logoutIconContainer: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: '#DC2626',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 15,
+    },
+    logoutButtonText: {
         color: '#DC2626',
         fontSize: 16,
         fontFamily: Fonts.sans.semiBold,
