@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -16,11 +15,12 @@ import {
 } from "react-native";
 import { ExerciseBottomSheet } from '../../components/exercise-bottom-sheet';
 import GradientText from '../../components/gradient-text';
-import { Mood } from '../../constants/moods';
 import { Colors, Fonts } from '../../constants/theme';
 import { useColorScheme } from '../../hooks/use-color-scheme';
 import { HELP_PHONE_NUMBER } from '../../lib/config';
 import { AnalysisResult, analyzeTextWithMistral } from '../../services/mistral';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 
 type MoodEntry = {
   id: string;
@@ -30,18 +30,19 @@ type MoodEntry = {
   date: string; // ISO string pour trier
 };
 
-const clearMoodHistoryStorage = async () => {
-  try {
-    await AsyncStorage.removeItem("moodHistory"); // ou la clé que tu utilises
-  } catch (error) {
-    console.error("Erreur suppression historique :", error);
-  }
-};
+// const clearMoodHistoryStorage = async () => {
+//   try {
+//     await AsyncStorage.removeItem("moodHistory"); // ou la clé que tu utilises
+//   } catch (error) {
+//     console.error("Erreur suppression historique :", error);
+//   }
+// };
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
   const router = useRouter();
+  const { user } = useAuth();
   const [note, setNote] = useState("");
   const [moodHistory, setMoodHistory] = useState<MoodEntry[]>([]);
   const [moodTexts, setMoodTexts] = useState<{ [key: string]: string }>({});
@@ -58,13 +59,12 @@ export default function HomeScreen() {
 
   const loadMoodHistory = useCallback(async () => {
     try {
-      // Charger tous les jours depuis AsyncStorage
+      let allMoods: MoodEntry[] = [];
+
+      // Charger uniquement depuis AsyncStorage (local) - ne pas recharger depuis Supabase
       const allKeys = await AsyncStorage.getAllKeys();
       const moodKeys = allKeys.filter(key => key.startsWith('moods_'));
 
-      let allMoods: MoodEntry[] = [];
-
-      // Charger les moods de tous les jours
       for (const key of moodKeys) {
         const savedMoods = await AsyncStorage.getItem(key);
         if (savedMoods) {
@@ -83,7 +83,7 @@ export default function HomeScreen() {
         const lastMood = allMoods[allMoods.length - 1];
         setEditingMoodId(lastMood.id);
         setNote(lastMood.text || ""); // On remet le texte dans l'input
-        
+
         // Scroller vers le bas pour montrer les données les plus récentes après le rendu
         setTimeout(() => {
           scrollViewRef.current?.scrollToEnd({ animated: false });
@@ -105,12 +105,10 @@ export default function HomeScreen() {
     };
   }, []);
 
-  // Recharger les données chaque fois que l'écran devient actif
-  useFocusEffect(
-    useCallback(() => {
-      loadMoodHistory();
-    }, [loadMoodHistory])
-  );
+  // Charger les données seulement une fois au montage initial
+  useEffect(() => {
+    loadMoodHistory();
+  }, []); // Charger seulement au montage, pas à chaque focus
 
   const loadNote = async () => {
     try {
@@ -127,52 +125,52 @@ export default function HomeScreen() {
   const [editingMoodId, setEditingMoodId] = useState<string | null>(null);
 
   // ajouter un nouveau mood
-  const handleSelectMood = async (newMood: Mood) => {
-    // 1. Sauvegarder le texte du mood précédent avant de changer
-    if (editingMoodId && note.trim() !== "") {
-      handleSaveText(editingMoodId, note);
-      await saveMoodToStorage(editingMoodId, note);
-    }
+  // const handleSelectMood = async (newMood: Mood) => {
+  //   // 1. Sauvegarder le texte du mood précédent avant de changer
+  //   if (editingMoodId && note.trim() !== "") {
+  //     handleSaveText(editingMoodId, note);
+  //     await saveMoodToStorage(editingMoodId, note);
+  //   }
 
-    const newEntry: MoodEntry = {
-      id: Date.now().toString(),
-      mood: newMood,
-      text: "",
-      time: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
-      date: new Date().toISOString(),
-    };
+  //   const newEntry: MoodEntry = {
+  //     id: Date.now().toString(),
+  //     mood: newMood,
+  //     text: "",
+  //     time: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
+  //     date: new Date().toISOString(),
+  //   };
 
-    // On ajoute le nouveau et on le met en mode édition
-    setMoodHistory(prev => {
-      const updated = [...prev, newEntry];
+  //   // On ajoute le nouveau et on le met en mode édition
+  //   setMoodHistory(prev => {
+  //     const updated = [...prev, newEntry];
 
-      // Sauvegarder immédiatement le nouveau mood
-      const today = new Date().toDateString();
-      const todayMoods = updated.filter(m => {
-        const moodDate = new Date(m.date).toDateString();
-        return moodDate === today;
-      });
+  //     // Sauvegarder immédiatement le nouveau mood
+  //     const today = new Date().toDateString();
+  //     const todayMoods = updated.filter(m => {
+  //       const moodDate = new Date(m.date).toDateString();
+  //       return moodDate === today;
+  //     });
 
-      AsyncStorage.setItem(`moods_${today}`, JSON.stringify(todayMoods)).catch(e => {
-        console.error("Erreur sauvegarde nouveau mood", e);
-      });
+  //     AsyncStorage.setItem(`moods_${today}`, JSON.stringify(todayMoods)).catch(e => {
+  //       console.error("Erreur sauvegarde nouveau mood", e);
+  //     });
 
-      return updated;
-    });
+  //     return updated;
+  //   });
 
-    setEditingMoodId(newEntry.id);
-    setNote(""); // On vide l'input pour le nouveau
-  };
+  //   setEditingMoodId(newEntry.id);
+  //   setNote(""); // On vide l'input pour le nouveau
+  // };
 
   // sauvegarder le texte
-  const handleSaveText = (id: string, text: string) => {
-    setMoodHistory((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, text } : item
-      )
-    );
-    // SURTOUT : Ne pas faire setNote("") ici, sinon l'input se vide pendant la saisie
-  };
+  // const handleSaveText = (id: string, text: string) => {
+  //   setMoodHistory((prev) =>
+  //     prev.map((item) =>
+  //       item.id === id ? { ...item, text } : item
+  //     )
+  //   );
+  //   // SURTOUT : Ne pas faire setNote("") ici, sinon l'input se vide pendant la saisie
+  // };
 
   const scrollViewRef = useRef<ScrollView>(null);
   useEffect(() => {
@@ -193,143 +191,52 @@ export default function HomeScreen() {
     }
   }, [moodHistory]);
 
-  const clearMoodHistory = async () => {
-    try {
-      // Date limite : mercredi 14 janvier 2026
-      const limitDate = new Date('2026-01-14T23:59:59.999Z');
-      
-      // Récupérer toutes les clés de moods
-      const allKeys = await AsyncStorage.getAllKeys();
-      const moodKeys = allKeys.filter(key => key.startsWith('moods_'));
+  // const clearMoodHistory = async () => {
+  //   try {
+  //     // Date limite : mercredi 14 janvier 2026
+  //     const limitDate = new Date('2026-01-14T23:59:59.999Z');
 
-      // Supprimer tous les jours jusqu'au mercredi 14 janvier inclus
-      for (const key of moodKeys) {
-        // Extraire la date de la clé (format: "moods_Wed Jan 14 2026")
-        const dayKey = key.replace('moods_', '');
-        const dayDate = new Date(dayKey);
-        
-        // Si la date est avant ou égale au mercredi 14 janvier, supprimer
-        if (dayDate <= limitDate) {
-          await AsyncStorage.removeItem(key);
-          console.log(`Supprimé: ${key}`);
-        }
-      }
+  //     // Récupérer toutes les clés de moods
+  //     const allKeys = await AsyncStorage.getAllKeys();
+  //     const moodKeys = allKeys.filter(key => key.startsWith('moods_'));
 
-      // Recharger l'historique pour mettre à jour l'affichage
-      await loadMoodHistory();
+  //     // Supprimer tous les jours jusqu'au mercredi 14 janvier inclus
+  //     for (const key of moodKeys) {
+  //       // Extraire la date de la clé (format: "moods_Wed Jan 14 2026")
+  //       const dayKey = key.replace('moods_', '');
+  //       const dayDate = new Date(dayKey);
 
-      Alert.alert(
-        "Historique supprimé",
-        "Toutes les données jusqu'au mercredi 14 janvier ont été supprimées.",
-        [{ text: "OK" }]
-      );
-    } catch (error) {
-      console.error("Erreur lors de la suppression :", error);
-      Alert.alert(
-        "Erreur",
-        "Une erreur est survenue lors de la suppression.",
-        [{ text: "OK" }]
-      );
-    }
-  };
+  //       // Si la date est avant ou égale au mercredi 14 janvier, supprimer
+  //       if (dayDate <= limitDate) {
+  //         await AsyncStorage.removeItem(key);
+  //         console.log(`Supprimé: ${key}`);
+  //       }
+  //     }
 
-  // Fonction pour charger les données de démonstration
-  const loadDemoData = async () => {
-    try {
-      // Importer les données de démonstration
-      const demoData = require('../../demo-data.json');
-      const entries: MoodEntry[] = demoData.moodEntries;
+  //     // Recharger l'historique pour mettre à jour l'affichage
+  //     await loadMoodHistory();
 
-      // Supprimer d'abord toutes les anciennes données de démonstration pour éviter les doublons
-      const allKeys = await AsyncStorage.getAllKeys();
-      const moodKeys = allKeys.filter(key => key.startsWith('moods_'));
-      
-      for (const key of moodKeys) {
-        const savedMoods = await AsyncStorage.getItem(key);
-        if (savedMoods) {
-          const parsedMoods: MoodEntry[] = JSON.parse(savedMoods);
-          // Filtrer les entrées qui ne sont pas des données de démonstration
-          const nonDemoMoods = parsedMoods.filter(m => !m.id?.startsWith('demo_'));
-          
-          if (nonDemoMoods.length === 0) {
-            // Si toutes les entrées étaient des démos, supprimer la clé
-            await AsyncStorage.removeItem(key);
-          } else {
-            // Sinon, garder seulement les non-démos
-            await AsyncStorage.setItem(key, JSON.stringify(nonDemoMoods));
-          }
-        }
-      }
-
-      // Grouper les nouvelles entrées par jour
-      const entriesByDay: { [key: string]: MoodEntry[] } = {};
-      
-      for (const entry of entries) {
-        const entryDate = new Date(entry.date);
-        const dayKey = entryDate.toDateString();
-        
-        if (!entriesByDay[dayKey]) {
-          entriesByDay[dayKey] = [];
-        }
-        entriesByDay[dayKey].push(entry);
-      }
-
-      // Sauvegarder chaque jour dans AsyncStorage
-      for (const [dayKey, dayEntries] of Object.entries(entriesByDay)) {
-        // Récupérer les entrées existantes (non-démo) pour ce jour
-        const existingKey = `moods_${dayKey}`;
-        const existingMoods = await AsyncStorage.getItem(existingKey);
-        const nonDemoMoods = existingMoods ? JSON.parse(existingMoods).filter((m: MoodEntry) => !m.id?.startsWith('demo_')) : [];
-        
-        // Combiner les non-démos existantes avec les nouvelles démos
-        const allMoods = [...nonDemoMoods, ...dayEntries];
-        await AsyncStorage.setItem(existingKey, JSON.stringify(allMoods));
-      }
-
-      // Recharger l'historique
-      await loadMoodHistory();
-
-      Alert.alert(
-        "Données de démonstration chargées",
-        `${entries.length} entrées ont été chargées avec succès !`,
-        [{ text: "OK" }]
-      );
-    } catch (error) {
-      console.error("Erreur lors du chargement des données de démonstration :", error);
-      Alert.alert(
-        "Erreur",
-        "Impossible de charger les données de démonstration. Vérifiez que le fichier demo-data.json existe.",
-        [{ text: "OK" }]
-      );
-    }
-  };
-
-  const saveMoodToStorage = async (id: string, finalText: string) => {
-    try {
-      const today = new Date().toDateString();
-      // On récupère uniquement les moods du jour actuel
-      const todayMoods = moodHistory.filter(m => {
-        const moodDate = new Date(m.date).toDateString();
-        return moodDate === today;
-      });
-
-      // Mettre à jour le texte du mood spécifique
-      const updatedTodayMoods = todayMoods.map(m =>
-        m.id === id ? { ...m, text: finalText } : m
-      );
-
-      await AsyncStorage.setItem(`moods_${today}`, JSON.stringify(updatedTodayMoods));
-    } catch (e) {
-      console.error("Erreur storage", e);
-    }
-  };
+  //     Alert.alert(
+  //       "Historique supprimé",
+  //       "Toutes les données jusqu'au mercredi 14 janvier ont été supprimées.",
+  //       [{ text: "OK" }]
+  //     );
+  //   } catch (error) {
+  //     console.error("Erreur lors de la suppression :", error);
+  //     Alert.alert(
+  //       "Erreur",
+  //       "Une erreur est survenue lors de la suppression.",
+  //       [{ text: "OK" }]
+  //     );
+  //   }
+  // };
 
   // Fonction pour analyser le texte avec Mistral
   const analyzeText = async (text: string) => {
     console.log('🚀 [ANALYZE TEXT] Fonction analyzeText appelée');
     console.log('📝 [ANALYZE TEXT] Texte reçu:', text.substring(0, 100) + (text.length > 100 ? '...' : ''));
     console.log('📏 [ANALYZE TEXT] Longueur du texte:', text.length);
-    
+
     if (!text.trim() || text.trim().length < 10) {
       console.log('⚠️ [ANALYZE TEXT] Texte trop court, analyse annulée');
       // Ne pas analyser si le texte est trop court
@@ -347,7 +254,7 @@ export default function HomeScreen() {
         confidence: result.confidence,
         hasResponseText: !!result.responseText,
       });
-      
+
       setAnalysisResult(result);
 
       // Si pensées suicidaires → afficher l'écran d'urgence en plein écran
@@ -457,26 +364,260 @@ export default function HomeScreen() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    
+
     // Utiliser une méthode plus fiable pour formater la date
     const weekday = date.toLocaleDateString("fr-FR", { weekday: "short" });
     const day = date.toLocaleDateString("fr-FR", { day: "2-digit" });
     const month = date.toLocaleDateString("fr-FR", { month: "long" });
     const year = date.toLocaleDateString("fr-FR", { year: "numeric" });
-    
+
     // Construire la date manuellement pour éviter les problèmes de locale
     const months = ['Janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
     const monthIndex = date.getMonth();
     const monthName = months[monthIndex];
-    
+
     const weekdays = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'];
     const weekdayIndex = date.getDay();
     const weekdayName = weekdays[weekdayIndex];
-    
+
     // Première lettre en majuscule pour le jour de la semaine
     const capitalizedWeekday = weekdayName.charAt(0).toUpperCase() + weekdayName.slice(1);
-    
+
     return `${capitalizedWeekday} ${day} ${monthName} ${year}`;
+  };
+
+  // Fonction pour générer un UUID v4
+  const generateUUID = () => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  };
+
+  // Fonction pour sauvegarder une nouvelle entrée de journal dans Supabase
+  const saveJournalEntryToSupabase = async (entry: MoodEntry) => {
+    if (!supabase || !user) {
+      console.warn('⚠️ Supabase ou utilisateur non disponible');
+      return;
+    }
+
+    try {
+      // Générer un nouvel UUID pour chaque nouvelle entrée
+      const entryId = generateUUID();
+
+      const { data, error } = await supabase
+        .from('journal_entries')
+        .insert({
+          id: entryId,
+          user_id: user.id,
+          mood_id: entry.mood.id,
+          mood_label: entry.mood.label,
+          mood_color: entry.mood.color,
+          note: entry.text || '',
+          entry_date: entry.date,
+          entry_time: entry.time,
+        })
+        .select();
+
+      if (error) {
+        console.error('❌ Erreur sauvegarde Supabase:', error);
+        throw error;
+      }
+
+      console.log('✅ Nouvelle entrée sauvegardée dans Supabase:', data);
+      return data;
+    } catch (error) {
+      console.error('❌ Erreur lors de la sauvegarde Supabase:', error);
+      throw error;
+    }
+  };
+
+  // Fonction pour récupérer les entrées depuis Supabase
+  // const fetchJournalEntriesFromSupabase = async () => {
+  //   if (!supabase || !user) {
+  //     console.warn('⚠️ Supabase ou utilisateur non disponible');
+  //     return [];
+  //   }
+
+  //   try {
+  //     const { data, error } = await supabase
+  //       .from('journal_entries')
+  //       .select('*')
+  //       .eq('user_id', user.id)
+  //       .order('entry_date', { ascending: false })
+  //       .order('entry_time', { ascending: false });
+
+  //     if (error) {
+  //       console.error('❌ Erreur récupération Supabase:', error);
+  //       throw error;
+  //     }
+
+  //     // Convertir les données Supabase au format MoodEntry
+  //     const entries: MoodEntry[] = (data || []).map((item: any) => ({
+  //       id: item.id,
+  //       mood: {
+  //         id: item.mood_id || '',
+  //         label: item.mood_label || '',
+  //         color: item.mood_color || '#000000',
+  //       },
+  //       text: item.note || '',
+  //       time: item.entry_time || '',
+  //       date: item.entry_date || new Date().toISOString(),
+  //     }));
+
+  //     console.log('✅ Entrées récupérées depuis Supabase:', entries.length);
+  //     return entries;
+  //   } catch (error) {
+  //     console.error('❌ Erreur lors de la récupération Supabase:', error);
+  //     return [];
+  //   }
+  // };
+
+  // Fonction pour sauvegarder ou mettre à jour une entrée dans Supabase
+  // ✅ VERSION CORRIGÉE - saveOrUpdateEntryToSupabase
+  // Cette version vérifie que l'UPDATE fonctionne vraiment
+
+  const saveOrUpdateEntryToSupabase = async (entry: MoodEntry) => {
+    if (!supabase || !user) {
+      console.warn('⚠️ Supabase ou utilisateur non disponible');
+      return;
+    }
+
+    try {
+      console.log('💾 [SUPABASE] Sauvegarde:', {
+        id: entry.id,
+        text: entry.text,
+        length: entry.text?.length || 0
+      });
+
+      // Préparer les données
+      const noteText = entry.text ?? '';
+
+      const entryData = {
+        mood_id: entry.mood.id,
+        mood_label: entry.mood.label,
+        mood_color: entry.mood.color,
+        note: noteText,
+        entry_date: entry.date,
+        entry_time: entry.time,
+      };
+
+      console.log('💾 [SUPABASE] Données à sauvegarder:', {
+        note: noteText,
+        noteLength: noteText.length,
+      });
+
+      // ✅ SOLUTION 1 : Utiliser upsert au lieu de vérifier puis update/insert
+      // upsert = UPDATE si existe, INSERT sinon
+      const { data, error } = await supabase
+        .from('journal_entries')
+        .upsert({
+          id: entry.id,
+          user_id: user.id,
+          ...entryData,
+        }, {
+          onConflict: 'id', // La clé primaire sur laquelle on vérifie
+        })
+        .select();
+
+      if (error) {
+        console.error('❌ [SUPABASE] Erreur upsert:', error);
+        throw error;
+      }
+
+      console.log('✅ [SUPABASE] Upsert réussi');
+      console.log('🔍 [SUPABASE] Données retournées:', {
+        hasData: !!data,
+        dataLength: data?.length || 0,
+      });
+
+      if (data && data.length > 0) {
+        console.log('✅ [SUPABASE] Note sauvegardée:', {
+          id: data[0].id,
+          note: data[0].note,
+          noteLength: data[0].note?.length || 0,
+        });
+      } else {
+        console.warn('⚠️ [SUPABASE] Aucune donnée retournée par upsert');
+
+        // ✅ SOLUTION 2 : Si upsert ne retourne rien, faire un SELECT pour vérifier
+        const { data: checkData, error: checkError } = await supabase
+          .from('journal_entries')
+          .select('id, note')
+          .eq('id', entry.id)
+          .single();
+
+        if (!checkError && checkData) {
+          console.log('✅ [SUPABASE] Vérification : note bien sauvegardée:', {
+            id: checkData.id,
+            note: checkData.note,
+            noteLength: checkData.note?.length || 0,
+          });
+        } else {
+          console.error('❌ [SUPABASE] Erreur vérification:', checkError);
+        }
+      }
+
+      return data;
+    } catch (error) {
+      console.error('❌ [SUPABASE] Erreur générale:', error);
+      throw error;
+    }
+  };
+
+  // Fonction pour sauvegarder le texte d'une entrée
+  const handleSaveText = async (id: string, text: string) => {
+    try {
+      console.log('💾 Sauvegarde:', { id, text, length: text?.length });
+
+      // 1. Trouver l'entrée
+      const updatedEntry = moodHistory.find(item => item.id === id);
+      if (!updatedEntry) {
+        console.error('❌ Entrée non trouvée:', id);
+        return;
+      }
+
+      // 2. Créer l'entrée avec le nouveau texte
+      const entryWithText: MoodEntry = {
+        ...updatedEntry,
+        text: text
+      };
+
+      // 3. Mettre à jour l'état React
+      setMoodHistory((prev) =>
+        prev.map((item) =>
+          item.id === id ? entryWithText : item
+        )
+      );
+
+      // 4. Sauvegarder dans AsyncStorage
+      const today = new Date(entryWithText.date).toDateString();
+      const todayKey = `moods_${today}`;
+
+      const savedMoods = await AsyncStorage.getItem(todayKey);
+      let todayMoods: MoodEntry[] = savedMoods ? JSON.parse(savedMoods) : [];
+
+      // Mettre à jour ou ajouter
+      const existingIndex = todayMoods.findIndex(m => m.id === id);
+      if (existingIndex >= 0) {
+        todayMoods[existingIndex] = entryWithText;
+      } else {
+        todayMoods.push(entryWithText);
+      }
+
+      await AsyncStorage.setItem(todayKey, JSON.stringify(todayMoods));
+      console.log('✅ AsyncStorage sauvegardé');
+
+      // 5. Sauvegarder dans Supabase (arrière-plan)
+      if (user && supabase) {
+        saveOrUpdateEntryToSupabase(entryWithText).catch((error) => {
+          console.error('❌ Erreur Supabase:', error);
+        });
+      }
+    } catch (error) {
+      console.error('❌ Erreur sauvegarde:', error);
+    }
   };
 
   return (
@@ -537,11 +678,14 @@ export default function HomeScreen() {
                       setNote(text); // Met à jour l'affichage instantanément
                     }}
                     onBlur={async () => {
-                      // Sauvegarde définitive quand l'utilisateur a fini d'écrire
-                      handleSaveText(item.id, note);
-                      saveMoodToStorage(item.id, note);
-                      // Analyser le texte avec Mistral
-                      await analyzeText(note);
+                      // Capturer la valeur actuelle
+                      const currentText = note;
+
+                      // Sauvegarder (local + Supabase)
+                      await handleSaveText(item.id, currentText);
+
+                      // Analyser
+                      await analyzeText(currentText);
                     }}
                     blurOnSubmit={false}
                   />

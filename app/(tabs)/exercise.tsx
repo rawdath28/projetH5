@@ -114,7 +114,7 @@ export default function ExerciseScreen() {
                 style={styles.exerciseCard}
                 onPress={() => {
                   if (exercise.id === 4) {
-                    router.push('/select-thought-screen');
+                    router.push('/screens/select-thought-screen' as any);
                   }
                 }}
               >
@@ -215,7 +215,7 @@ export default function ExerciseScreen() {
         buttonText="Démarrer l'exercice"
         onButtonPress={() => {
           console.log('Démarrer exercice');
-          router.push('/select-thought-screen');
+          router.push('/screens/select-thought-screen');
         }}
         onDismiss={() => setShowBottomSheet(false)}
       />

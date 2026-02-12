@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../../contexts/AuthContext';
+import { Ionicons } from '@expo/vector-icons'; // ou 'react-native-vector-icons/Ionicons'
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -17,6 +18,9 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
+
   const { signUp } = useAuth();
 
   const handleSignUp = async () => {
@@ -67,21 +71,45 @@ export default function SignUpScreen() {
         keyboardType="email-address"
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Mot de passe"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Mot de passe"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!isPasswordVisible}
+        />
+        <TouchableOpacity
+          style={styles.icon}
+          onPress={() => setIsPasswordVisible(!isPasswordVisible)} // bascule affichage
+        >
+          <Ionicons
+            name={isPasswordVisible ? 'eye-off' : 'eye'}
+            size={24}
+            color="#666"
+          />
+        </TouchableOpacity>
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Confirmer le mot de passe"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Confirmer le mot de passe"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry={!isConfirmPasswordVisible}
+        />
+        <TouchableOpacity
+          style={styles.icon}
+          onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)} // bascule affichage
+        >
+          <Ionicons
+            name={isConfirmPasswordVisible ? 'eye-off' : 'eye'}
+            size={24}
+            color="#666"
+          />
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity
         style={styles.button}
@@ -143,5 +171,14 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  icon: {
+    position: 'absolute',
+    right: 15,
+    top: 15,
+  },
+  inputContainer: {
+    position: 'relative',
+    marginVertical: 10,
   },
 });

@@ -14,19 +14,19 @@ export type AnalysisResult = {
 };
 
 export async function analyzeTextWithMistral(text: string): Promise<AnalysisResult> {
-  console.log('🔍 [MISTRAL API] Début de l\'analyse du texte');
-  console.log('📝 [MISTRAL API] Texte à analyser:', text.substring(0, 100) + (text.length > 100 ? '...' : ''));
+  // console.log('🔍 [MISTRAL API] Début de l\'analyse du texte');
+  // console.log('📝 [MISTRAL API] Texte à analyser:', text.substring(0, 100) + (text.length > 100 ? '...' : ''));
   
   // Récupérer la clé API depuis la configuration
   const apiKey = getMistralApiKey();
   
   if (!apiKey) {
-    console.warn('⚠️ [MISTRAL API] Aucune clé API trouvée, utilisation de l\'analyse basique');
+    // console.warn('⚠️ [MISTRAL API] Aucune clé API trouvée, utilisation de l\'analyse basique');
     // Fallback: analyse basique avec mots-clés
     return analyzeTextBasic(text);
   }
 
-  console.log('✅ [MISTRAL API] Clé API trouvée (masquée):', apiKey.substring(0, 8) + '...' + apiKey.substring(apiKey.length - 4));
+  // console.log('✅ [MISTRAL API] Clé API trouvée (masquée):', apiKey.substring(0, 8) + '...' + apiKey.substring(apiKey.length - 4));
 
   try {
     const prompt = `Tu es un assistant bienveillant qui aide les personnes en détresse psychologique. 
@@ -60,14 +60,14 @@ Texte à analyser: "${text}"`;
       max_tokens: 300, // Augmenté pour permettre une réponse plus détaillée avec le message bienveillant
     };
 
-    console.log('📤 [MISTRAL API] Envoi de la requête à Mistral API...');
-    console.log('🌐 [MISTRAL API] URL:', MISTRAL_API_URL);
-    console.log('🤖 [MISTRAL API] Modèle:', requestBody.model);
-    console.log('📊 [MISTRAL API] Paramètres:', {
-      temperature: requestBody.temperature,
-      max_tokens: requestBody.max_tokens,
-      prompt_length: prompt.length,
-    });
+    // console.log('📤 [MISTRAL API] Envoi de la requête à Mistral API...');
+    // console.log('🌐 [MISTRAL API] URL:', MISTRAL_API_URL);
+    // console.log('🤖 [MISTRAL API] Modèle:', requestBody.model);
+    // console.log('📊 [MISTRAL API] Paramètres:', {
+    //   temperature: requestBody.temperature,
+    //   max_tokens: requestBody.max_tokens,
+    //   prompt_length: prompt.length,
+    // });
 
     const startTime = Date.now();
     const response = await fetch(MISTRAL_API_URL, {
@@ -80,22 +80,22 @@ Texte à analyser: "${text}"`;
     });
     const duration = Date.now() - startTime;
 
-    console.log('📥 [MISTRAL API] Réponse reçue en', duration, 'ms');
-    console.log('📊 [MISTRAL API] Status:', response.status, response.statusText);
+    // console.log('📥 [MISTRAL API] Réponse reçue en', duration, 'ms');
+    // console.log('📊 [MISTRAL API] Status:', response.status, response.statusText);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ [MISTRAL API] Erreur API Mistral:', response.status, response.statusText);
-      console.error('❌ [MISTRAL API] Détails erreur:', errorText);
+      // console.error('❌ [MISTRAL API] Erreur API Mistral:', response.status, response.statusText);
+      // console.error('❌ [MISTRAL API] Détails erreur:', errorText);
       
       // Si c'est une erreur 401, la clé API est probablement invalide
       if (response.status === 401) {
-        console.error('❌ [MISTRAL API] Erreur 401: Clé API invalide ou expirée.');
-        console.error('💡 [MISTRAL API] Solutions possibles:');
-        console.error('   1. Vérifiez que votre clé API Mistral est valide sur https://console.mistral.ai/');
-        console.error('   2. Mettez à jour la clé dans lib/config.ts ou dans votre fichier .env');
-        console.error('   3. Redémarrez le serveur Expo après avoir modifié la clé');
-        console.error('   4. Clé actuelle (masquée):', apiKey.substring(0, 8) + '...' + apiKey.substring(apiKey.length - 4));
+        // console.error('❌ [MISTRAL API] Erreur 401: Clé API invalide ou expirée.');
+        // console.error('💡 [MISTRAL API] Solutions possibles:');
+        // console.error('   1. Vérifiez que votre clé API Mistral est valide sur https://console.mistral.ai/');
+        // console.error('   2. Mettez à jour la clé dans lib/config.ts ou dans votre fichier .env');
+        // console.error('   3. Redémarrez le serveur Expo après avoir modifié la clé');
+        // console.error('   4. Clé actuelle (masquée):', apiKey.substring(0, 8) + '...' + apiKey.substring(apiKey.length - 4));
       }
       
       // Utiliser l'analyse basique en cas d'erreur
@@ -106,13 +106,13 @@ Texte à analyser: "${text}"`;
     const data = await response.json();
     const content = data.choices[0]?.message?.content || '';
     
-    console.log('✅ [MISTRAL API] Réponse API reçue avec succès');
-    console.log('📄 [MISTRAL API] Contenu de la réponse:', content.substring(0, 200) + (content.length > 200 ? '...' : ''));
-    console.log('📊 [MISTRAL API] Métadonnées:', {
-      model: data.model,
-      usage: data.usage,
-      finish_reason: data.choices[0]?.finish_reason,
-    });
+    // console.log('✅ [MISTRAL API] Réponse API reçue avec succès');
+    // console.log('📄 [MISTRAL API] Contenu de la réponse:', content.substring(0, 200) + (content.length > 200 ? '...' : ''));
+    // console.log('📊 [MISTRAL API] Métadonnées:', {
+    //   model: data.model,
+    //   usage: data.usage,
+    //   finish_reason: data.choices[0]?.finish_reason,
+    // });
     
     // Analyser le contenu pour déterminer le type
     const upperContent = content.toUpperCase();
@@ -193,21 +193,21 @@ Texte à analyser: "${text}"`;
       responseText: content.trim() || undefined,
     };
     
-    console.log('✅ [MISTRAL API] Analyse terminée avec succès');
-    console.log('📊 [MISTRAL API] Résultat:', {
-      type,
-      confidence,
-      responseText_length: result.responseText?.length || 0,
-    });
+    // console.log('✅ [MISTRAL API] Analyse terminée avec succès');
+    // console.log('📊 [MISTRAL API] Résultat:', {
+    //   type,
+    //   confidence,
+    //   responseText_length: result.responseText?.length || 0,
+    // });
     
     return result;
   } catch (error) {
-    console.error('❌ [MISTRAL API] Erreur lors de l\'analyse Mistral:', error);
+    // console.error('❌ [MISTRAL API] Erreur lors de l\'analyse Mistral:', error);
     if (error instanceof Error) {
-      console.error('❌ [MISTRAL API] Message d\'erreur:', error.message);
-      console.error('❌ [MISTRAL API] Stack:', error.stack);
+      // console.error('❌ [MISTRAL API] Message d\'erreur:', error.message);
+      // console.error('❌ [MISTRAL API] Stack:', error.stack);
     }
-    console.warn('⚠️ [MISTRAL API] Utilisation de l\'analyse basique (fallback)');
+    // console.warn('⚠️ [MISTRAL API] Utilisation de l\'analyse basique (fallback)');
     return analyzeTextBasic(text);
   }
 }
@@ -216,7 +216,7 @@ Texte à analyser: "${text}"`;
  * Analyse basique avec mots-clés (fallback si API indisponible)
  */
 function analyzeTextBasic(text: string): AnalysisResult {
-  console.log('🔧 [MISTRAL API] Utilisation de l\'analyse basique (fallback)');
+  // console.log('🔧 [MISTRAL API] Utilisation de l\'analyse basique (fallback)');
   const lowerText = text.toLowerCase();
   
   // Mots-clés pour pensées suicidaires (priorité haute)

@@ -10,12 +10,14 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../../contexts/AuthContext';
+import { Ionicons } from '@expo/vector-icons'; // ou 'react-native-vector-icons/Ionicons'
 
 export default function LoginScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [secureText, setSecureText] = useState(true); // true = mot de passe caché
   const { signIn } = useAuth();
 
   const handleLogin = async () => {
@@ -56,13 +58,25 @@ export default function LoginScreen() {
         keyboardType="email-address"
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Mot de passe"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Mot de passe"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={secureText}
+        />
+        <TouchableOpacity
+          style={styles.icon}
+          onPress={() => setSecureText(!secureText)} // bascule affichage
+        >
+          <Ionicons
+            name={secureText ? 'eye-off' : 'eye'}
+            size={24}
+            color="#666"
+          />
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity
         style={styles.button}
@@ -139,6 +153,15 @@ const styles = StyleSheet.create({
   forgotPassword: {
     alignSelf: 'flex-end',
     marginBottom: 20,
+  },
+  icon: {
+    position: 'absolute',
+    right: 15,
+    top: 15,
+  },
+  inputContainer: {
+    position: 'relative',
+    marginVertical: 10,
   },
   // forgotPasswordText: {
   //   color: '#007AFF',

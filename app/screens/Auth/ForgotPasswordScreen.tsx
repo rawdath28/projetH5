@@ -64,19 +64,19 @@ export default function ForgotPasswordScreen() {
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>← Retour</Text>
+          <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
 
         <Text style={styles.title}>Mot de passe oublié ?</Text>
-        <Text style={styles.subtitle}>
+        {/* <Text style={styles.subtitle}>
           Entrez votre adresse email et nous vous enverrons un lien pour
           réinitialiser votre mot de passe.
-        </Text>
+        </Text> */}
 
         <TextInput
           style={styles.input}
           placeholder="Adresse email"
-          placeholderTextColor="#999"
+          placeholderTextColor="1#B1B1B"
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
@@ -129,7 +129,7 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: '#white',
   },
   content: {
     flex: 1,
@@ -143,14 +143,14 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   backButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
+    color: '#000000',
+    fontSize: 20,
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 16,
+    color: '#000000',
+    marginBottom: 40,
   },
   subtitle: {
     fontSize: 16,
@@ -160,18 +160,18 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#333',
-    backgroundColor: '#1A1A1A',
+    borderColor: 'white',
+    backgroundColor: 'white',
     borderRadius: 12,
     padding: 16,
     marginBottom: 20,
     fontSize: 16,
-    color: '#FFFFFF',
+    color: '#1B1B1B',
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#1B1B1B',
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     alignItems: 'center',
     marginTop: 10,
   },
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     padding: 20,
     backgroundColor: '#1A3A1A',
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: '#2A5A2A',
   },
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loginLinkText: {
-    color: '#007AFF',
+    color: 'black',
     fontSize: 14,
   },
 });
