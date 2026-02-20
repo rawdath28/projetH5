@@ -1,7 +1,6 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-
 import { HapticTab } from '../../components/haptic-tab';
 import { GradientIcon } from '../../components/gradient-icon';
 import { Icon } from '../../lib/icons';
@@ -51,12 +50,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="record"
         options={{
-          tabBarIcon: ({ color, focused }) => 
-            focused ? (
-              <GradientIcon name="mic-fill" size={24} />
-            ) : (
-              <Icon name="mic" size={24} color={color} />
-            ),
+          href: null, // Masquer cette route de la tab bar
         }}
       />
       <Tabs.Screen

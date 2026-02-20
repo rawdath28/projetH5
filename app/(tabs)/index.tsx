@@ -11,16 +11,18 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View
 } from "react-native";
 import { ExerciseBottomSheet } from '../../components/exercise-bottom-sheet';
 import GradientText from '../../components/gradient-text';
 import { Colors, Fonts } from '../../constants/theme';
+import { useAuth } from '../../contexts/AuthContext';
 import { useColorScheme } from '../../hooks/use-color-scheme';
 import { HELP_PHONE_NUMBER } from '../../lib/config';
-import { AnalysisResult, analyzeTextWithMistral } from '../../services/mistral';
+import { Icon } from '../../lib/icons';
 import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../contexts/AuthContext';
+import { AnalysisResult, analyzeTextWithMistral } from '../../services/mistral';
 
 type MoodEntry = {
   id: string;
@@ -449,7 +451,7 @@ export default function HomeScreen() {
   //       .order('entry_time', { ascending: false });
 
   //     if (error) {
-  //       console.error('❌ Erreur récupération Supabase:', error);
+  //       console.error('❌ Erreur ation Supabase:', error);
   //       throw error;
   //     }
 
@@ -725,6 +727,16 @@ export default function HomeScreen() {
           onDismiss={() => setShowBottomSheet(false)}
         />
       )}
+
+      {/* Bouton flottant pour accéder au mood tracker avec effet glow */}
+      <View style={styles.fabButtonContainer}>
+        <TouchableOpacity
+          style={styles.fabButton}
+          onPress={() => router.push('/screens/onboarding' as any)}
+          activeOpacity={0.8}>
+          <Icon name="plus" size={28} color="#FFFFFF" />
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 }
@@ -735,7 +747,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    paddingBottom: 80,
+    paddingBottom: 100, // Augmenté pour laisser de la place au bouton flottant
     flexGrow: 1,
   },
   moodItem: {
@@ -789,5 +801,31 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 12,
     paddingVertical: 20,
+  },
+  fabButtonContainer: {
+    position: 'absolute',
+    bottom: 100, // Au-dessus de la tab bar (80px de hauteur + 20px de marge)
+    right: 20,
+    width: 56,
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fabButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#027A54', // Même couleur que la date du jour (première couleur du dégradé)
+    justifyContent: 'center',
+    alignItems: 'center',
+    // Effet flottant avec glow prononcé - similaire à l'image
+    shadowColor: '#027A54', // Utiliser la couleur du bouton pour le glow
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8, // Opacité élevée pour l'effet de lueur visible
+    shadowRadius: 25, // Rayon très large pour créer l'effet de glow diffus et flou
+    elevation: 12, // Pour Android
+    // Bordure subtile pour renforcer l'effet de profondeur
+    borderWidth: 1.5,
+    borderColor: 'rgba(2, 122, 84, 0.4)', // Bordure semi-transparente de la même couleur
   },
 });

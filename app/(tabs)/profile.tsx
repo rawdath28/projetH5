@@ -10,10 +10,11 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export default function ProfileScreen() {
     const router = useRouter();
-    const { signOut } = useAuth();
+    const { signOut, user } = useAuth();
     const [userName] = useState('Sophie');
     const [completedExercises] = useState(12);
     const [streak] = useState(7);
+    const [syncingMoods, setSyncingMoods] = useState(false);
 
     const recentCircles = [
         {
@@ -41,6 +42,22 @@ export default function ProfileScreen() {
         { icon: 'flame', label: 'Série', value: `${streak} jours` },
         { icon: 'trending-up', label: 'Progrès', value: '87%' },
     ];
+
+    // Fonction pour synchroniser les moods vers Supabase
+    // Note: Cette fonction nécessite maintenant un tableau de moods en paramètre
+    // Les moods doivent être gérés directement dans Supabase
+    const handleSyncMoods = async () => {
+        if (!user) {
+            Alert.alert('Erreur', 'Vous devez être connecté pour synchroniser les moods');
+            return;
+        }
+
+        Alert.alert(
+            'Information',
+            'Les moods sont maintenant chargés directement depuis Supabase. ' +
+            'Pour ajouter ou modifier des moods, veuillez le faire directement dans votre base de données Supabase.'
+        );
+    };
 
     // Fonction pour gérer la déconnexion
     const handleSignOut = () => {
@@ -260,6 +277,21 @@ export default function ProfileScreen() {
                         </View>
                         <Text style={styles.actionButtonText}>Conseils & astuces</Text>
                         <Icon name="chevron-forward" size={20} color="#027A54" />
+                    </TouchableOpacity>
+
+                    {/* Bouton pour synchroniser les moods vers Supabase */}
+                    <TouchableOpacity
+                        style={styles.actionButton}
+                        onPress={handleSyncMoods}
+                        disabled={syncingMoods || !user}
+                    >
+                        <View style={styles.actionIconContainer}>
+                            <Icon name={syncingMoods ? "sync" : "cloud-upload-outline"} size={22} color="#FFFFFF" />
+                        </View>
+                        <Text style={styles.actionButtonText}>
+                            {syncingMoods ? 'Synchronisation...' : 'Synchroniser les moods'}
+                        </Text>
+                        {!syncingMoods && <Icon name="chevron-forward" size={20} color="#027A54" />}
                     </TouchableOpacity>
 
                     {/* Bouton pour charger les données de démonstration */}

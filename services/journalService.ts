@@ -18,6 +18,5 @@ export const createJournalEntry = async (mood: string, note: string) => {
     ])
 
   if (error) throw error
-
   return data
 }

@@ -1,16 +1,16 @@
+import { Ionicons } from '@expo/vector-icons'; // ou 'react-native-vector-icons/Ionicons'
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  ActivityIndicator,
+    ActivityIndicator,
+    Alert,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Ionicons } from '@expo/vector-icons'; // ou 'react-native-vector-icons/Ionicons'
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -26,15 +26,24 @@ export default function LoginScreen() {
       return;
     }
 
-    setLoading(true);
-    const { error } = await signIn(email, password);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const { error } = await signIn(email, password);
+      setLoading(false);
 
-    if (error) {
-      Alert.alert('Erreur de connexion', error.message);
-    } else {
-      // Rediriger vers le mood tracker après connexion
-      router.replace('/screens/onboarding' as any);
+      if (error) {
+        Alert.alert('Erreur de connexion', error.message);
+      } else {
+        // Rediriger vers le mood tracker après connexion
+        // Petit délai pour éviter les problèmes de navigation
+        setTimeout(() => {
+          router.replace('/screens/onboarding' as any);
+        }, 100);
+      }
+    } catch (err) {
+      setLoading(false);
+      console.error('Erreur lors de la connexion:', err);
+      Alert.alert('Erreur', 'Une erreur est survenue lors de la connexion');
     }
   };
 

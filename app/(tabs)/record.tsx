@@ -1,4 +1,7 @@
 import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { Fonts } from '../../constants/theme';
 import {
   FlatList,
   StyleSheet,
@@ -6,9 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { Fonts } from '../../constants/theme';
 
 type RecordItem = {
   id: string;

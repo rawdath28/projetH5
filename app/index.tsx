@@ -18,9 +18,7 @@ function IndexRedirect() {
   if (!user) {
     return <Redirect href="/screens/Auth/LoginScreen" />;
   }
-
   return <Redirect href="/screens/onboarding" />;
 }
 
 export default IndexRedirect;
-

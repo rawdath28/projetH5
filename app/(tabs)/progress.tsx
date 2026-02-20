@@ -4,8 +4,8 @@ import { Colors, Fonts } from '../../constants/theme';
 import { useColorScheme } from '../../hooks/use-color-scheme';
 
 export default function ProgressScreen() {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  // const colorScheme = useColorScheme();
+  // const colors = Colors[colorScheme ?? 'light'];
 
   return (
     <View style={styles.container}>

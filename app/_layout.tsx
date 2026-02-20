@@ -6,7 +6,8 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View, ActivityIndicator } from 'react-native';
 import 'react-native-reanimated';
-
+import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { MoodsProvider } from '../contexts/MoodsContext';
 import {
   SourceSansPro_300Light,
   SourceSansPro_400Regular,
@@ -16,7 +17,6 @@ import {
   SourceSansPro_700Bold,
   useFonts,
 } from '@expo-google-fonts/source-sans-pro';
-
 import {
   SourceSerifPro_300Light,
   SourceSerifPro_400Regular,
@@ -25,8 +25,6 @@ import {
   SourceSerifPro_600SemiBold_Italic,
   SourceSerifPro_700Bold,
 } from '@expo-google-fonts/source-serif-pro';
-
-import { AuthProvider, useAuth } from '../contexts/AuthContext';
 
 // Empêcher le splash screen de se cacher automatiquement
 SplashScreen.preventAutoHideAsync();
@@ -125,8 +123,10 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={DefaultTheme}>
         <AuthProvider>
-          <RootLayoutNav />
-          <StatusBar style="dark" />
+          <MoodsProvider>
+            <RootLayoutNav />
+            <StatusBar style="dark" />
+          </MoodsProvider>
         </AuthProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

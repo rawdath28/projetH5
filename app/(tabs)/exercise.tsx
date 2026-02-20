@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-
 import { useRouter } from 'expo-router';
 import { ExerciseBottomSheet } from '../../components/exercise-bottom-sheet';
 import { ThemedText } from '../../components/themed-text';

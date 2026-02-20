@@ -60,7 +60,7 @@ Texte à analyser: "${text}"`;
       max_tokens: 300, // Augmenté pour permettre une réponse plus détaillée avec le message bienveillant
     };
 
-    // console.log('📤 [MISTRAL API] Envoi de la requête à Mistral API...');
+    console.log('📤 [MISTRAL API] Envoi de la requête à Mistral API...');
     // console.log('🌐 [MISTRAL API] URL:', MISTRAL_API_URL);
     // console.log('🤖 [MISTRAL API] Modèle:', requestBody.model);
     // console.log('📊 [MISTRAL API] Paramètres:', {
@@ -85,12 +85,12 @@ Texte à analyser: "${text}"`;
 
     if (!response.ok) {
       const errorText = await response.text();
-      // console.error('❌ [MISTRAL API] Erreur API Mistral:', response.status, response.statusText);
+      console.error('❌ [MISTRAL API] Erreur API Mistral:', response.status, response.statusText);
       // console.error('❌ [MISTRAL API] Détails erreur:', errorText);
       
       // Si c'est une erreur 401, la clé API est probablement invalide
       if (response.status === 401) {
-        // console.error('❌ [MISTRAL API] Erreur 401: Clé API invalide ou expirée.');
+        console.error('❌ [MISTRAL API] Erreur 401: Clé API invalide ou expirée.');
         // console.error('💡 [MISTRAL API] Solutions possibles:');
         // console.error('   1. Vérifiez que votre clé API Mistral est valide sur https://console.mistral.ai/');
         // console.error('   2. Mettez à jour la clé dans lib/config.ts ou dans votre fichier .env');
@@ -106,7 +106,7 @@ Texte à analyser: "${text}"`;
     const data = await response.json();
     const content = data.choices[0]?.message?.content || '';
     
-    // console.log('✅ [MISTRAL API] Réponse API reçue avec succès');
+    console.log('✅ [MISTRAL API] Réponse API reçue avec succès');
     // console.log('📄 [MISTRAL API] Contenu de la réponse:', content.substring(0, 200) + (content.length > 200 ? '...' : ''));
     // console.log('📊 [MISTRAL API] Métadonnées:', {
     //   model: data.model,
@@ -193,7 +193,7 @@ Texte à analyser: "${text}"`;
       responseText: content.trim() || undefined,
     };
     
-    // console.log('✅ [MISTRAL API] Analyse terminée avec succès');
+    console.log('✅ [MISTRAL API] Analyse terminée avec succès');
     // console.log('📊 [MISTRAL API] Résultat:', {
     //   type,
     //   confidence,
@@ -202,9 +202,9 @@ Texte à analyser: "${text}"`;
     
     return result;
   } catch (error) {
-    // console.error('❌ [MISTRAL API] Erreur lors de l\'analyse Mistral:', error);
+    console.error('❌ [MISTRAL API] Erreur lors de l\'analyse Mistral:', error);
     if (error instanceof Error) {
-      // console.error('❌ [MISTRAL API] Message d\'erreur:', error.message);
+      console.error('❌ [MISTRAL API] Message d\'erreur:', error.message);
       // console.error('❌ [MISTRAL API] Stack:', error.stack);
     }
     // console.warn('⚠️ [MISTRAL API] Utilisation de l\'analyse basique (fallback)');
