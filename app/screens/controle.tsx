@@ -110,7 +110,7 @@ export default function ControleScreen() {
                 </TouchableOpacity>
                 <View style={styles.headerLeft} />
                 <Text style={styles.title}>Cercles de contrôles</Text>
-                <TouchableOpacity onPress={() => router.push('/')}>
+                <TouchableOpacity onPress={() => router.replace('/(tabs)' as any)}>
                     <Icon name="close" size={24} color="#fff" />
                 </TouchableOpacity>
             </View>

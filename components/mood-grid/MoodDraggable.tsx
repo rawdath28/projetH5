@@ -47,7 +47,7 @@ const MAX_SCALE = 1.50;
 const CLOSE_DISTANCE = 180;
 
 // Configuration de la physique de collision
-const MIN_GAP = 10;
+const MIN_GAP = 8;
 const COLLISION_DAMPING = 1.0;
 const COLLISION_ITERATIONS = 5;
 
