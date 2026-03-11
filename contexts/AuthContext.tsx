@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { Linking, Platform } from 'react-native';
 import { supabase } from '../lib/supabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Expo Go web = localhost, build mobile = scheme custom
 const RESET_PASSWORD_REDIRECT =
@@ -114,12 +115,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    if (!supabase) {
-      return;
-    }
+    if (!supabase) return;
     await supabase.auth.signOut();
     setSession(null);
     setUser(null);
+    // Vider le cache local au déconnexion
+    const allKeys = await AsyncStorage.getAllKeys();
+    const moodKeys = allKeys.filter(key => key.startsWith('moods_'));
+    await AsyncStorage.multiRemove(moodKeys);
   };
 
   const resetPassword = async (email: string) => {

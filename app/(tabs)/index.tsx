@@ -61,40 +61,54 @@ export default function HomeScreen() {
 
   const loadMoodHistory = useCallback(async () => {
     try {
-      let allMoods: MoodEntry[] = [];
+      // Si user connecté → charger depuis Supabase
+      if (user && supabase) {
+        const { data, error } = await supabase
+          .from('journal_entries')
+          .select('*')
+          .eq('user_id', user.id) // ← filtre par user connecté
+          .order('entry_date', { ascending: true });
 
-      // Charger uniquement depuis AsyncStorage (local) - ne pas recharger depuis Supabase
+        if (error) throw error;
+
+        const entries: MoodEntry[] = (data || []).map((item: any) => ({
+          id: item.id,
+          mood: {
+            id: item.mood_id || '',
+            label: item.mood_label || '',
+            color: item.mood_color || '#000000',
+          },
+          text: item.note || '',
+          time: item.entry_time || '',
+          date: item.entry_date || new Date().toISOString(),
+        }));
+
+        setMoodHistory(entries);
+
+        if (entries.length > 0) {
+          const lastMood = entries[entries.length - 1];
+          setEditingMoodId(lastMood.id);
+          setNote(lastMood.text || '');
+          setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: false }), 100);
+        }
+        return;
+      }
+
+      // Fallback AsyncStorage si pas connecté
+      let allMoods: MoodEntry[] = [];
       const allKeys = await AsyncStorage.getAllKeys();
       const moodKeys = allKeys.filter(key => key.startsWith('moods_'));
-
       for (const key of moodKeys) {
         const savedMoods = await AsyncStorage.getItem(key);
-        if (savedMoods) {
-          const parsedMoods: MoodEntry[] = JSON.parse(savedMoods);
-          allMoods = [...allMoods, ...parsedMoods];
-        }
+        if (savedMoods) allMoods = [...allMoods, ...JSON.parse(savedMoods)];
       }
-
-      // Trier par date/heure croissante (les plus anciennes en haut, les plus récentes en bas)
       allMoods.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
       setMoodHistory(allMoods);
 
-      // Si on a des moods, on reprend l'édition du dernier
-      if (allMoods.length > 0) {
-        const lastMood = allMoods[allMoods.length - 1];
-        setEditingMoodId(lastMood.id);
-        setNote(lastMood.text || ""); // On remet le texte dans l'input
-
-        // Scroller vers le bas pour montrer les données les plus récentes après le rendu
-        setTimeout(() => {
-          scrollViewRef.current?.scrollToEnd({ animated: false });
-        }, 100);
-      }
     } catch (error) {
-      console.error("Erreur chargement historique moods", error);
+      console.error('Erreur chargement historique moods', error);
     }
-  }, []);
+  }, [user]); // ← dépend de user
 
   useEffect(() => {
     loadNote();
