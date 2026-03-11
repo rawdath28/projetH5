@@ -6,7 +6,7 @@ Notre projet s’intéresse à un enjeu majeur : la dégradation de la santé me
 
 ---
 
-# 🎯 Problématique
+# Problématique
 
 **Comment soutenir les personnes en suivi thérapeutique dans leur travail inter-séances afin d’augmenter l’adhésion thérapeutique ?**
 
@@ -22,7 +22,7 @@ Notre objectif est donc de **renforcer l’accompagnement entre les séances**.
 
 ---
 
-# 💡 Notre solution
+# Notre solution
 
 Nous développons **une application mobile de suivi thérapeutique** centrée autour d’un **journaling intelligent assisté par IA**.
 
@@ -30,7 +30,7 @@ L’application permet aux patients de mieux comprendre leurs émotions, de suiv
 
 ---
 
-# ✨ Fonctionnalités principales
+# Fonctionnalités principales
 
 ## 📓 Journaling intelligent
 
@@ -51,7 +51,7 @@ Dans des cas plus sensibles (ex : idées suicidaires ou auto-mutilation), l’ap
 
 ---
 
-## 😊 Mood Tracker
+## Mood Tracker
 
 Un système de suivi de l’humeur basé sur une matrice :
 
@@ -66,7 +66,7 @@ Inspiré de l’application *How We Feel*, il permet de :
 
 ---
 
-## 📊 Suivi de progression
+## Suivi de progression
 
 Chaque utilisateur possède un profil lui permettant de :
 
@@ -77,7 +77,7 @@ Chaque utilisateur possède un profil lui permettant de :
 
 ---
 
-## 👩‍⚕️ Dashboard pour les thérapeutes
+## Dashboard pour les thérapeutes
 
 Dans le cas d’une utilisation avec un psychologue, un **dashboard dédié** pourrait permettre aux professionnels de :
 
@@ -90,16 +90,16 @@ L’objectif est de faciliter le **suivi thérapeutique** et améliorer l’acco
 
 ---
 
-# 🛠️ Tech Stack
+# Tech Stack
 
-## 📱 Frontend
+## Frontend
 
 - **React Native** : framework utilisé pour développer l'application mobile.
 - **Expo** : environnement qui facilite le développement, le test et le déploiement de l’application.
 - **Expo Router** : gestion de la navigation avec un système de routing basé sur les fichiers.
 - **TypeScript** : utilisé pour améliorer la fiabilité du code et éviter certaines erreurs.
 
-## 🖥️ Backend
+## Backend
 
 - **API & services IA** : utilisés pour analyser les entrées de journaling, détecter certains marqueurs émotionnels et proposer des exercices adaptés.
 
@@ -110,7 +110,7 @@ L’objectif est de faciliter le **suivi thérapeutique** et améliorer l’acco
 
 ---
 
-# 🚀 Getting Started
+# Getting Started
 
 ## 1. Installer les dépendances
 
@@ -158,8 +158,9 @@ Le développement se fait principalement dans le dossier :
 ```bash
 /app
 ```
+Ce projet utilise un système de routing basé sur les fichiers avec Expo Router.
 
-# 👥 Auteurs
+# Auteurs
 
 Projet réalisé dans le cadre du projet de fin d’étude à HETIC.
 
@@ -167,4 +168,3 @@ Projet réalisé dans le cadre du projet de fin d’étude à HETIC.
 - **Alexis Baud**
 - **Alexandre Andurand**
 
-Ce projet utilise un système de routing basé sur les fichiers avec Expo Router.
