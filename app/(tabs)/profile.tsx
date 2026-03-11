@@ -60,25 +60,30 @@ export default function ProfileScreen() {
     };
 
     // Fonction pour gérer la déconnexion
-    const handleSignOut = () => {
-        Alert.alert(
-            "Déconnexion",
-            "Êtes-vous sûr de vouloir vous déconnecter ?",
-            [
-                {
-                    text: "Annuler",
-                    style: "cancel"
-                },
-                {
-                    text: "Déconnexion",
-                    style: "destructive",
-                    onPress: async () => {
-                        await signOut();
-                        router.replace('/screens/Auth/LoginScreen' as any);
-                    }
-                }
-            ]
-        );
+    // const handleSignOut = () => {
+    //     Alert.alert(
+    //         "Déconnexion",
+    //         "Êtes-vous sûr de vouloir vous déconnecter ?",
+    //         [
+    //             {
+    //                 text: "Annuler",
+    //                 style: "cancel"
+    //             },
+    //             {
+    //                 text: "Déconnexion",
+    //                 style: "destructive",
+    //                 onPress: async () => {
+    //                     await signOut();
+    //                     router.replace('/screens/Auth/LoginScreen' as any);
+    //                 }
+    //             }
+    //         ]
+    //     );
+    // };
+
+    const handleSignOut = async () => {
+        await signOut();
+        router.replace('/screens/Auth/LoginScreen' as any);
     };
 
     // Fonction pour charger les données de démonstration

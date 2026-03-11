@@ -1,11 +1,20 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
+import { Linking, Platform } from 'react-native';
 import { supabase } from '../lib/supabase';
+
+// Expo Go web = localhost, build mobile = scheme custom
+const RESET_PASSWORD_REDIRECT =
+  Platform.OS === 'web'
+    ? 'http://localhost:8081'
+    : 'projeth5://reset-password';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  isPasswordRecovery: boolean;
+  setIsPasswordRecovery: (value: boolean) => void;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -18,6 +27,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
+
+  // Gère l'URL deep link pour extraire les tokens Supabase (ex: reset password)
+  const handleDeepLink = async (url: string) => {
+    if (!supabase || !url) return;
+    // L'URL contient #access_token=...&refresh_token=...&type=recovery
+    const hash = url.split('#')[1];
+    if (!hash) return;
+    const params = Object.fromEntries(new URLSearchParams(hash));
+    if (params.access_token && params.refresh_token) {
+      await supabase.auth.setSession({
+        access_token: params.access_token,
+        refresh_token: params.refresh_token,
+      });
+    }
+  };
 
   useEffect(() => {
     if (!supabase) {
@@ -38,10 +63,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        if (_event === 'PASSWORD_RECOVERY') {
+          setIsPasswordRecovery(true);
+        }
       }
     );
 
-    return () => subscription.unsubscribe();
+    // Gérer le deep link initial (app ouverte depuis le lien email)
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink(url);
+    });
+
+    // Gérer les deep links quand l'app est en arrière-plan
+    const linkSub = Linking.addEventListener('url', ({ url }) => handleDeepLink(url));
+
+    return () => {
+      subscription.unsubscribe();
+      linkSub.remove();
+    };
   }, []);
 
   const signUp = async (email: string, password: string) => {
@@ -84,7 +123,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const redirectTo =
+      Platform.OS === 'web'
+        ? `${window.location.origin}/screens/Auth/ResetPasswordScreen`
+        : 'projeth5://reset-password';
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo,
+    });
     return { error };
   };
 
@@ -94,6 +140,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         session,
         loading,
+        isPasswordRecovery,
+        setIsPasswordRecovery,
         signUp,
         signIn,
         signOut,

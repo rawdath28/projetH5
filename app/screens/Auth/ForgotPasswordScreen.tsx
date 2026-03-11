@@ -43,7 +43,7 @@ export default function ForgotPasswordScreen() {
       setEmailSent(true);
       Alert.alert(
         '✅ Email envoyé !',
-        'Un lien de réinitialisation a été envoyé à ' + email + 
+        'Un lien de réinitialisation a été envoyé à ' + email +
         '\n\nVérifiez votre boîte mail et cliquez sur le lien pour réinitialiser votre mot de passe.',
         [
           {
@@ -61,11 +61,11 @@ export default function ForgotPasswordScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <View style={styles.content}>
         {/* Bouton retour */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}>
           <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <Text style={styles.title}>Mot de passe oublié ?</Text>
         {/* <Text style={styles.subtitle}>
@@ -75,7 +75,7 @@ export default function ForgotPasswordScreen() {
 
         <TextInput
           style={styles.input}
-          placeholder="Adresse email"
+          placeholder="Adresse e-mail"
           placeholderTextColor="1#B1B1B"
           value={email}
           onChangeText={setEmail}
@@ -117,9 +117,14 @@ export default function ForgotPasswordScreen() {
         <TouchableOpacity
           style={styles.loginLink}
           onPress={() => router.replace('/screens/Auth/LoginScreen' as any)}>
-          <Text style={styles.loginLinkText}>
+
+          <View style={styles.linkContainer}>
+            <Text style={styles.link}>Vous vous souvenez de votre mot de passe ? </Text>
+            <Text style={styles.link2}>Se connecter</Text>
+          </View>
+          {/* <Text style={styles.loginLinkText}>
             Vous vous souvenez de votre mot de passe ? Se connecter
-          </Text>
+          </Text> */}
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -213,5 +218,16 @@ const styles = StyleSheet.create({
   loginLinkText: {
     color: 'black',
     fontSize: 14,
+  },
+  linkContainer: {
+    marginBottom: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  link: {
+    color: '#1B1B1B',
+  },
+  link2: {
+    color: '#007AFF',
   },
 });

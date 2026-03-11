@@ -1,5 +1,5 @@
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
@@ -31,7 +31,15 @@ SplashScreen.preventAutoHideAsync();
 
 // Composant interne qui utilise le contexte d'authentification
 function RootLayoutNav() {
-  const { user, loading } = useAuth();
+  const { loading, isPasswordRecovery } = useAuth();
+  const router = useRouter();
+
+  // Rediriger vers l'écran de réinitialisation quand le deep link password recovery est reçu
+  useEffect(() => {
+    if (isPasswordRecovery) {
+      router.replace('/screens/Auth/ResetPasswordScreen' as any);
+    }
+  }, [isPasswordRecovery]);
 
   // Afficher un loader pendant le chargement de l'authentification
   if (loading) {
@@ -62,6 +70,12 @@ function RootLayoutNav() {
       />
       <Stack.Screen
         name="screens/Auth/ForgotPasswordScreen"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="screens/Auth/ResetPasswordScreen"
         options={{
           headerShown: false,
         }}
