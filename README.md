@@ -159,4 +159,12 @@ Le développement se fait principalement dans le dossier :
 /app
 ```
 
+# 👥 Auteurs
+
+Projet réalisé dans le cadre du projet de fin d’étude à HETIC.
+
+- **Rawdath Laabudo Demba Diallo**
+- **Alexis Baud**
+- **Alexandre Andurand**
+
 Ce projet utilise un système de routing basé sur les fichiers avec Expo Router.
