@@ -4,8 +4,6 @@ Application mobile développée dans le cadre du projet de fin d’étude du pro
 
 Notre projet s’intéresse à un enjeu majeur : la dégradation de la santé mentale chez les jeunes, qui apparaît de plus en plus tôt et avec des troubles parfois plus sévères.
 
----
-
 # Problématique
 
 **Comment soutenir les personnes en suivi thérapeutique dans leur travail inter-séances afin d’augmenter l’adhésion thérapeutique ?**
@@ -20,7 +18,6 @@ Entre ces séances, les patients peuvent avoir des difficultés à :
 
 Notre objectif est donc de **renforcer l’accompagnement entre les séances**.
 
----
 
 # Notre solution
 
@@ -28,11 +25,10 @@ Nous développons **une application mobile de suivi thérapeutique** centrée au
 
 L’application permet aux patients de mieux comprendre leurs émotions, de suivre leur progression et d’effectuer des exercices recommandés par leur thérapeute.
 
----
 
 # Fonctionnalités principales
 
-## 📓 Journaling intelligent
+## Journaling intelligent
 
 Un espace d’écriture où l’utilisateur peut exprimer ses pensées et ses émotions.
 
@@ -49,8 +45,6 @@ Exemples :
 
 Dans des cas plus sensibles (ex : idées suicidaires ou auto-mutilation), l’application peut orienter l’utilisateur vers des **ressources d’aide d’urgence**.
 
----
-
 ## Mood Tracker
 
 Un système de suivi de l’humeur basé sur une matrice :
@@ -64,7 +58,6 @@ Inspiré de l’application *How We Feel*, il permet de :
 - identifier des tendances
 - suivre l’évolution dans le temps
 
----
 
 ## Suivi de progression
 
@@ -75,7 +68,6 @@ Chaque utilisateur possède un profil lui permettant de :
 - suivre son évolution émotionnelle
 - visualiser ses progrès
 
----
 
 ## Dashboard pour les thérapeutes
 
@@ -88,9 +80,8 @@ Dans le cas d’une utilisation avec un psychologue, un **dashboard dédié** po
 
 L’objectif est de faciliter le **suivi thérapeutique** et améliorer l’accompagnement.
 
----
 
-# Tech Stack
+# Stack Technique
 
 ## Frontend
 
@@ -103,12 +94,12 @@ L’objectif est de faciliter le **suivi thérapeutique** et améliorer l’acco
 
 - **API & services IA** : utilisés pour analyser les entrées de journaling, détecter certains marqueurs émotionnels et proposer des exercices adaptés.
 
-## 🔧 Autres outils
+## Autres outils
 
 - **Node.js / npm** : gestion des dépendances et exécution des scripts du projet.
 - **Figma** : conception UX/UI et prototypage de l’application.
 
----
+
 
 # Getting Started
 
@@ -118,13 +109,13 @@ L’objectif est de faciliter le **suivi thérapeutique** et améliorer l’acco
 npm install
 ```
 
-## 2. Lancer l’application
+## Lancer l’application
 
 ```bash
 npx expo start
 ```
 
-### 3. Reset du projet
+## Reset du projet
 
 Si vous souhaitez repartir d’une base vierge :
 
@@ -151,7 +142,7 @@ Vous pourrez ensuite ouvrir l’application dans :
 - Expo Go
 - un development build
 
-#### 4. Structure du projet
+## Structure du projet
 
 Le développement se fait principalement dans le dossier :
 
@@ -160,7 +151,7 @@ Le développement se fait principalement dans le dossier :
 ```
 Ce projet utilise un système de routing basé sur les fichiers avec Expo Router.
 
-# Auteurs
+## Auteurs
 
 Projet réalisé dans le cadre du projet de fin d’étude à HETIC.
 
