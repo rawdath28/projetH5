@@ -92,11 +92,21 @@ L’objectif est de faciliter le **suivi thérapeutique** et améliorer l’acco
 
 # 🛠️ Tech Stack
 
-Le projet est développé avec :
+## 📱 Frontend
 
-- Expo
-- React Native
-- Expo Router
+- **React Native** : framework utilisé pour développer l'application mobile.
+- **Expo** : environnement qui facilite le développement, le test et le déploiement de l’application.
+- **Expo Router** : gestion de la navigation avec un système de routing basé sur les fichiers.
+- **TypeScript** : utilisé pour améliorer la fiabilité du code et éviter certaines erreurs.
+
+## 🖥️ Backend
+
+- **API & services IA** : utilisés pour analyser les entrées de journaling, détecter certains marqueurs émotionnels et proposer des exercices adaptés.
+
+## 🔧 Autres outils
+
+- **Node.js / npm** : gestion des dépendances et exécution des scripts du projet.
+- **Figma** : conception UX/UI et prototypage de l’application.
 
 ---
 
