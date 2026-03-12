@@ -1,50 +1,161 @@
-# Welcome to your Expo app 👋
+# 🧠 Mental Health Companion App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Application mobile développée dans le cadre du projet de fin d’étude du programme Grande École (PGE) de HETIC.
 
-## Get started
+Notre projet s’intéresse à un enjeu majeur : la dégradation de la santé mentale chez les jeunes, qui apparaît de plus en plus tôt et avec des troubles parfois plus sévères.
 
-1. Install dependencies
+# Problématique
 
-   ```bash
-   npm install
-   ```
+**Comment soutenir les personnes en suivi thérapeutique dans leur travail inter-séances afin d’augmenter l’adhésion thérapeutique ?**
 
-2. Start the app
+Les séances avec un psychologue ne représentent souvent qu’une petite partie du travail thérapeutique.  
+Entre ces séances, les patients peuvent avoir des difficultés à :
 
-   ```bash
-   npx expo start
-   ```
+- suivre les exercices recommandés
+- comprendre leurs émotions
+- identifier des schémas cognitifs négatifs
+- maintenir une continuité dans leur suivi
 
-In the output, you'll find options to open the app in a
+Notre objectif est donc de **renforcer l’accompagnement entre les séances**.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+# Notre solution
 
-## Get a fresh project
+Nous développons **une application mobile de suivi thérapeutique** centrée autour d’un **journaling intelligent assisté par IA**.
 
-When you're ready, run:
+L’application permet aux patients de mieux comprendre leurs émotions, de suivre leur progression et d’effectuer des exercices recommandés par leur thérapeute.
+
+
+# Fonctionnalités principales
+
+## Journaling intelligent
+
+Un espace d’écriture où l’utilisateur peut exprimer ses pensées et ses émotions.
+
+Grâce à l’IA, l’application peut :
+
+- analyser le contenu des entrées
+- détecter certains **marqueurs psychologiques**
+- proposer des **exercices adaptés**
+
+Exemples :
+
+- détection de **distorsions cognitives**
+- suggestion d’exercices thérapeutiques
+
+Dans des cas plus sensibles (ex : idées suicidaires ou auto-mutilation), l’application peut orienter l’utilisateur vers des **ressources d’aide d’urgence**.
+
+## Mood Tracker
+
+Un système de suivi de l’humeur basé sur une matrice :
+
+- **High / Low energy**
+- **Positive / Negative emotions**
+
+Inspiré de l’application *How We Feel*, il permet de :
+
+- visualiser son état émotionnel
+- identifier des tendances
+- suivre l’évolution dans le temps
+
+
+## Suivi de progression
+
+Chaque utilisateur possède un profil lui permettant de :
+
+- consulter son historique
+- revoir les exercices réalisés
+- suivre son évolution émotionnelle
+- visualiser ses progrès
+
+
+## Dashboard pour les thérapeutes
+
+Dans le cas d’une utilisation avec un psychologue, un **dashboard dédié** pourrait permettre aux professionnels de :
+
+- suivre leurs patients
+- voir les exercices réalisés
+- identifier des **marqueurs importants**
+- obtenir des **insights clés** entre les séances
+
+L’objectif est de faciliter le **suivi thérapeutique** et améliorer l’accompagnement.
+
+
+# Stack Technique
+
+## Frontend
+
+- **React Native** : framework utilisé pour développer l'application mobile.
+- **Expo** : environnement qui facilite le développement, le test et le déploiement de l’application.
+- **Expo Router** : gestion de la navigation avec un système de routing basé sur les fichiers.
+- **TypeScript** : utilisé pour améliorer la fiabilité du code et éviter certaines erreurs.
+
+## Backend
+
+- **API & services IA** : utilisés pour analyser les entrées de journaling, détecter certains marqueurs émotionnels et proposer des exercices adaptés.
+
+## Autres outils
+
+- **Node.js / npm** : gestion des dépendances et exécution des scripts du projet.
+- **Figma** : conception UX/UI et prototypage de l’application.
+
+
+
+# Getting Started
+
+## 1. Installer les dépendances
+
+```bash
+npm install
+```
+
+## Lancer l’application
+
+```bash
+npx expo start
+```
+
+## Reset du projet
+
+Si vous souhaitez repartir d’une base vierge :
 
 ```bash
 npm run reset-project
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Cela déplacera le code d’exemple dans :
 
-## Learn more
+```bash
+/app-example
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+et créera un nouveau dossier :
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+/app
+```
 
-## Join the community
+Vous pourrez ensuite ouvrir l’application dans :
 
-Join our community of developers creating universal apps.
+- un Android emulator
+- un iOS simulator
+- Expo Go
+- un development build
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Structure du projet
+
+Le développement se fait principalement dans le dossier :
+
+```bash
+/app
+```
+Ce projet utilise un système de routing basé sur les fichiers avec Expo Router.
+
+## Auteurs
+
+Projet réalisé dans le cadre du projet de fin d’étude à HETIC.
+
+- **Rawdath Laabudo Demba Diallo**
+- **Alexis Baud**
+- **Alexandre Andurand**
+
