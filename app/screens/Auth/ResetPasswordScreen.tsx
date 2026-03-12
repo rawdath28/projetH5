@@ -69,21 +69,15 @@ export default function ResetPasswordScreen() {
     const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
 
-    // if (error) {
-    //   Alert.alert('Erreur', error.message);
-    // } else {
-    //   setIsPasswordRecovery(false);
-    //   Alert.alert(
-    //     '✅ Mot de passe mis à jour !',
-    //     'Votre mot de passe a été modifié avec succès.',
-    //     [{ text: 'OK', onPress: () => router.replace('/screens/Auth/LoginScreen' as any) }]
-    //   );
-    // }
     if (error) {
       Alert.alert('Erreur', error.message);
     } else {
       setIsPasswordRecovery(false);
-      router.replace('/screens/Auth/LoginScreen' as any);
+      Alert.alert(
+        '✅ Mot de passe mis à jour !',
+        'Votre mot de passe a été modifié avec succès.',
+        [{ text: 'OK', onPress: () => router.replace('/screens/Auth/LoginScreen' as any) }]
+      );
     }
   };
 

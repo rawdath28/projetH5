@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
-import { Linking, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { supabase } from '../lib/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Linking from 'expo-linking';
+import { EXPO_URL } from '../lib/config';
 
 // Expo Go web = localhost, build mobile = scheme custom
 const RESET_PASSWORD_REDIRECT =
@@ -125,11 +127,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.multiRemove(moodKeys);
   };
 
+  // const resetPassword = async (email: string) => {
+  //   const redirectTo =
+  //     Platform.OS === 'web'
+  //       ? `${window.location.origin}/screens/Auth/ResetPasswordScreen`
+  //       : 'projeth5://reset-password';
+
+  //   const { error } = await supabase.auth.resetPasswordForEmail(email, {
+  //     redirectTo,
+  //   });
+  //   return { error };
+  // };
+  // const resetPassword = async (email: string) => {
+  //   let redirectTo: string;
+
+  //   if (Platform.OS === 'web') {
+  //     redirectTo = `${window.location.origin}/screens/Auth/ResetPasswordScreen`;
+  //   } else {
+  //     // Génère automatiquement le bon scheme selon l'environnement
+  //     // Expo Go → exp://192.168.x.x:8081/--/screens/Auth/ResetPasswordScreen
+  //     // Build natif → projeth5://screens/Auth/ResetPasswordScreen
+  //     redirectTo = Linking.createURL('/screens/Auth/ResetPasswordScreen');
+  //   }
+
+  //   console.log('🔗 Redirect URL:', redirectTo);
+
+  //   const { error } = await supabase.auth.resetPasswordForEmail(email, {
+  //     redirectTo,
+  //   });
+  //   return { error };
+  // };
   const resetPassword = async (email: string) => {
-    const redirectTo =
-      Platform.OS === 'web'
-        ? `${window.location.origin}/screens/Auth/ResetPasswordScreen`
-        : 'projeth5://reset-password';
+    let redirectTo: string;
+
+    if (Platform.OS === 'web') {
+      redirectTo = `${window.location.origin}/screens/Auth/ResetPasswordScreen`;
+    } else {
+      // Utilise l'IP de ta machine (même IP qu'Expo Go utilise)
+      redirectTo = `${EXPO_URL}/screens/Auth/ResetPasswordScreen`;
+    }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo,
