@@ -68,7 +68,7 @@ function RootLayoutNav() {
   }
 
   return (
-    <Stack>
+    <Stack screenOptions={{ gestureEnabled: false }}>
       {/* Écran index pour la redirection conditionnelle */}
       <Stack.Screen name="index" options={{ headerShown: false }} />
 

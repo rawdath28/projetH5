@@ -193,20 +193,22 @@ const SelectThoughtsScreen: React.FC = () => {
             {/* Footer */}
             <View style={styles.footer}>
                 <TouchableOpacity
-                    style={styles.nextButton}
+                    style={[styles.nextButton, selected.length < MAX_SELECTION && styles.nextButtonDisabled]}
                     onPress={() => {
+                        if (selected.length < MAX_SELECTION) return;
                         router.push({
                             pathname: '/screens/draganddrop-screen',
                             params: {
-                                selected: JSON.stringify(selected) // Passer les items sélectionnés
+                                selected: JSON.stringify(selected)
                             }
                         });
                     }}
+                    disabled={selected.length < MAX_SELECTION}
                 >
                     <Text style={styles.nextText}>Suivant</Text>
                 </TouchableOpacity>
                 <Text style={styles.helper}>
-                    Sélectionne jusqu’à {MAX_SELECTION} éléments
+                    {selected.length}/{MAX_SELECTION} éléments sélectionnés
                 </Text>
             </View>
         </SafeAreaView>
@@ -240,6 +242,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         textAlign: 'center',
         flex: 1,
+        fontFamily: Fonts.serif.semiBold,
     },
 
     close: {
@@ -295,6 +298,10 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         alignItems: 'center',
         marginBottom: 12,
+    },
+
+    nextButtonDisabled: {
+        opacity: 0.35,
     },
 
     nextText: {

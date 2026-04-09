@@ -3,6 +3,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Fonts } from '../../constants/theme';
 
 interface ProcessedItem {
     text: string;
@@ -79,11 +80,11 @@ const styles = StyleSheet.create({
         width: 24,
     },
     title: {
-        fontSize: 20,
-        fontWeight: '600',
+        fontSize: 18,
         color: '#FFFFFF',
         flex: 1,
         textAlign: 'center',
+        fontFamily: Fonts.serif.semiBold,
     },
     scrollContent: {
         flex: 1,
@@ -138,5 +139,6 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: '600',
+        fontFamily: Fonts.serif.semiBold,
     },
 });

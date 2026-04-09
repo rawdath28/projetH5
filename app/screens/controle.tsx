@@ -206,8 +206,8 @@ const styles = StyleSheet.create({
         width: 24,
     },
     title: {
-        fontSize: 20,
-        fontFamily: Fonts.sans.semiBold,
+        fontSize: 18,
+        fontFamily: Fonts.serif.semiBold,
         color: '#FFFFFF',
         flex: 1,
         textAlign: 'center',
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     finishButtonText: {
         color: '#FFFFFF',
         fontSize: 16,
-        fontFamily: Fonts.serif.regularItalic,
+        fontFamily: Fonts.serif.regular,
         fontStyle: 'italic',
     },
 });

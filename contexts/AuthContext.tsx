@@ -6,11 +6,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Linking from 'expo-linking';
 import { EXPO_URL } from '../lib/config';
 
-// Expo Go web = localhost, build mobile = scheme custom
-const RESET_PASSWORD_REDIRECT =
-  Platform.OS === 'web'
-    ? 'http://localhost:8081'
-    : 'projeth5://reset-password';
 
 interface AuthContextType {
   user: User | null;
@@ -18,7 +13,7 @@ interface AuthContextType {
   loading: boolean;
   isPasswordRecovery: boolean;
   setIsPasswordRecovery: (value: boolean) => void;
-  signUp: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, username?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
@@ -86,13 +81,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, username?: string) => {
     if (!supabase) {
       return { error: { message: 'Supabase non configuré' } };
     }
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: { username: username || '' },
+      },
     });
     if (!error && data.session) {
       setSession(data.session);

@@ -68,7 +68,7 @@ export default function ExerciseScreen() {
         </View>
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
@@ -123,7 +123,7 @@ export default function ExerciseScreen() {
                     <IconSymbol size={48} name="lightbulb.fill" color="#027A54" />
 
                   </View>
-                  
+
                   <View style={styles.exerciseInfo}>
                     <ThemedText style={styles.exerciseTitle}>
                       {exercise.title}
@@ -131,7 +131,7 @@ export default function ExerciseScreen() {
                     <ThemedText style={styles.exerciseDescription}>
                       {exercise.description}
                     </ThemedText>
-                    
+
                     <View style={styles.exerciseMeta}>
                       <View style={styles.metaItem}>
                         <IconSymbol size={14} name="clock" color="#999999" />
@@ -154,7 +154,7 @@ export default function ExerciseScreen() {
           {/* Section exercices récents */}
           <View style={styles.section}>
             <ThemedText style={styles.sectionTitle}>Exercices récents</ThemedText>
-            
+
             <View style={styles.recentCard}>
               <View style={styles.recentCardHeader}>
                 <View style={styles.recentIconWrapper}>
@@ -250,6 +250,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontFamily: Fonts.serif.bold,
+    paddingTop: 10,
     color: '#FFFFFF',
     marginBottom: 6,
   },

@@ -10,27 +10,21 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Ionicons } from '@expo/vector-icons'; // ou 'react-native-vector-icons/Ionicons'
+import { Ionicons } from '@expo/vector-icons';
 
 export default function SignUpScreen() {
   const router = useRouter();
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
   const { signUp } = useAuth();
 
   const handleSignUp = async () => {
-    if (!email || !password || !confirmPassword) {
+    if (!username || !email || !password) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert('Erreur', 'Les mots de passe ne correspondent pas');
       return;
     }
 
@@ -40,13 +34,12 @@ export default function SignUpScreen() {
     }
 
     setLoading(true);
-    const { error } = await signUp(email, password);
+    const { error } = await signUp(email, password, username);
     setLoading(false);
 
     if (error) {
-      Alert.alert('Erreur d\'inscription', error.message);
+      Alert.alert("Erreur d'inscription", error.message);
     } else {
-      // Rediriger vers le mood tracker après inscription réussie
       router.replace('/screens/onboarding' as any);
     }
   };
@@ -61,6 +54,14 @@ export default function SignUpScreen() {
           <Text style={styles.link1}>Se connecter</Text>
         </View>
       </TouchableOpacity>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Nom d'utilisateur"
+        value={username}
+        onChangeText={setUsername}
+        autoCapitalize="none"
+      />
 
       <TextInput
         style={styles.input}
@@ -81,30 +82,10 @@ export default function SignUpScreen() {
         />
         <TouchableOpacity
           style={styles.icon}
-          onPress={() => setIsPasswordVisible(!isPasswordVisible)} // bascule affichage
+          onPress={() => setIsPasswordVisible(!isPasswordVisible)}
         >
           <Ionicons
             name={isPasswordVisible ? 'eye-off' : 'eye'}
-            size={24}
-            color="#666"
-          />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Confirmer le mot de passe"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry={!isConfirmPasswordVisible}
-        />
-        <TouchableOpacity
-          style={styles.icon}
-          onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)} // bascule affichage
-        >
-          <Ionicons
-            name={isConfirmPasswordVisible ? 'eye-off' : 'eye'}
             size={24}
             color="#666"
           />
@@ -179,6 +160,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     position: 'relative',
-    marginVertical: 10,
+    marginVertical: 5,
   },
 });

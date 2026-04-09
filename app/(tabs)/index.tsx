@@ -801,7 +801,7 @@ const styles = StyleSheet.create({
     minHeight: 120,
     textAlignVertical: "top",
     marginBottom: 12,
-    fontFamily: Fonts.serif.regular,
+    fontFamily: Fonts.sans.regular,
   },
   dateHeaderContainer: {
     width: "100%",
@@ -809,7 +809,7 @@ const styles = StyleSheet.create({
   },
   dateHeader: {
     fontSize: 24,
-    fontFamily: Fonts.serif.semiBoldItalic,
+    fontFamily: Fonts.sans.semiBoldItalic,
     lineHeight: 28,
     textAlignVertical: "top",
     textAlign: "center",

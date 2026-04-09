@@ -11,7 +11,7 @@ import { useAuth } from '../../contexts/AuthContext';
 export default function ProfileScreen() {
     const router = useRouter();
     const { signOut, user } = useAuth();
-    const [userName] = useState('Sophie');
+    const userName = user?.user_metadata?.username || 'Utilisateur';
     const [completedExercises] = useState(12);
     const [streak] = useState(7);
     const [syncingMoods, setSyncingMoods] = useState(false);

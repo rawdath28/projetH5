@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         color: '#FFFFFF',
         fontSize: 18,
-        fontFamily: Fonts.sans.semiBold,
+        fontFamily: Fonts.serif.semiBold,
     },
     categoriesContainer: {
         paddingHorizontal: 20,
@@ -443,6 +443,6 @@ const styles = StyleSheet.create({
     finishButtonText: {
         color: '#FFFFFF',
         fontSize: 16,
-        fontFamily: Fonts.sans.semiBold,
+        fontFamily: Fonts.serif.regular,
     },
 });
