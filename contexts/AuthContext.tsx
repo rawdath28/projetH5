@@ -11,6 +11,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  username: string | null;
   isPasswordRecovery: boolean;
   setIsPasswordRecovery: (value: boolean) => void;
   signUp: (email: string, password: string, username?: string) => Promise<{ error: any }>;
@@ -25,12 +26,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState<string | null>(null);
   const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
+
+  // Récupère le username depuis la table profiles
+  const fetchUsername = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('user_id', userId) // ou user_id
+      .single();
+
+    console.log('fetchUsername data:', data, 'error:', error);
+
+    if (data?.username) {
+      setUsername(data.username);
+    }
+  };
 
   // Gère l'URL deep link pour extraire les tokens Supabase (ex: reset password)
   const handleDeepLink = async (url: string) => {
     if (!supabase || !url) return;
-    // L'URL contient #access_token=...&refresh_token=...&type=recovery
     const hash = url.split('#')[1];
     if (!hash) return;
     const params = Object.fromEntries(new URLSearchParams(hash));
@@ -52,6 +68,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchUsername(session.user.id);
+      } else {
+        // AUTH DÉSACTIVÉE - fetch username avec id de test
+        fetchUsername('8e17e66f-0d42-48f7-8188-313251cb4039');
+      }
       setLoading(false);
     });
 
@@ -60,6 +82,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+        if (session?.user) {
+          fetchUsername(session.user.id);
+        } else {
+          setUsername(null);
+        }
         setLoading(false);
         if (_event === 'PASSWORD_RECOVERY') {
           setIsPasswordRecovery(true);
@@ -81,21 +108,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const signUp = async (email: string, password: string, username?: string) => {
-    if (!supabase) {
-      return { error: { message: 'Supabase non configuré' } };
+  const signUp = async (email: string, password: string, username: string) => {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+
+    console.log('SignUp data:', JSON.stringify(data));
+    console.log('SignUp error:', error);
+
+    if (!error && data.user) {
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({ user_id: data.user.id, username }); // ou user_id selon votre table
+
+      console.log('Profile insert error:', profileError);
+      setUsername(username);
     }
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { username: username || '' },
-      },
-    });
-    if (!error && data.session) {
-      setSession(data.session);
-      setUser(data.user);
-    }
+
     return { error };
   };
 
@@ -110,6 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!error && data.session) {
       setSession(data.session);
       setUser(data.user);
+      fetchUsername(data.user.id);
     }
     return { error };
   };
@@ -119,49 +147,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut();
     setSession(null);
     setUser(null);
+    setUsername(null);
     // Vider le cache local au déconnexion
     const allKeys = await AsyncStorage.getAllKeys();
     const moodKeys = allKeys.filter(key => key.startsWith('moods_'));
     await AsyncStorage.multiRemove(moodKeys);
   };
 
-  // const resetPassword = async (email: string) => {
-  //   const redirectTo =
-  //     Platform.OS === 'web'
-  //       ? `${window.location.origin}/screens/Auth/ResetPasswordScreen`
-  //       : 'projeth5://reset-password';
-
-  //   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-  //     redirectTo,
-  //   });
-  //   return { error };
-  // };
-  // const resetPassword = async (email: string) => {
-  //   let redirectTo: string;
-
-  //   if (Platform.OS === 'web') {
-  //     redirectTo = `${window.location.origin}/screens/Auth/ResetPasswordScreen`;
-  //   } else {
-  //     // Génère automatiquement le bon scheme selon l'environnement
-  //     // Expo Go → exp://192.168.x.x:8081/--/screens/Auth/ResetPasswordScreen
-  //     // Build natif → projeth5://screens/Auth/ResetPasswordScreen
-  //     redirectTo = Linking.createURL('/screens/Auth/ResetPasswordScreen');
-  //   }
-
-  //   console.log('🔗 Redirect URL:', redirectTo);
-
-  //   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-  //     redirectTo,
-  //   });
-  //   return { error };
-  // };
   const resetPassword = async (email: string) => {
     let redirectTo: string;
 
     if (Platform.OS === 'web') {
       redirectTo = `${window.location.origin}/screens/Auth/ResetPasswordScreen`;
     } else {
-      // Utilise l'IP de ta machine (même IP qu'Expo Go utilise)
       redirectTo = `${EXPO_URL}/screens/Auth/ResetPasswordScreen`;
     }
 
@@ -177,6 +175,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         session,
         loading,
+        username,
         isPasswordRecovery,
         setIsPasswordRecovery,
         signUp,

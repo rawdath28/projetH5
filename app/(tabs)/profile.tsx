@@ -10,11 +10,13 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export default function ProfileScreen() {
     const router = useRouter();
-    const { signOut, user } = useAuth();
-    const userName = user?.user_metadata?.username || 'Utilisateur';
+    const { signOut, user, username } = useAuth(); // ✅ username depuis AuthContext
     const [completedExercises] = useState(12);
     const [streak] = useState(7);
     const [syncingMoods, setSyncingMoods] = useState(false);
+
+    const displayName = username ?? 'Utilisateur';
+    const avatarLetter = displayName.charAt(0).toUpperCase();
 
     const recentCircles = [
         {
@@ -43,9 +45,6 @@ export default function ProfileScreen() {
         { icon: 'trending-up', label: 'Progrès', value: '87%' },
     ];
 
-    // Fonction pour synchroniser les moods vers Supabase
-    // Note: Cette fonction nécessite maintenant un tableau de moods en paramètre
-    // Les moods doivent être gérés directement dans Supabase
     const handleSyncMoods = async () => {
         if (!user) {
             Alert.alert('Erreur', 'Vous devez être connecté pour synchroniser les moods');
@@ -59,7 +58,6 @@ export default function ProfileScreen() {
         );
     };
 
-    // Fonction pour gérer la déconnexion
     const handleSignOut = () => {
         Alert.alert(
             "Déconnexion",
@@ -81,12 +79,6 @@ export default function ProfileScreen() {
         );
     };
 
-    // const handleSignOut = async () => {
-    //     await signOut();
-    //     router.replace('/screens/Auth/LoginScreen' as any);
-    // };
-
-    // Fonction pour charger les données de démonstration
     const loadDemoData = () => {
         Alert.alert(
             "Charger les données de démonstration ?",
@@ -100,11 +92,9 @@ export default function ProfileScreen() {
                     text: "Charger",
                     onPress: async () => {
                         try {
-                            // Importer les données de démonstration
                             const demoData = require('../../demo-data.json');
                             const entries = demoData.moodEntries;
 
-                            // Supprimer d'abord toutes les anciennes données de démonstration
                             const allKeys = await AsyncStorage.getAllKeys();
                             const moodKeys = allKeys.filter(key => key.startsWith('moods_'));
 
@@ -112,20 +102,16 @@ export default function ProfileScreen() {
                                 const savedMoods = await AsyncStorage.getItem(key);
                                 if (savedMoods) {
                                     const parsedMoods = JSON.parse(savedMoods);
-                                    // Filtrer les entrées qui ne sont pas des données de démonstration
                                     const nonDemoMoods = parsedMoods.filter((m: any) => !m.id?.startsWith('demo_'));
 
                                     if (nonDemoMoods.length === 0) {
-                                        // Si toutes les entrées étaient des démos, supprimer la clé
                                         await AsyncStorage.removeItem(key);
                                     } else {
-                                        // Sinon, garder seulement les non-démos
                                         await AsyncStorage.setItem(key, JSON.stringify(nonDemoMoods));
                                     }
                                 }
                             }
 
-                            // Grouper les nouvelles entrées par jour
                             const entriesByDay: { [key: string]: any[] } = {};
 
                             for (const entry of entries) {
@@ -138,14 +124,11 @@ export default function ProfileScreen() {
                                 entriesByDay[dayKey].push(entry);
                             }
 
-                            // Sauvegarder chaque jour dans AsyncStorage
                             for (const [dayKey, dayEntries] of Object.entries(entriesByDay)) {
-                                // Récupérer les entrées existantes (non-démo) pour ce jour
                                 const existingKey = `moods_${dayKey}`;
                                 const existingMoods = await AsyncStorage.getItem(existingKey);
                                 const nonDemoMoods = existingMoods ? JSON.parse(existingMoods).filter((m: any) => !m.id?.startsWith('demo_')) : [];
 
-                                // Combiner les non-démos existantes avec les nouvelles démos
                                 const allMoods = [...nonDemoMoods, ...dayEntries];
                                 await AsyncStorage.setItem(existingKey, JSON.stringify(allMoods));
                             }
@@ -192,10 +175,10 @@ export default function ProfileScreen() {
                 <View style={styles.profileHeader}>
                     <View style={styles.avatarContainer}>
                         <View style={styles.avatar}>
-                            <Text style={styles.avatarText}>{userName.charAt(0)}</Text>
+                            <Text style={styles.avatarText}>{avatarLetter}</Text>
                         </View>
                     </View>
-                    <Text style={styles.userName}>{userName}</Text>
+                    <Text style={styles.userName}>{displayName}</Text>
                     <Text style={styles.userBio}>
                         En quête de contrôle et de sérénité
                     </Text>
@@ -284,7 +267,6 @@ export default function ProfileScreen() {
                         <Icon name="chevron-forward" size={20} color="#027A54" />
                     </TouchableOpacity>
 
-                    {/* Bouton pour synchroniser les moods vers Supabase */}
                     <TouchableOpacity
                         style={styles.actionButton}
                         onPress={handleSyncMoods}
@@ -299,7 +281,6 @@ export default function ProfileScreen() {
                         {!syncingMoods && <Icon name="chevron-forward" size={20} color="#027A54" />}
                     </TouchableOpacity>
 
-                    {/* Bouton pour charger les données de démonstration */}
                     <TouchableOpacity
                         style={styles.demoButton}
                         onPress={loadDemoData}
@@ -311,7 +292,6 @@ export default function ProfileScreen() {
                         <Icon name="chevron-forward" size={20} color="#DC2626" />
                     </TouchableOpacity>
 
-                    {/* Bouton de déconnexion */}
                     <TouchableOpacity
                         style={styles.logoutButton}
                         onPress={handleSignOut}
