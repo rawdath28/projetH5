@@ -1,161 +1,144 @@
-# 🧠 Mental Health Companion App
+# 🧠 UMi — Suivi thérapeutique inter-séances
 
-Application mobile développée dans le cadre du projet de fin d’étude du programme Grande École (PGE) de HETIC.
+Application mobile de suivi psychologique développée dans le cadre du projet de fin d'étude du programme Grande École (PGE) de HETIC (promotion Mars 2026).
 
-Notre projet s’intéresse à un enjeu majeur : la dégradation de la santé mentale chez les jeunes, qui apparaît de plus en plus tôt et avec des troubles parfois plus sévères.
+---
 
-# Problématique
+## Le problème
 
-**Comment soutenir les personnes en suivi thérapeutique dans leur travail inter-séances afin d’augmenter l’adhésion thérapeutique ?**
+En France, **28 000 psychologues libéraux** exercent sans outil numérique dédié à la continuité thérapeutique. Entre deux séances, le patient est livré à lui-même : aucun suivi, aucun exercice guidé, aucune détection des signaux d'alerte. Le thérapeute, lui, reprend chaque consultation à froid : notes dispersées, contexte à reconstruire, évolution inter-séances invisible.
 
-Les séances avec un psychologue ne représentent souvent qu’une petite partie du travail thérapeutique.  
-Entre ces séances, les patients peuvent avoir des difficultés à :
+**Résultat :** environ 25 % des patients abandonnent la thérapie, avec en moyenne 2,4 séances pour ceux qui abandonnent contre 7,4 pour ceux qui la complètent.
 
-- suivre les exercices recommandés
-- comprendre leurs émotions
-- identifier des schémas cognitifs négatifs
-- maintenir une continuité dans leur suivi
+**Problématique centrale :** *Comment soutenir les personnes en suivi thérapeutique dans leur travail inter-séances afin d'augmenter l'adhésion thérapeutique ?*
 
-Notre objectif est donc de **renforcer l’accompagnement entre les séances**.
+---
 
+## La solution
 
-# Notre solution
+UMi est une solution **B2B2C de suivi psychologique inter-séances**, structurée autour d'une double interface :
 
-Nous développons **une application mobile de suivi thérapeutique** centrée autour d’un **journaling intelligent assisté par IA**.
+- **App mobile patient** : journaling guidé par IA, exercices TCC validés cliniquement, détection de signaux d'alerte
+- **SaaS thérapeute** (web) : gestion de patientèle, alertes critiques, suivi d'engagement inter-séances
 
-L’application permet aux patients de mieux comprendre leurs émotions, de suivre leur progression et d’effectuer des exercices recommandés par leur thérapeute.
+Le psy invite → le patient utilise → le psy perçoit la valeur. UMi est un prolongement de la thérapie, jamais un substitut.
 
+---
 
-# Fonctionnalités principales
+## Données clés
 
-## Journaling intelligent
+- Une application avec IA générative **augmente la proportion de patients en amélioration fiable de 48 % à 69 %** par rapport aux supports statiques
+- Elle **réduit le taux d'abandon** de thérapie de groupe de 46 % à 23 %
+- Elle **diminue les séances manquées** de 33 % à 18 %
 
-Un espace d’écriture où l’utilisateur peut exprimer ses pensées et ses émotions.
+Sources : [PMC11933774](https://pmc.ncbi.nlm.nih.gov/articles/PMC11933774/) · [PMC2939342](https://pmc.ncbi.nlm.nih.gov/articles/PMC2939342/) · [PMC10207790](https://pmc.ncbi.nlm.nih.gov/articles/PMC10207790/)
 
-Grâce à l’IA, l’application peut :
+---
 
-- analyser le contenu des entrées
-- détecter certains **marqueurs psychologiques**
-- proposer des **exercices adaptés**
+## Fonctionnalités
 
-Exemples :
+### App mobile patient (cœur de valeur)
 
-- détection de **distorsions cognitives**
-- suggestion d’exercices thérapeutiques
+#### Check-in émotionnel
+Notification bi-quotidienne (matin & soir) pour lancer un parcours complet. Point d'entrée systématique à chaque ouverture de l'app.
 
-Dans des cas plus sensibles (ex : idées suicidaires ou auto-mutilation), l’application peut orienter l’utilisateur vers des **ressources d’aide d’urgence**.
+#### Mood Tracker
+Basé sur une matrice énergie × valence (inspiré de *How We Feel*). Sélection en moins d'une minute — l'habitude quotidienne qui ancre l'usage.
 
-## Mood Tracker
+#### Journaling augmenté
+En fonction de l'émotion sélectionnée, l'app propose 1 à 2 questions contextuelles qui guident l'écriture naturellement. L'IA (Qwen 2.5, hébergée sur serveur certifié **HDS**) analyse les réponses pour détecter des marqueurs cliniques comme les distorsions cognitives.
 
-Un système de suivi de l’humeur basé sur une matrice :
+#### Exercices TCC
+Sur la base du mood et de l'analyse du journal, l'app propose un exercice de Thérapie Cognitivo-Comportementale ciblé et validé cliniquement. Un seul exercice pertinent plutôt qu'une bibliothèque générique.
 
-- **High / Low energy**
-- **Positive / Negative emotions**
+#### Sécurité & urgences
+Détection automatique de mots-clés critiques (mutilation, suicide) avec redirection immédiate vers des numéros d'urgence (SOS Suicide). Obligatoire légalement. Le patient garde le contrôle total sur ce qu'il partage avec son thérapeute.
 
-Inspiré de l’application *How We Feel*, il permet de :
+#### Suivi de progression
+Historique des entrées, exercices réalisés, évolution émotionnelle dans le temps.
 
-- visualiser son état émotionnel
-- identifier des tendances
-- suivre l’évolution dans le temps
+---
 
+### SaaS thérapeute (interface MVP)
 
-## Suivi de progression
+L'interface psy est volontairement minimale au lancement, centrée sur la preuve de valeur du cycle complet.
 
-Chaque utilisateur possède un profil lui permettant de :
+#### Gestion de patientèle
+Invitation des patients par lien/code. Suivi de statut : actif/inactif, fréquence d'écriture, exercices réalisés.
 
-- consulter son historique
-- revoir les exercices réalisés
-- suivre son évolution émotionnelle
-- visualiser ses progrès
+#### Alertes critiques
+Notification immédiate en cas de signaux d'urgence détectés côté patient.
 
+#### Profil vérifié
+Authentification par numéro **ADELI/RPPS** — l'identifiant national des professionnels de santé en France, qui garantit que seuls des praticiens accèdent à la plateforme.
 
-## Dashboard pour les thérapeutes
+---
 
-Dans le cas d’une utilisation avec un psychologue, un **dashboard dédié** pourrait permettre aux professionnels de :
+## Stack technique
 
-- suivre leurs patients
-- voir les exercices réalisés
-- identifier des **marqueurs importants**
-- obtenir des **insights clés** entre les séances
+### Frontend
 
-L’objectif est de faciliter le **suivi thérapeutique** et améliorer l’accompagnement.
+- **React Native** — framework mobile cross-platform
+- **Expo** — environnement de développement, test et déploiement
+- **Expo Router** — routing basé sur les fichiers
+- **TypeScript** — typage statique pour la fiabilité du code
 
+### Backend & IA
 
-# Stack Technique
+- **Qwen 2.5** — modèle open source pour l'analyse du journaling et la détection de marqueurs cliniques
+- **Hébergement HDS certifié** (OVH) — obligation légale pour tout hébergement de données de santé (art. L.1111-8 CSP)
+- **API REST** — communication entre l'app mobile et le SaaS thérapeute
 
-## Frontend
+### Outils
 
-- **React Native** : framework utilisé pour développer l'application mobile.
-- **Expo** : environnement qui facilite le développement, le test et le déploiement de l’application.
-- **Expo Router** : gestion de la navigation avec un système de routing basé sur les fichiers.
-- **TypeScript** : utilisé pour améliorer la fiabilité du code et éviter certaines erreurs.
+- **Node.js / npm** — gestion des dépendances
+- **Figma** — conception UX/UI et prototypage
 
-## Backend
+---
 
-- **API & services IA** : utilisés pour analyser les entrées de journaling, détecter certains marqueurs émotionnels et proposer des exercices adaptés.
+## Getting Started
 
-## Autres outils
-
-- **Node.js / npm** : gestion des dépendances et exécution des scripts du projet.
-- **Figma** : conception UX/UI et prototypage de l’application.
-
-
-
-# Getting Started
-
-## 1. Installer les dépendances
+### 1. Installer les dépendances
 
 ```bash
 npm install
 ```
 
-## Lancer l’application
+### 2. Lancer l'application
 
 ```bash
 npx expo start
 ```
 
-## Reset du projet
+### 3. Reset du projet
 
-Si vous souhaitez repartir d’une base vierge :
+Si vous souhaitez repartir d'une base vierge :
 
 ```bash
 npm run reset-project
 ```
 
-Cela déplacera le code d’exemple dans :
+Cela déplacera le code d'exemple dans `/app-example` et créera un nouveau dossier `/app`.
 
-```bash
-/app-example
-```
-
-et créera un nouveau dossier :
-
-```bash
-/app
-```
-
-Vous pourrez ensuite ouvrir l’application dans :
+Vous pourrez ensuite ouvrir l'application dans :
 
 - un Android emulator
 - un iOS simulator
 - Expo Go
 - un development build
 
-## Structure du projet
+### Structure du projet
 
-Le développement se fait principalement dans le dossier :
+Le développement se fait principalement dans le dossier `/app`. Ce projet utilise un système de routing basé sur les fichiers avec Expo Router.
 
-```bash
-/app
-```
-Ce projet utilise un système de routing basé sur les fichiers avec Expo Router.
+---
 
-## Auteurs
+## Équipe
 
-Projet réalisé dans le cadre du projet de fin d’étude à HETIC.
+Projet réalisé dans le cadre du projet de fin d'étude à HETIC.
 
-- **Rawdath Laabudo Demba Diallo**
-- **Alexis Baud**
-- **Alexandre Andurand**
-
+| Membre | Rôle |
+|---|---|
+| **Alexandre Andurand** | Business & Stratégie |
+| **Alexis Baud** | Design |
+| **Rawdath Laabudo Demba Diallo** | Développement et Architecture |
