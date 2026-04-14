@@ -72,7 +72,10 @@ export function useExercises() {
         const uri = asset.localUri ?? asset.uri;
         const text = await FileSystem.readAsStringAsync(uri);
         if (!cancelled) {
-          setExercises(parseCsv(text));
+          const sorted = parseCsv(text).sort((a, b) =>
+            a.titre.localeCompare(b.titre, 'fr', { sensitivity: 'base' })
+          );
+          setExercises(sorted);
         }
       } catch (e: any) {
         if (!cancelled) setError(e.message ?? 'Erreur de chargement');
