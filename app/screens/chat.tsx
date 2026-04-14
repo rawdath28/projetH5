@@ -1,4 +1,4 @@
-// app/chat/index.tsx (ou le chemin de ton écran de chat existant)
+// app/screens/chat.tsx
 
 import { BlurView } from 'expo-blur';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -18,19 +18,19 @@ import { ThemedText } from '../../components/themed-text';
 import { IconSymbol } from '../../components/ui/icon-symbol';
 import { Fonts } from '../../constants/theme';
 import { CirclesOfControlData } from '../../lib/circles_of_control';
-import { useGeminiChat, ChatMessage } from '../../hooks/Usegeminichat';
+import { useClaudeChat, Message } from '../../hooks/use-claude-chat';
 
 export default function ChatScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ titre?: string; exerciseId?: string }>();
   const listRef = useRef<FlatList>(null);
   const inputRef = useRef('');
+  const textInputRef = useRef<TextInput>(null);
   const fadeOverlay = useRef(new Animated.Value(0)).current;
 
   // ── Callback quand l'exercice est prêt à être lancé ───────────────────────
   const handleExerciseLaunch = (data: CirclesOfControlData) => {
     const labels = (data.items ?? []).map((i) => i.label).filter(Boolean);
-    // Fondu vert → puis navigation seamless vers l'écran de même couleur
     Animated.timing(fadeOverlay, {
       toValue: 1,
       duration: 600,
@@ -38,15 +38,13 @@ export default function ChatScreen() {
     }).start(() => {
       router.replace({
         pathname: '/screens/draganddrop-screen',
-        params: {
-          selected: JSON.stringify(labels),
-        },
+        params: { selected: JSON.stringify(labels) },
       } as any);
     });
   };
 
   const { messages, isLoading, error, sendMessage, initConversation } =
-    useGeminiChat(handleExerciseLaunch);
+    useClaudeChat(handleExerciseLaunch);
 
   // ── Démarre la conversation au montage ────────────────────────────────────
   useEffect(() => {
@@ -65,19 +63,15 @@ export default function ChatScreen() {
     const text = inputRef.current.trim();
     if (!text || isLoading) return;
     sendMessage(text);
-    // Reset l'input via la ref (évite un setState supplémentaire)
     inputRef.current = '';
-    // Force le re-render du TextInput en changeant sa key ou via ref
     if (textInputRef.current) {
       textInputRef.current.clear();
     }
   };
 
-  const textInputRef = useRef<TextInput>(null);
-
   // ── Rendu d'un message ────────────────────────────────────────────────────
-  const renderMessage = ({ item }: { item: ChatMessage }) => {
-    if (item.role === 'ai') {
+  const renderMessage = ({ item }: { item: Message }) => {
+    if (item.role === 'assistant') {
       return (
         <View style={styles.aiRow}>
           <ThemedText style={styles.aiText}>{item.text}</ThemedText>
