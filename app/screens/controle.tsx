@@ -3,7 +3,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { Ionicons as Icon } from '@expo/vector-icons';
 import { Fonts } from '../../constants/theme';
 
 interface Category {
@@ -110,7 +110,7 @@ export default function ControleScreen() {
                 </TouchableOpacity>
                 <View style={styles.headerLeft} />
                 <Text style={styles.title}>Cercles de contrôles</Text>
-                <TouchableOpacity onPress={() => router.replace('/(tabs)' as any)}>
+                <TouchableOpacity onPress={() => router.replace('/(tabs)/exercise' as any)}>
                     <Icon name="close" size={24} color="#fff" />
                 </TouchableOpacity>
             </View>

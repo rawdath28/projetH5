@@ -157,7 +157,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // };
   const resetPassword = async (email: string) => {
     let redirectTo: string;
-
+    if (!supabase) {
+      return { error: { message: 'Supabase non configuré' } };
+    }
     if (Platform.OS === 'web') {
       redirectTo = `${window.location.origin}/screens/Auth/ResetPasswordScreen`;
     } else {

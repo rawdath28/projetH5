@@ -29,7 +29,7 @@ export default function FinalScreen() {
                 </TouchableOpacity>
                 <View style={styles.headerLeft} />
                 <Text style={styles.title}>Cercles de contrôles</Text>
-                <TouchableOpacity onPress={() => router.replace('/(tabs)' as any)}>
+                <TouchableOpacity onPress={() => router.replace('/(tabs)/exercise' as any)}>
                     <Icon name="close" size={24} color="#fff" />
                 </TouchableOpacity>
             </View>
@@ -52,10 +52,7 @@ export default function FinalScreen() {
             <View style={styles.footer}>
                 <TouchableOpacity
                     style={styles.finishButton}
-                    onPress={() => {
-                        // Rediriger vers le HomeScreen
-                        router.replace('/(tabs)' as any);
-                    }}
+                    onPress={() => router.replace('/(tabs)/exercise' as any)}
                 >
                     <Text style={styles.finishButtonText}>Terminer</Text>
                 </TouchableOpacity>

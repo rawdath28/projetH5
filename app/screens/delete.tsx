@@ -82,7 +82,7 @@ export default function DeleteScreen() {
                     <Icon name="chevron-back" size={24} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.title}>Cercles de contrôles</Text>
-                <TouchableOpacity onPress={() => router.replace('/(tabs)' as any)}>
+                <TouchableOpacity onPress={() => router.replace('/(tabs)/exercise' as any)}>
                     <Icon name="close" size={24} color="#fff" />
                 </TouchableOpacity>
             </View>

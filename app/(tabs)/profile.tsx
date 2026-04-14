@@ -4,7 +4,7 @@ import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { Ionicons as Icon } from '@expo/vector-icons';
 import { Fonts } from '../../constants/theme';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -206,7 +206,7 @@ export default function ProfileScreen() {
                     {stats.map((stat, index) => (
                         <View key={index} style={styles.statCard}>
                             <View style={styles.statIconContainer}>
-                                <Icon name={stat.icon} size={28} color="#027A54" />
+                                <Icon name={stat.icon as any} size={28} color="#027A54" />
                             </View>
                             <Text style={styles.statValue}>{stat.value}</Text>
                             <Text style={styles.statLabel}>{stat.label}</Text>

@@ -11,7 +11,7 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { Ionicons as Icon } from '@expo/vector-icons';
 import { Fonts } from '../../constants/theme';
 
 const { height } = Dimensions.get('window');
@@ -92,7 +92,7 @@ const DragAndDropScreen: React.FC = () => {
                     <Icon name="chevron-back" size={24} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Cercles de contrôles</Text>
-                <TouchableOpacity onPress={() => router.replace('/(tabs)' as any)}>
+                <TouchableOpacity onPress={() => router.replace('/(tabs)/exercise' as any)}>
                     <Icon name="close" size={24} color="#fff" />
                 </TouchableOpacity>
             </View>

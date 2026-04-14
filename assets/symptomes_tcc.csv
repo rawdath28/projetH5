@@ -1,0 +1,9 @@
+id,titre,description,exercices_associes
+1,Pensées automatiques négatives,Tendances à ruminer des pensées pessimistes ou auto-critiques qui amplifient le mal-être.,1;3;4;9;14
+2,Stress généralisé,État de tension et d’inquiétude persistant face aux exigences quotidiennes.,1;5;8;11;20
+3,Anxiété physiologique,"Manifestations corporelles de l’anxiété comme la tension physique, les palpitations ou la respiration rapide.",2;5;8;11;13;19
+4,Peur anticipatoire,"Tendance à imaginer le pire avant une situation future, souvent paralysante et génératrice d'évitement.",3;9;16
+5,Distorsions cognitives,"Manières biaisées de penser la réalité (comme le tout-ou-rien ou la généralisation), qui amplifient les émotions négatives.",4;9;12;14;18
+6,Baisse de motivation,"Perte d’élan, d'énergie ou de sens pour passer à l’action ou poursuivre des objectifs importants.",6;10;12;17;18
+7,Baisse d’estime de soi,"Sous-évaluation persistante de sa valeur personnelle, de ses qualités ou de ses capacités de réussite.",7;8;13;15;17;19
+8,Évitement comportemental,"Tendance à fuir ou éviter systématiquement les situations perçues comme risquées, anxiogènes ou inconfortables.",10;16;20
