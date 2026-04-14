@@ -1,17 +1,44 @@
 // profile-screen.tsx
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { Ionicons as Icon } from '@expo/vector-icons';
 import { Fonts } from '../../constants/theme';
 import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
 
 export default function ProfileScreen() {
     const router = useRouter();
     const { signOut, user } = useAuth();
-    const userName = user?.user_metadata?.username || 'Utilisateur';
+    const [userName, setUserName] = useState('Utilisateur');
+
+    useEffect(() => {
+        if (!user || !supabase) {
+            console.log('❌ Pas de user ou supabase:', { user, supabase });
+            return;
+        }
+
+        console.log('🔍 Recherche username pour user id:', user.id);
+        console.log('📦 user_metadata:', user.user_metadata);
+
+        supabase
+            .from('profiles')
+            .select('username')
+            .eq('user_id', user.id)
+            .single()
+            .then(({ data, error }) => {
+                console.log('📊 Résultat profiles:', { data, error });
+                if (data?.username) {
+                    setUserName(data.username);
+                } else {
+                    const metaUsername = user.user_metadata?.username;
+                    console.log('📦 Fallback metadata username:', metaUsername);
+                    if (metaUsername) setUserName(metaUsername);
+                }
+            });
+    }, [user]);
     const [completedExercises] = useState(12);
     const [streak] = useState(7);
     const [syncingMoods, setSyncingMoods] = useState(false);
@@ -206,7 +233,7 @@ export default function ProfileScreen() {
                     {stats.map((stat, index) => (
                         <View key={index} style={styles.statCard}>
                             <View style={styles.statIconContainer}>
-                                <Icon name={stat.icon} size={28} color="#027A54" />
+                                <Icon name={stat.icon as any} size={28} color="#027A54" />
                             </View>
                             <Text style={styles.statValue}>{stat.value}</Text>
                             <Text style={styles.statLabel}>{stat.label}</Text>

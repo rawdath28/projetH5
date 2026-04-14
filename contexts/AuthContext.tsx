@@ -92,9 +92,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         data: { username: username || '' },
       },
     });
-    if (!error && data.session) {
-      setSession(data.session);
-      setUser(data.user);
+    if (!error && data.user) {
+      // Insérer le username dans la table profiles
+      await supabase.from('profiles').upsert({
+        user_id: data.user.id,
+        username: username || '',
+      });
+      if (data.session) {
+        setSession(data.session);
+        setUser(data.user);
+      }
     }
     return { error };
   };
@@ -156,6 +163,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   //   return { error };
   // };
   const resetPassword = async (email: string) => {
+    if (!supabase) {
+      return { error: { message: 'Supabase non configuré' } };
+    }
     let redirectTo: string;
 
     if (Platform.OS === 'web') {
