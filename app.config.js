@@ -4,7 +4,7 @@ module.exports = ({ config }) => ({
   slug: 'projetH5',
   version: '1.0.0',
   orientation: 'portrait',
-  icon: './assets/images/app-icon.jpg',
+  icon: './assets/images/app-icon.png',
   platforms: ['ios', 'android', 'web'],
   scheme: 'projeth5',
   userInterfaceStyle: 'automatic',
@@ -27,6 +27,7 @@ module.exports = ({ config }) => ({
     },
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
+    package: 'umi.app.mobile',
   },
 
   web: {
