@@ -1,8 +1,8 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  ImageBackground,
   ScrollView,
   StyleSheet,
   TextInput,
@@ -11,8 +11,17 @@ import {
 } from 'react-native';
 import { ThemedText } from '../../components/themed-text';
 import { IconSymbol } from '../../components/ui/icon-symbol';
-import { GRADIENTS } from '../../constants/exercise-gradients';
 import { Fonts } from '../../constants/theme';
+
+const BG_IMAGES = [
+  require('../../assets/ExerciceBG/Property 1=1.png'),
+  require('../../assets/ExerciceBG/Property 1=2.png'),
+  require('../../assets/ExerciceBG/Property 1=3.png'),
+  require('../../assets/ExerciceBG/Property 1=4.png'),
+  require('../../assets/ExerciceBG/Property 1=5.png'),
+  require('../../assets/ExerciceBG/Property 1=6.png'),
+  require('../../assets/ExerciceBG/Property 1=7.png'),
+];
 import { useFavorites } from '../../contexts/FavoritesContext';
 import type { Exercise } from '../../hooks/use-exercises';
 import { useExercises } from '../../hooks/use-exercises';
@@ -109,7 +118,7 @@ export default function ExerciseScreen() {
           {/* Grille d'exercices */}
           <View style={styles.gridContainer}>
             {filteredExercises.map((exercise) => {
-              const grad = GRADIENTS[exercise.gradientIndex];
+              const bg = BG_IMAGES[exercise.gradientIndex % BG_IMAGES.length];
               return (
                 <TouchableOpacity
                   key={exercise.id}
@@ -117,12 +126,14 @@ export default function ExerciseScreen() {
                   onPress={() => goToDetail(exercise)}
                   activeOpacity={0.85}
                 >
-                  <LinearGradient
-                    colors={grad.colors}
-                    start={grad.start}
-                    end={grad.end}
+                  <ImageBackground
+                    source={bg}
                     style={StyleSheet.absoluteFill}
-                  />
+                    resizeMode="cover"
+                  >
+                    {/* Overlay blanc 30% pour atténuer les couleurs */}
+                    <View style={styles.bgOverlay} />
+                  </ImageBackground>
 
                   {/* Étoile favoris */}
                   <TouchableOpacity
@@ -248,6 +259,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     overflow: 'hidden',
     position: 'relative',
+  },
+  bgOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.20)',
+    // backgroundColor: 'rgba(255,255,255,0.40)',
   },
   gridCardPlaceholder: {
     width: '47.5%',

@@ -1,6 +1,6 @@
 module.exports = ({ config }) => ({
   ...config,
-  name: 'projetH5',
+  name: 'UMi',
   slug: 'projetH5',
   version: '1.0.0',
   orientation: 'portrait',
@@ -27,7 +27,7 @@ module.exports = ({ config }) => ({
     },
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
-    package: 'umi.app.mobile',
+    package: 'com.umi.mobile',
   },
 
   web: {
@@ -83,7 +83,7 @@ module.exports = ({ config }) => ({
 //   slug: 'projetH5',
 //   version: '1.0.0',
 //   orientation: 'portrait',
-//   icon: './assets/images/app-icon.jpg',
+//   icon: './assets/images/app-icon.png',
 //   platforms: ['ios', 'android', 'web'],
 //   scheme: 'projeth5',
 //   userInterfaceStyle: 'automatic',

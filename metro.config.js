@@ -31,17 +31,5 @@ config.resolver = {
   sourceExts: [...resolver.sourceExts, 'svg'],
 };
 
-// Optimisations pour le cache
-config.cacheStores = [
-  {
-    get: async (key) => {
-      // Cache en mémoire pour améliorer les performances
-      return null;
-    },
-    set: async (key, value) => {
-      // Pas de cache persistant pour éviter les problèmes
-    },
-  },
-];
 
 module.exports = config;

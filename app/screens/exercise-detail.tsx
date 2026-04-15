@@ -1,10 +1,18 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '../../components/themed-text';
 import { IconSymbol } from '../../components/ui/icon-symbol';
-import { GRADIENTS } from '../../constants/exercise-gradients';
 import { Fonts } from '../../constants/theme';
+
+const BG_IMAGES = [
+  require('../../assets/ExerciceBG/Property 1=1.png'),
+  require('../../assets/ExerciceBG/Property 1=2.png'),
+  require('../../assets/ExerciceBG/Property 1=3.png'),
+  require('../../assets/ExerciceBG/Property 1=4.png'),
+  require('../../assets/ExerciceBG/Property 1=5.png'),
+  require('../../assets/ExerciceBG/Property 1=6.png'),
+  require('../../assets/ExerciceBG/Property 1=7.png'),
+];
 import { useFavorites } from '../../contexts/FavoritesContext';
 import { useSymptoms } from '../../hooks/use-symptoms';
 
@@ -32,7 +40,7 @@ export default function ExerciseDetailScreen() {
   const { symptoms } = useSymptoms();
 
   const gradIndex = parseInt(params.gradientIndex ?? '0', 10);
-  const grad = GRADIENTS[gradIndex] ?? GRADIENTS[0];
+  const bg = BG_IMAGES[gradIndex % BG_IMAGES.length];
   const effort = parseInt(params.effort_cognitif ?? '1', 10);
   const effortLabel = EFFORT_LABEL[effort] ?? 'Effort faible';
 
@@ -43,13 +51,10 @@ export default function ExerciseDetailScreen() {
   return (
     <View style={styles.wrapper}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Header dégradé */}
-        <LinearGradient
-          colors={grad.colors}
-          start={grad.start}
-          end={grad.end}
-          style={styles.headerContainer}
-        >
+        {/* Header image */}
+        <ImageBackground source={bg} style={styles.headerContainer} resizeMode="cover">
+          <View style={styles.headerOverlay} />
+
           {/* Ligne boutons haut */}
           <View style={styles.headerTopRow}>
             <TouchableOpacity style={styles.iconButton} onPress={() => router.back()}>
@@ -73,7 +78,7 @@ export default function ExerciseDetailScreen() {
             <ThemedText style={styles.headerTitle}>{params.titre}</ThemedText>
             <ThemedText style={styles.headerSubtitle}>{params.description_courte}</ThemedText>
           </View>
-        </LinearGradient>
+        </ImageBackground>
         {/* Psychologues + badges — sous le header */}
         <View style={styles.metaSection}>
           {params.psychologues ? (
@@ -137,25 +142,18 @@ export default function ExerciseDetailScreen() {
 
       {/* Bouton démarrer */}
       <View style={styles.footer}>
-        <LinearGradient
-          colors={grad.colors}
-          start={grad.start}
-          end={grad.end}
+        <TouchableOpacity
           style={styles.startButton}
+          onPress={() => {
+            router.push({
+              pathname: '/screens/chat',
+              params: { titre: params.titre },
+            } as any);
+          }}
         >
-          <TouchableOpacity
-            style={styles.startButtonInner}
-            onPress={() => {
-              router.push({
-                pathname: '/screens/chat',
-                params: { titre: params.titre },
-              } as any);
-            }}
-          >
-            <ThemedText style={styles.startButtonText}>Démarrer</ThemedText>
-            <IconSymbol size={18} name="arrow.right" color="#FFFFFF" />
-          </TouchableOpacity>
-        </LinearGradient>
+          <ThemedText style={styles.startButtonText}>Démarrer</ThemedText>
+          <IconSymbol size={18} name="arrow.right" color="#FFFFFF" />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -169,8 +167,11 @@ const styles = StyleSheet.create({
   /* ── Header ── */
   headerContainer: {
     paddingBottom: 10,
-    // borderBottomLeftRadius: 30,
-    // borderBottomRightRadius: 30,
+    overflow: 'hidden',
+  },
+  headerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.20)',
   },
   headerTopRow: {
     flexDirection: 'row',
@@ -336,15 +337,13 @@ const styles = StyleSheet.create({
     // borderTopColor: '#EEEEEE',
   },
   startButton: {
-    borderRadius: 14,
-    overflow: 'hidden',
-  },
-  startButtonInner: {
+    borderRadius: 25,
+    backgroundColor: '#303030',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
-    paddingVertical: 16,
+    paddingVertical: 12,
   },
   startButtonText: {
     fontSize: 17,
