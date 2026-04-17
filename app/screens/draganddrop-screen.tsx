@@ -39,7 +39,7 @@ const DragAndDropScreen: React.FC = () => {
         { id: 'external', title: 'Exterieur', items: [] },
     ]);
 
-    const [availableItems, setAvailableItems] = useState<string[]>(selectedItems);
+    const [availableItems, setAvailableItems] = useState<string[]>(selectedItems.slice(0, 4));
     const [draggedItem, setDraggedItem] = useState<string | null>(null);
     
     // Refs pour stocker les refs des vues des catégories

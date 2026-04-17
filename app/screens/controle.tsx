@@ -1,7 +1,7 @@
 // controle.tsx
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons as Icon } from '@expo/vector-icons';
 import { Fonts } from '../../constants/theme';
@@ -80,15 +80,28 @@ export default function ControleScreen() {
                 });
             }, 100);
         } else {
-            // Tous les éléments sont traités, aller à l'écran final
-            router.push({
-                pathname: '/screens/delete',
-                params: {
-                    categories: JSON.stringify(categories),
-                    processedItems: JSON.stringify(updatedProcessedItems),
-                    externalItems: JSON.stringify(externalCategory?.items || [])
-                }
-            });
+            const hasExternalItems = (externalCategory?.items ?? []).length > 0;
+
+            if (hasExternalItems) {
+                // Il y a des éléments "Extérieur" → passer par delete
+                router.push({
+                    pathname: '/screens/delete',
+                    params: {
+                        categories: JSON.stringify(categories),
+                        processedItems: JSON.stringify(updatedProcessedItems),
+                        externalItems: JSON.stringify(externalCategory?.items || [])
+                    }
+                });
+            } else {
+                // Aucun élément "Extérieur" → aller directement à la final screen
+                router.push({
+                    pathname: '/screens/final-screen',
+                    params: {
+                        processedItems: JSON.stringify(updatedProcessedItems),
+                        externalItems: JSON.stringify([])
+                    }
+                });
+            }
         }
     };
 
@@ -102,6 +115,11 @@ export default function ControleScreen() {
     };
 
     return (
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={60}
+        >
         <SafeAreaView style={styles.container}>
             <Stack.Screen options={{ headerShown: false }} />
             <View style={styles.header}>
@@ -187,6 +205,7 @@ export default function ControleScreen() {
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
+        </KeyboardAvoidingView>
     );
 }
 

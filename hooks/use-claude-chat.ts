@@ -8,7 +8,10 @@ import {
 } from '../lib/circles_of_control';
 import { supabase } from '../lib/supabase';
 
-const EDGE_FUNCTION_URL = `${process.env.EXPO_PUBLIC_SUPABASE_URL}functions/v1/claude-chat`;
+// Ensure trailing slash on Supabase URL
+const _supabaseUrl = (process.env.EXPO_PUBLIC_SUPABASE_URL ?? '').replace(/\/$/, '');
+const EDGE_FUNCTION_URL = `${_supabaseUrl}/functions/v1/claude-chat`;
+console.log('[useClaudeChat] Edge Function URL:', EDGE_FUNCTION_URL);
 const MAX_TURNS = 20;
 
 // ─── Outil Claude (format Anthropic) ─────────────────────────────────────────
@@ -97,42 +100,63 @@ export function useClaudeChat(onExerciseLaunch: (data: CirclesOfControlData) => 
 
     const callClaude = useCallback(async (history: ClaudeMessage[]) => {
         const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
+        console.log('[callClaude] Appel Edge Function →', EDGE_FUNCTION_URL);
+        console.log('[callClaude] Historique messages count:', history.length);
 
-        const response = await fetch(EDGE_FUNCTION_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                'apikey': SUPABASE_ANON_KEY,
-            },
-            body: JSON.stringify({
-                system: SYSTEM_PROMPT,
-                tools: CLAUDE_TOOLS,
-                tool_choice: { type: 'auto' },
-                messages: history,
-            }),
-        });
+        let response: Response;
+        try {
+            response = await fetch(EDGE_FUNCTION_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'apikey': SUPABASE_ANON_KEY,
+                },
+                body: JSON.stringify({
+                    system: SYSTEM_PROMPT,
+                    tools: CLAUDE_TOOLS,
+                    tool_choice: { type: 'auto' },
+                    messages: history,
+                }),
+            });
+        } catch (fetchErr: any) {
+            console.error('[callClaude] Erreur réseau (fetch failed):', fetchErr?.message ?? fetchErr);
+            throw fetchErr;
+        }
+
+        console.log('[callClaude] Réponse status:', response.status);
 
         if (!response.ok) {
             const err = await response.text();
+            console.error('[callClaude] Erreur HTTP:', response.status, err);
             throw new Error(`Erreur Edge Function ${response.status} : ${err}`);
         }
 
-        return response.json();
+        const data = await response.json();
+        console.log('[callClaude] Réponse Claude - stop_reason:', data.stop_reason, '| nb blocs:', data.content?.length ?? 0);
+        return data;
     }, []);
 
     // ── Traitement d'un tour (texte + tool calls) ─────────────────────────────
 
     const processTurn = useCallback(async (history: ClaudeMessage[]) => {
+        console.log('[processTurn] Début du tour, historique:', history.length, 'messages');
         const data = await callClaude(history);
         const content: ClaudeContentBlock[] = data.content ?? [];
+
+        console.log('[processTurn] Blocs reçus:', content.map(b => b.type));
 
         let assistantText: string | null = null;
         const toolUses: { id: string; name: string; input: any }[] = [];
 
         for (const block of content) {
-            if (block.type === 'text') assistantText = block.text;
-            else if (block.type === 'tool_use') toolUses.push({ id: block.id, name: block.name, input: block.input });
+            if (block.type === 'text') {
+                assistantText = block.text;
+                console.log('[processTurn] Texte assistant (100 chars):', block.text?.slice(0, 100));
+            } else if (block.type === 'tool_use') {
+                console.log('[processTurn] Tool use détecté:', block.name, '| input:', JSON.stringify(block.input)?.slice(0, 100));
+                toolUses.push({ id: block.id, name: block.name, input: block.input });
+            }
         }
 
         // Stocker le message assistant avec tous ses blocs
@@ -142,19 +166,24 @@ export function useClaudeChat(onExerciseLaunch: (data: CirclesOfControlData) => 
         ];
 
         if (assistantText) {
+            console.log('[processTurn] Ajout message assistant dans state');
             setMessages((prev) => [
                 ...prev,
                 { id: Date.now().toString(), role: 'assistant', text: assistantText! },
             ]);
+        } else {
+            console.warn('[processTurn] Aucun texte dans la réponse — rien affiché');
         }
 
         // Traiter les tool calls
         if (toolUses.length > 0) {
+            console.log('[processTurn] Traitement', toolUses.length, 'tool(s)');
             const toolResults: ClaudeContentBlock[] = [];
 
             for (const tc of toolUses) {
                 if (tc.name === 'update_exercise_data') {
                     buffer.current = mergeBuffer(buffer.current, tc.input);
+                    console.log('[processTurn] Buffer mis à jour:', JSON.stringify(buffer.current)?.slice(0, 150));
                     toolResults.push({
                         type: 'tool_result',
                         tool_use_id: tc.id,
@@ -173,12 +202,38 @@ export function useClaudeChat(onExerciseLaunch: (data: CirclesOfControlData) => 
             ];
         }
 
+        // Si Claude a fait des tool calls sans texte → rappeler pour obtenir la réponse
+        if (toolUses.length > 0 && !assistantText) {
+            console.log('[processTurn] Tool use sans texte → 2ème appel pour réponse...');
+            const data2 = await callClaude(updatedHistory);
+            const content2: ClaudeContentBlock[] = data2.content ?? [];
+            console.log('[processTurn] Blocs 2ème appel:', content2.map(b => b.type));
+
+            for (const block of content2) {
+                if (block.type === 'text' && block.text) {
+                    console.log('[processTurn] Texte 2ème appel:', block.text.slice(0, 100));
+                    setMessages((prev) => [
+                        ...prev,
+                        { id: Date.now().toString(), role: 'assistant', text: block.text },
+                    ]);
+                    break;
+                }
+            }
+
+            updatedHistory = [
+                ...updatedHistory,
+                { role: 'assistant', content: content2 },
+            ];
+        }
+
         claudeHistory.current = updatedHistory;
+        console.log('[processTurn] Fin du tour OK');
     }, [callClaude]);
 
     // ── Message d'ouverture ───────────────────────────────────────────────────
 
     const initConversation = useCallback(async () => {
+        console.log('[initConversation] Démarrage de la conversation...');
         setIsLoading(true);
         setError(null);
         try {
@@ -186,8 +241,9 @@ export function useClaudeChat(onExerciseLaunch: (data: CirclesOfControlData) => 
                 { role: 'user', content: 'Bonjour' },
             ];
             await processTurn(initialHistory);
+            console.log('[initConversation] Conversation initialisée avec succès');
         } catch (e: any) {
-            console.error('[useClaudeChat] initConversation error:', e?.message ?? e);
+            console.error('[initConversation] Erreur:', e?.message ?? e);
             setError(`Erreur : ${e?.message ?? 'inconnue'}`);
         } finally {
             setIsLoading(false);
@@ -198,6 +254,8 @@ export function useClaudeChat(onExerciseLaunch: (data: CirclesOfControlData) => 
 
     const sendMessage = useCallback(async (text: string) => {
         if (!text.trim() || isLoading) return;
+
+        console.log('[sendMessage] Message envoyé:', text.slice(0, 60), '| Tour:', turnCount.current + 1, '/', MAX_TURNS);
 
         if (turnCount.current >= MAX_TURNS) {
             setError("La conversation a atteint sa limite.");
@@ -212,8 +270,9 @@ export function useClaudeChat(onExerciseLaunch: (data: CirclesOfControlData) => 
             { id: Date.now().toString(), role: 'user', text },
         ]);
 
-        // Après 4 tours → message de transition + lancement de l'exercice
-        if (turnCount.current >= 4) {
+        // Après 3 tours → message de transition + lancement de l'exercice
+        if (turnCount.current >= 3) {
+            console.log('[sendMessage] Tour 4 atteint → lancement exercice');
             setIsLoading(true);
             try {
                 await new Promise((resolve) => setTimeout(resolve, 600));
@@ -226,6 +285,7 @@ export function useClaudeChat(onExerciseLaunch: (data: CirclesOfControlData) => 
                     },
                 ]);
                 await new Promise((resolve) => setTimeout(resolve, 1000));
+                console.log('[sendMessage] Buffer final:', JSON.stringify(buffer.current));
                 onExerciseLaunch(buffer.current as CirclesOfControlData);
             } finally {
                 setIsLoading(false);
@@ -242,7 +302,7 @@ export function useClaudeChat(onExerciseLaunch: (data: CirclesOfControlData) => 
         try {
             await processTurn(updatedHistory);
         } catch (e: any) {
-            console.error('[useClaudeChat] sendMessage error:', e?.message ?? e);
+            console.error('[sendMessage] Erreur:', e?.message ?? e);
             setError(`Erreur : ${e?.message ?? 'inconnue'}`);
         } finally {
             setIsLoading(false);
